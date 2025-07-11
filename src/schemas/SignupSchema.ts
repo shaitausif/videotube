@@ -17,7 +17,7 @@ export const SignupSchema = z.object({
       file instanceof File &&
       file.size > 0 &&
       ["image/jpeg", "image/png", "image/webp"].includes(file.type),
-    {
+    { 
       message: "Avatar must be a valid JPG, PNG, or WebP file",
     }
   ),

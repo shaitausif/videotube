@@ -19,7 +19,7 @@ import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
 import ThemeSwitcher from "../../../../components/ThemeSwitcher";
 import { toast } from "sonner";
-import { Ellipsis, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const page = () => {
@@ -91,9 +91,9 @@ const page = () => {
         <div className="md:w-[50vw] md:mx-auto mx-4 h-fit flex flex-col gap-6 dark:bg-[#161616] rounded-md px-6 justify-center py-6">
           <div className="flex flex-col justify-center space-y-0.5 items-center">
             <h2 className="text-2xl">Create an Account</h2>
-            <p>
+            <p className="text-sm">
               Already have an account?{" "}
-              <span className="duration-200 cursor-pointer hover:text-blue-500">
+              <span onClick={() => router.push("/sign-in")} className="duration-200 cursor-pointer hover:text-blue-500">
                 Login
               </span>
             </p>
@@ -232,7 +232,7 @@ const page = () => {
 
                     <Button disabled={isSubmitting} type="submit" className="md:mt-4 w-full">
                       {isSubmitting ? (
-                        <Ellipsis />
+                        <Loader2 className="animate-spin" />
                       ): "Submit" }
                     </Button>
                   </div>
