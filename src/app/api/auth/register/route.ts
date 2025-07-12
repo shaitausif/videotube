@@ -4,6 +4,7 @@ import path from "path";
 import { User } from "@/app/models/user.model";
 import { uploadOnCloudinary } from "@/lib/cloudinary";
 import ConnectDB from "@/lib/dbConnect";
+import { generateAccessAndRefreshTokens } from "@/lib/server/generateTokens";
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,13 +19,10 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
 
-    
-
     const fullName = data.get("fullName")?.toString().trim();
     const username = data.get("username")?.toString().trim();
     const email = data.get("email")?.toString().trim();
     const password = data.get("password")?.toString().trim();
-
 
     if (!fullName || !username || !email || !password) {
       return NextResponse.json(
@@ -74,8 +72,6 @@ export async function POST(req: NextRequest) {
       coverImage = await uploadOnCloudinary(coverImageFilePath);
     }
 
-     
-
     if (!avatar)
       return NextResponse.json({
         success: false,
@@ -101,7 +97,24 @@ export async function POST(req: NextRequest) {
         message: "Unable to register the User",
       });
 
-    return NextResponse.json(
+
+  
+
+      const tokens = await generateAccessAndRefreshTokens(user._id)
+
+      if(!tokens){
+        return NextResponse.json({
+          success : false,
+          message : "Unable to generate the tokens"
+        },{status : 500})
+      }
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    const response = NextResponse.json(
       {
         success: true,
         data: userCreated,
@@ -109,6 +122,10 @@ export async function POST(req: NextRequest) {
       },
       { status: 201 }
     );
+
+    response.cookies.set("accessToken",tokens.accessToken,options)
+    response.cookies.set("refreshToken",tokens.refreshToken,options)
+
   } catch (error) {
     console.log(error);
     return NextResponse.json(

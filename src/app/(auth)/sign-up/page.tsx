@@ -76,7 +76,7 @@ const page = () => {
         toast("User registered successfully");
         router.push("/")
         return;
-      }
+      }``
       toast(res.message);
     } catch (error) {
       console.log(error);

@@ -1,5 +1,5 @@
 import { User } from "@/app/models/user.model";
-import { generateAccessAndRefreshTokens } from "@/lib/utils";
+import { generateAccessAndRefreshTokens } from "@/lib/server/generateTokens";
 import { NextRequest, NextResponse } from "next/server";
 
 
