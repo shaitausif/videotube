@@ -33,7 +33,9 @@ export const authOptions: NextAuthOptions = {
                     username : profile.given_name || profile.login || "No Username",
                     fullName : profile.name || profile.login || "Unnamed",
                     avatar : profile.picture || profile.avatar_url || "" ,
-                    password : ""
+                    password : "",
+                    VerifyCodeExpiry: undefined,
+                    isVerified: true
                 },{validateBeforeSave : false})
             }
 
@@ -54,7 +56,7 @@ export const authOptions: NextAuthOptions = {
 
   pages : {
     signIn : "/sign-in",
-    error : "/"
+    error : "/" 
   },
 
   session : {
@@ -63,7 +65,5 @@ export const authOptions: NextAuthOptions = {
   },
 
   secret : process.env.NEXTAUTH_SECRET
-
-
 }
 

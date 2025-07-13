@@ -5,6 +5,7 @@ import { User } from "@/app/models/user.model";
 import { uploadOnCloudinary } from "@/lib/cloudinary";
 import ConnectDB from "@/lib/dbConnect";
 import { generateAccessAndRefreshTokens } from "@/lib/server/generateTokens";
+import { sendVerificationEmail } from "../../../../../helpers/SendVerificationEmail";
 
 export async function POST(req: NextRequest) {
   try {
@@ -40,7 +41,8 @@ export async function POST(req: NextRequest) {
       $or: [{ email }, { username }],
     });
 
-    if (ExistingUser) {
+    // if there is already a document of the user then won't allow anyone else to use   
+    if (ExistingUser?.isVerified) {
       return NextResponse.json({
         success: false,
         message: "User with Email or Username already exists",
@@ -78,6 +80,9 @@ export async function POST(req: NextRequest) {
         message: "Failed to upload avatar on cloudinary",
       });
 
+
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString()
+
     const user = await User.create({
       fullName,
       username,
@@ -85,46 +90,21 @@ export async function POST(req: NextRequest) {
       password,
       avatar: avatar?.secure_url,
       coverImage: coverImage?.secure_url! || "",
+      verifyCode : verificationCode,
     });
 
-    const userCreated = await User.findById(user._id).select(
-      "-password -refreshToken"
-    );
+    const emailResponse = await sendVerificationEmail(email, username, verificationCode)
 
-    if (!userCreated)
+    if(!emailResponse.success){
       return NextResponse.json({
-        success: false,
-        message: "Unable to register the User",
-      });
+        success : false, message : emailResponse.message
+      })
+    }
 
-
-  
-
-      const tokens = await generateAccessAndRefreshTokens(user._id)
-
-      if(!tokens){
-        return NextResponse.json({
-          success : false,
-          message : "Unable to generate the tokens"
-        },{status : 500})
-      }
-
-    const options = {
-      httpOnly: true,
-      secure: true,
-    };
-
-    const response = NextResponse.json(
-      {
-        success: true,
-        data: userCreated,
-        message: "User registered successfully",
-      },
-      { status: 201 }
-    );
-
-    response.cookies.set("accessToken",tokens.accessToken,options)
-    response.cookies.set("refreshToken",tokens.refreshToken,options)
+    return NextResponse.json({
+      success : true,
+      message : "User registered successfully, Please verify your email"
+    })
 
   } catch (error) {
     console.log(error);
