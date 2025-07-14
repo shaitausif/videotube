@@ -1,4 +1,5 @@
 import { User } from "@/app/models/user.model";
+import ConnectDB from "@/lib/dbConnect";
 import { generateAccessAndRefreshTokens } from "@/lib/server/generateTokens";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -12,6 +13,7 @@ export async function POST(req: NextRequest){
         return NextResponse.json({success : false, message : "All fields are required"},{status : 400})
     }
 
+    await ConnectDB();
     const user = await User.findOne({
         $or : [
             {email : identifier},

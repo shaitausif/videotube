@@ -1,6 +1,7 @@
 'use client'
 import Image from "next/image";
 import React, { useState } from "react";
+import LogoutButton from "../../components/LogoutButton";
 
 export default function Home() {
 
@@ -35,6 +36,9 @@ export default function Home() {
         <input accept="image/*" type="file" name="file" onChange={(e) => setfile(e.target.files?.[0])} />
 
         <button type="submit">Upload</button>
+
+        <br />
+        <LogoutButton />
       </form>
     </main>
     </>

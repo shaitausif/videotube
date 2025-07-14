@@ -39,7 +39,7 @@ export const authOptions: NextAuthOptions = {
                 },{validateBeforeSave : false})
             }
 
-            token.id = user._id.toString()
+            token._id = user._id.toString()
         }
         return token
     },

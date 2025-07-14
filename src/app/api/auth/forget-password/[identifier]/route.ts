@@ -25,6 +25,7 @@ export async function GET(req: NextRequest,{params}: {params: {identifier: strin
 
         const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
         user.verifyCode = verificationCode
+        user.VerifyCodeExpiry = new Date(Date.now() + 60 * 60 * 1000)
         await user.save({validateBeforeSave: false})
 
         const emailResponse = await sendVerificationEmail(user.email,user.username,verificationCode)
@@ -32,6 +33,7 @@ export async function GET(req: NextRequest,{params}: {params: {identifier: strin
         if(!emailResponse.success){
             return NextResponse.json({success : false, message : emailResponse.message},{status : 400})
         }
+        console.log("Email Response", emailResponse)
 
         return NextResponse.json({
             success : true ,

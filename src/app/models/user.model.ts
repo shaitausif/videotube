@@ -95,11 +95,6 @@ const userSchema = new Schema(
     VerifyCodeExpiry: {
       type: String,
       default: () => new Date(Date.now() + 60 * 60 * 1000), // 1 hour from now
-      index: {
-        expireAfterSeconds: 0, // TTL starts counting from the value of the field
-      },
-      //   This will tell MongoDB:
-      // "Delete this document when verificationExpiresAt is reached."
     },
     isVerified: {
       type: Boolean,
