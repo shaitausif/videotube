@@ -16,7 +16,7 @@ export async function PUT(req: NextRequest){
         // Connect to DB and search for the User and delete the refreshToken from user's document
         await ConnectDB()
         const user = await User.findById({_id: payload._id})
-
+        
         if(!user) return NextResponse.json({success : false, message: "User not found"},{status : 404})
         
         user.refreshToken = ""

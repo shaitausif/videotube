@@ -18,6 +18,5 @@ export const getCurrentUser = async(req: NextRequest) => {
     } catch (error) {
         return null;
     }
-
     
 }

@@ -1,8 +1,11 @@
+'use client'
+
 import React, { useState } from 'react'
 import { Button } from './ui/button'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+import { signOut } from 'next-auth/react'
 
 const LogoutButton = () => {
     const router = useRouter()
@@ -32,7 +35,10 @@ const LogoutButton = () => {
 
   return (
     <div>
-      <Button onClick={Logout}>{isSubmitting ? <Loader2 className='animate-spin'/> : "Logout"}</Button>
+      <Button onClick={() => {
+        Logout();
+        signOut();
+      }}>{isSubmitting ? <Loader2 className='animate-spin'/> : "Logout"}</Button>
     </div>
   )
 }
