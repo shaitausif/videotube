@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
-import { RootState } from '@/store/store'
+import { persistor, RootState } from '@/store/store'
 import { clearUser } from '@/features/userSlice/UserSlice'
 import ThemeSwitcher from './ThemeSwitcher'
 import { SidebarTrigger } from '@/components/ui/sidebar'
@@ -34,6 +34,7 @@ const Navbar = () => {
 
   const dispatch = useDispatch();
   const router = useRouter();
+  
 
   const Logout = async() => {
         try {
@@ -47,7 +48,11 @@ const Navbar = () => {
                 
                 toast(data.message);
                 dispatch(clearUser());
-                router.push("/sign-in")
+
+                // Using persistor to clear the redux store completely and purging
+                // Purge persisted state
+                persistor.purge();
+                router.push("/")
                 return;
             }
             toast(data.message)
@@ -60,7 +65,7 @@ const Navbar = () => {
 
 
   return (
-    <div className='w-full py-4 fixed dark:bg-[#161616]/50 flex pr-12 pl-6 justify-between items-center backdrop-blur-3xl'>
+    <div className='md:w-full py-4 fixed dark:bg-[#161616]/50 flex pr-12 pl-6 justify-between items-center backdrop-blur-3xl'>
 
         {/* Logo */}
         

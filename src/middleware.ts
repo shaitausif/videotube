@@ -18,6 +18,7 @@ async function verifyCustomJWT(token: string) {
 
 export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
+  console.log(pathname)
 
 
   // Try to get next-auth token for o-auth user
@@ -51,10 +52,7 @@ export async function middleware(req: NextRequest) {
   if (!userIsAuthenticated && !isPublic) {
     return NextResponse.redirect(new URL("/sign-in", req.url));
   }
-  if(!userIsAuthenticated && pathname == "/"){
-    return NextResponse.redirect(new URL("/sign-in", req.url))
-
-  }
+  
 
   // If authenticated and accessing login or signup page
   if (userIsAuthenticated && isPublic) {
@@ -64,5 +62,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico|$).*)"],
 }
