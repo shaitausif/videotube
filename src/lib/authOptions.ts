@@ -37,9 +37,12 @@ export const authOptions: NextAuthOptions = {
                     VerifyCodeExpiry: undefined,
                     isVerified: true
                 },{validateBeforeSave : false})
+            }else{
+              // user.avatar = profile.picture || profile.avatar_url || ""
+              // await user.save();
             }
 
-            token.id = user._id.toString()
+            token._id = user._id.toString()
         }
         return token
     },

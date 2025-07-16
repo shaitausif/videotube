@@ -18,12 +18,12 @@ export async function POST(req : NextRequest){
         const isCodeValid = user.verifyCode === code
     
         const isCodeNotExpired = new Date(user.VerifyCodeExpiry) > new Date()
-    
+        console.log(isCodeNotExpired,isCodeValid)
         if(isCodeValid && isCodeNotExpired){
             // Making this field undefined so that TTL will not delete this user document
             user.VerifyCodeExpiry = undefined
             user.isVerified = true
-            user.save({new : true});
+            await user.save();
             const response =  NextResponse.json({success : true, message : "User Verified Successfully"})
 
             const options = {

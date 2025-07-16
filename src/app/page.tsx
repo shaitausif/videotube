@@ -1,42 +1,65 @@
 'use client'
-import Image from "next/image";
-import React, { useState } from "react";
+
+import React, { useEffect, useState } from "react";
+import Navbar from "../../components/Navbar";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "@/features/userSlice/UserSlice";
+import { toast } from "sonner";
+import { RootState } from "@/store/store";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "../../components/App-Sidebar";
 
 export default function Home() {
 
-      const [file, setfile] = useState<File | null>()
+  const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.user)
+  console.log(user)
 
 
-      const onSubmit = async(e: React.FormEvent) => {
-        e.preventDefault()
-        if(!file) return;
-        try {
-          // this FormData will automatically set the headers and will handle all the multi part form uploading
-          const data = new FormData()
-          data.set("file",file)
 
-          const res = await fetch('/api/upload',{
-            method : "POST",
-            body : data
-          })
+  useEffect(() => {
 
-          if(!res.ok) throw new Error(await res.text())
+      if(user && user._id) return;
 
-        } catch (error) {
-            console.error(error)
-        }
+      const fetchUserData = async() => {
+      try {
+        const response = await fetch("/api/auth/get-user-info",{
+        method : "GET",
+        credentials : "include"
+      })
+      const data = await response.json();
+      if(!data.success){
+        toast(data.message)
+        return;
       }
+
+      dispatch(setUser(data.data))  
+      } catch (error) {
+        console.log(error)
+      }
+
+    }
+    fetchUserData();
+  }, [])
+  
+    
+
 
   return (
 
     <>
-    <main>
-      <form onSubmit={onSubmit} >
-        <input accept="image/*" type="file" name="file" onChange={(e) => setfile(e.target.files?.[0])} />
+    <SidebarProvider defaultOpen={false} >
+      <AppSidebar/>
+    <header>
+      <nav>
+        <Navbar />
+      </nav>
+    </header>
+    <main className="pt-20">
 
-        <button type="submit">Upload</button>
-      </form>
+ 
     </main>
+    </SidebarProvider>
     </>
   );
 }
