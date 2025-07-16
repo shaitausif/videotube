@@ -27,8 +27,7 @@ export async function middleware(req: NextRequest) {
   });
   const customToken = req.cookies.get("accessToken")?.value;
   const customJWT = customToken ? await verifyCustomJWT(customToken) : null;
-  console.log(customJWT)
-  console.log(nextAuthToken)
+
 
   const userIsAuthenticated = !!nextAuthToken || !!customJWT;
 
@@ -39,7 +38,8 @@ export async function middleware(req: NextRequest) {
     "/register",
     "/api/auth/login",
     "/api/auth/signup",
-    "/verify-code"
+    "/verify-code",
+    
   ];
 
   const wildcardRoutes = ["/reset-password"];

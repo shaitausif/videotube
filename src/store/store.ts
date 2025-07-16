@@ -1,14 +1,31 @@
-import { configureStore } from '@reduxjs/toolkit'
-import userReducer from '../features/userSlice/UserSlice'
+import { configureStore } from "@reduxjs/toolkit";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage"; // defaults to localStorage
+import { combineReducers } from "redux";
+import userReducer from "@/features/userSlice/UserSlice";
 
+// We can use redux-persist to resist the user info even after page refresh to improve the user Experience and overall Application's performance
+
+const rootReducer = combineReducers({
+  user: userReducer,
+});
+
+const persistConfig = {
+  key: "root",
+  storage,
+  whitelist: ["user"], // only persist the 'user' slice
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: {
-    user: userReducer
-  },
-})
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false, // required for redux-persist
+    }),
+});
 
-// Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
-export type AppDispatch = typeof store.dispatch
+
+export const persistor = persistStore(store);

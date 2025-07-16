@@ -27,11 +27,21 @@ const ThemeSwitcher = () => {
     }
 
     if(resolvedTheme === 'dark'){
-       return  <SunDim onClick={() => setTheme('light')} />
+       return (
+    <button  onClick={() => setTheme('light')} className="w-full text-sm flex items-center gap-2 px-2 py-1">
+      <SunDim className="h-3 w-3" />
+      Light Mode
+    </button>
+  )
         
     }
     if(resolvedTheme === 'light'){
-        return <Moon onClick={()=> setTheme('dark')} />
+        return (
+    <button onClick={() => setTheme('dark')} className="w-full text-sm flex items-center gap-2 px-2 py-1">
+      <Moon className="h-3 w-3" />
+      Dark Mode
+    </button>
+  )
     }
     
 }

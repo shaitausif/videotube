@@ -2,8 +2,9 @@ import { Message } from "@/app/models/user.model";
 import { createSlice } from "@reduxjs/toolkit";
 import mongoose from "mongoose";
 
-interface UserState {
-    username?: string;
+export interface UserState {
+        _id? : string;
+      username?: string;
       email?: string;
       fullName?: string;
       avatar?: string;

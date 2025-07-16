@@ -6,10 +6,13 @@ import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
+import { useDispatch } from 'react-redux'
+import { clearUser } from '@/features/userSlice/UserSlice'
 
 const LogoutButton = () => {
     const router = useRouter()
     const [isSubmitting, setisSubmitting] = useState(false)
+    const dispatch = useDispatch();
 
     const Logout = async() => {
         try {
@@ -21,6 +24,7 @@ const LogoutButton = () => {
             const data = await response.json()
             if(data.success){
                 toast(data.message)
+                dispatch(clearUser());
                 router.push("/sign-in")
                 return;
             }

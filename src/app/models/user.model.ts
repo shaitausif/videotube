@@ -39,10 +39,10 @@ export interface User extends Document {
   watchHistory?: Array<mongoose.Types.ObjectId>;
   password?: string;
   refreshToken?: string;
-  messages?: [Message];
   VerifyCode?: string;
   VerifyCodeExpiry?: Date;
   isVerified?: boolean;
+  isPaid? : boolean
 }
 
 const userSchema = new Schema(
@@ -88,7 +88,6 @@ const userSchema = new Schema(
     refreshToken: {
       type: String,
     },
-    messages: [messageSchema],
     verifyCode: {
       type: String,
     },
@@ -100,6 +99,10 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isPaid : {
+      type : Boolean,
+      default : false
+    }
   },
   { timestamps: true }
 );

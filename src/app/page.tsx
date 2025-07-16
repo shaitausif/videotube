@@ -1,19 +1,26 @@
 'use client'
 
 import React, { useEffect, useState } from "react";
-import LogoutButton from "../../components/LogoutButton";
 import Navbar from "../../components/Navbar";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/features/userSlice/UserSlice";
 import { toast } from "sonner";
+import { RootState } from "@/store/store";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "../../components/App-Sidebar";
 
 export default function Home() {
 
   const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.user)
+  console.log(user)
 
 
 
   useEffect(() => {
+
+      if(user && user._id) return;
+
       const fetchUserData = async() => {
       try {
         const response = await fetch("/api/auth/get-user-info",{
@@ -33,16 +40,16 @@ export default function Home() {
 
     }
     fetchUserData();
-  }, )
+  }, [])
   
     
 
-    
-  
 
   return (
 
     <>
+    <SidebarProvider defaultOpen={false} >
+      <AppSidebar/>
     <header>
       <nav>
         <Navbar />
@@ -51,8 +58,8 @@ export default function Home() {
     <main className="pt-20">
 
  
-        <LogoutButton />
     </main>
+    </SidebarProvider>
     </>
   );
 }
