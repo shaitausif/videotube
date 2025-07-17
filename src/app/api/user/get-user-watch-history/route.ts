@@ -1,17 +1,24 @@
 import { User } from "@/app/models/user.model";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
+import ConnectDB from "@/lib/dbConnect";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
 
 export async function GET(req : NextRequest){
 
-    const payload = await getCurrentUser(req)
+    try {
+        const payload = await getCurrentUser(req)
 
     if(!payload || !payload._id){
         return NextResponse.json({success : false, message : "Unauthorized"},{status : 400})
     }
 
+    await ConnectDB()
+    const isUserExist = await User.findById({_id: payload._id})
+    if(!isUserExist){
+        return NextResponse.json({success : false, message: "User not found"},{status : 404})
+    }
 
     const user = await User.aggregate([
         // 1st Stage
@@ -67,5 +74,8 @@ export async function GET(req : NextRequest){
 
 
     return NextResponse.json({success : true, data : user[0].watchHistory , message : "Watch History fetched successfully"},{status : 200    })
+    } catch (error) {
+        return NextResponse.json({success : false, error},{status : 500})
+    }
 
 }

@@ -13,6 +13,8 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import {motion} from "motion/react"
+import { useDispatch } from 'react-redux';
+import { setUser } from '@/features/userSlice/UserSlice';
 
 
 
@@ -24,6 +26,7 @@ const VerifyCode = ({email, redirect, setverify, verify}: {email: string, redire
 
     const router = useRouter()
     const [code, setcode] = useState("")
+    const dispatch = useDispatch()
     
 
     const onsubmit = async (e: React.FormEvent) => {
@@ -47,6 +50,7 @@ const VerifyCode = ({email, redirect, setverify, verify}: {email: string, redire
 
     if (data?.success) {
       toast(data.message);
+      dispatch(setUser(data?.data))
       setverify?.(true); // ✅ update parent state
 
       if (redirect) {

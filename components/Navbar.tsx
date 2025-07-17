@@ -52,7 +52,7 @@ const Navbar = () => {
                 // Using persistor to clear the redux store completely and purging
                 // Purge persisted state
                 persistor.purge();
-                // router.push("/")
+                router.push("/")
                 return;
             }
             toast(data.message)

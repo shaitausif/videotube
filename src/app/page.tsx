@@ -4,9 +4,8 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/features/userSlice/UserSlice";
-import { toast } from "sonner";
 import { RootState } from "@/store/store";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "../../components/App-Sidebar";
 
 
@@ -15,9 +14,6 @@ export default function Home() {
 
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user)
-  const [isLoading, setisLoading] = useState(false)
-
-
 
 
 
@@ -31,12 +27,9 @@ export default function Home() {
         method : "GET",
         credentials : "include"
       })
-      setTimeout(() => {
-        console.log("Hi")
-      }, 5000);
       const data = await response.json();
       if(!data.success){
-        toast(data.message)
+        console.log(data.message)
         return;
       }
 

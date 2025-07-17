@@ -4,7 +4,6 @@ import path from "path";
 import { User } from "@/app/models/user.model";
 import { uploadOnCloudinary } from "@/lib/cloudinary";
 import ConnectDB from "@/lib/dbConnect";
-import { generateAccessAndRefreshTokens } from "@/lib/server/generateTokens";
 import { sendVerificationEmail } from "../../../../../helpers/SendVerificationEmail";
 
 export async function POST(req: NextRequest) {

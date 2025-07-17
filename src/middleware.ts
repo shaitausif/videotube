@@ -38,12 +38,10 @@ export async function middleware(req: NextRequest) {
     "/login",
     "/register",
     "/api/auth/login",
-    "/api/auth/signup",
-    "/verify-code",
-    
+    "/api/auth/signup",    
   ];
 
-  const wildcardRoutes = ["/reset-password"];
+  const wildcardRoutes = ["/reset-password","/verify-code"];
 
   const isPublic =
     publicRoutes.includes(pathname) ||

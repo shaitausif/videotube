@@ -1,12 +1,15 @@
 import { User } from "@/app/models/user.model";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
+import ConnectDB from "@/lib/dbConnect";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
   { params }: { params: { username: string } }
 ) {
-  const payload = await getCurrentUser(req);
+  
+    try {
+        const payload = await getCurrentUser(req);
   if (!payload || !payload._id) {
     return NextResponse.json(
       { success: false, message: "Unauthorized" },
@@ -23,7 +26,13 @@ export async function GET(
     );
   }
 
-  const channel = User.aggregate([
+  await ConnectDB();
+
+  const isUserExist = await User.findOne({username})
+  if(!isUserExist){
+    return NextResponse.json({success : false, message: "User not found"},{status : 404})
+  }
+  const channel = await User.aggregate([
     {
       $match: { username: username },
     },
@@ -88,7 +97,10 @@ export async function GET(
 
   if(!(await channel).length) return NextResponse.json({success : false, message : "Channel Doesn't Exist"})
 
-    return NextResponse.json({success : true,data : channel, message : "User fetched successfully"})
+    return NextResponse.json({success : true,data : channel[0], message : "User fetched successfully"})
+    } catch (error) {
+        return NextResponse.json({success : false, error},{status : 500})
+    }
 
 
 }

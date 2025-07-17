@@ -7,10 +7,8 @@
   import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
-    FormLabel,
     FormMessage,
   } from "../../../../components/ui/form";
   import { Input } from "../../../../components/ui/input";
@@ -173,7 +171,7 @@ import OAuthProviders from "../../../../components/OAuthProviders";
                             
                             <FormMessage />
                             {
-                              !forgetSubmitting && <div onClick={forgotPassword} className="text-sm text-gray-400 hover:text-gray-200 duration-400 cursor-pointer">Forgot Password?</div>
+                              !forgetSubmitting ? <div onClick={forgotPassword} className="text-sm text-gray-400 hover:text-gray-200 duration-400 cursor-pointer">Forgot Password?</div> : <Loader2  className="animate-spin size-5"/>
                             }
                           </FormItem>
                         )}

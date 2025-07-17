@@ -38,8 +38,8 @@ export const authOptions: NextAuthOptions = {
                     isVerified: true
                 },{validateBeforeSave : false})
             }else{
-              // user.avatar = profile.picture || profile.avatar_url || ""
-              // await user.save();
+              user.avatar = profile.picture || profile.avatar_url || ""
+              await user.save();
             }
 
             token._id = user._id.toString()
