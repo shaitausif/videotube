@@ -9,11 +9,15 @@ import { RootState } from "@/store/store";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "../../components/App-Sidebar";
 
+
+
 export default function Home() {
 
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user)
-  console.log(user)
+  const [isLoading, setisLoading] = useState(false)
+
+
 
 
 
@@ -27,6 +31,9 @@ export default function Home() {
         method : "GET",
         credentials : "include"
       })
+      setTimeout(() => {
+        console.log("Hi")
+      }, 5000);
       const data = await response.json();
       if(!data.success){
         toast(data.message)
@@ -36,11 +43,11 @@ export default function Home() {
       dispatch(setUser(data.data))  
       } catch (error) {
         console.log(error)
-      }
+      } 
 
     }
     fetchUserData();
-  }, [user, dispatch])
+  }, [])
   
     
 
@@ -48,7 +55,11 @@ export default function Home() {
   return (
 
     <>
+
     <SidebarProvider defaultOpen={false} >
+      
+       
+      
       <AppSidebar/>
     <header>
       <nav>

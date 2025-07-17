@@ -7,6 +7,7 @@ import { ReduxProvider } from "../../components/ReduxProvider";
 
 
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -35,6 +36,7 @@ export default function RootLayout({
       >
         <ReduxProvider>
         <Providers>
+          
         {children}
         </Providers>
         </ReduxProvider>

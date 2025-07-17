@@ -62,5 +62,6 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
+  // "These are exception routes it also includes "/" or homepage of the application"
   matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico|$).*)"],
 }
