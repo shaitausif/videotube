@@ -8,6 +8,7 @@ import userReducer from "@/features/userSlice/UserSlice";
 
 const rootReducer = combineReducers({
   user: userReducer,
+    
 });
 
 const persistConfig = {
