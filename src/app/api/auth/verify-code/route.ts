@@ -1,4 +1,4 @@
-import { User } from "@/app/models/user.model";
+import { User } from "@/models/user.model";
 import ConnectDB from "@/lib/dbConnect";
 import { generateAccessAndRefreshTokens } from "@/lib/server/generateTokens";
 import { NextRequest, NextResponse } from "next/server";

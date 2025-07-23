@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
-import { User } from "@/app/models/user.model";
+import { User } from "@/models/user.model";
 import { uploadOnCloudinary } from "@/lib/cloudinary";
 import ConnectDB from "@/lib/dbConnect";
 import { sendVerificationEmail } from "../../../../../helpers/SendVerificationEmail";

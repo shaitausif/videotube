@@ -1,4 +1,4 @@
-import { User } from "@/app/models/user.model";
+import { User } from "@/models/user.model";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import ConnectDB from "@/lib/dbConnect";
 import { NextRequest, NextResponse } from "next/server";

@@ -2,7 +2,7 @@ import NextAuth, { NextAuthOptions } from "next-auth"
 import GithubProvider from "next-auth/providers/github"
 import GoogleProvider from "next-auth/providers/google";
 import ConnectDB from "./dbConnect";
-import { User } from "@/app/models/user.model";
+import { User } from "@/models/user.model";
 
 
 

@@ -4,7 +4,7 @@ import path from "path";
 import { uploadOnCloudinary } from "@/lib/cloudinary";
 import ConnectDB from "@/lib/dbConnect";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
-import { User } from "@/app/models/user.model";
+import { User } from "@/models/user.model";
 
 export async function PUT(req: NextRequest) {
   try {

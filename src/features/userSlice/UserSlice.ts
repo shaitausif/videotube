@@ -1,4 +1,4 @@
-import { Message } from "@/app/models/user.model";
+import { Message } from "@/models/user.model";
 import { createSlice } from "@reduxjs/toolkit";
 import mongoose from "mongoose";
 

@@ -2,33 +2,6 @@ import mongoose, { Schema, Document } from "mongoose";
 import jwt, { Secret } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-export interface Message extends Document {
-  from: mongoose.Types.ObjectId;
-  to: mongoose.Types.ObjectId;
-  message: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-const messageSchema = new Schema(
-  {
-    from: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    to: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    message: {
-      type: String,
-      required: true,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
 
 export interface User extends Document {
   username: string;
