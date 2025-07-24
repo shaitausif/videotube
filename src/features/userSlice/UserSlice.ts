@@ -1,4 +1,3 @@
-import { Message } from "@/models/user.model";
 import { createSlice } from "@reduxjs/toolkit";
 import mongoose from "mongoose";
 
@@ -12,7 +11,6 @@ export interface UserState {
       watchHistory?: Array<mongoose.Types.ObjectId>;
       password?: string;
       refreshToken?: string;
-      messages?: [Message];
       VerifyCode?: string;
       VerifyCodeExpiry?: Date;
       isVerified?: boolean;

@@ -3,7 +3,7 @@ import jwt, { Secret } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 
-export interface User extends Document {
+export default interface User extends Document {
   username: string;
   email?: string;
   fullName: string;

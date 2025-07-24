@@ -3,12 +3,13 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage
 import { combineReducers } from "redux";
 import userReducer from "@/features/userSlice/UserSlice";
+import socketReducer from '@/features/socketSlice/SocketSlice'
 
 // We can use redux-persist to resist the user info even after page refresh to improve the user Experience and overall Application's performance
 
 const rootReducer = combineReducers({
   user: userReducer,
-    
+  socket : socketReducer
 });
 
 const persistConfig = {
