@@ -2,6 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { socket } from "@/socket";
 import { ChatListItemInterface, ChatMessageInterface } from "@/interfaces/chat";
 import { toast } from "sonner";
+import { LocalStorage, requestHandler } from "@/utils";
+import { deleteMessage, getChatMessages, getUserChats, sendMessage } from "@/lib/apiClient";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 const CONNECTED_EVENT = "connected";
 const DISCONNECT_EVENT = "disconnect";
@@ -15,6 +19,11 @@ const UPDATE_GROUP_NAME_EVENT = "updateGroupName";
 const MESSAGE_DELETE_EVENT = "messageDeleted";
 
 const page = () => {
+
+  const user = useSelector((state: RootState) => state.user)
+  const dispatch = useDispatch();
+
+
   // Create a reference using 'useRef' to hold the currently selected chat.
   // 'useRef' is used here because it ensures that the 'currentChat' value within socket event callbacks
   // will always refer to the latest value, even if the component re-renders.
@@ -25,6 +34,10 @@ const page = () => {
 
   // Define state variables and their initial values using 'useState'
   const [isConnected, setIsConnected] = useState(false); // For tracking socket connection
+
+  const [openAddChat, setOpenAddChat] = useState(false); // To control the 'Add Chat' modal
+  const [loadingChats, setLoadingChats] = useState(false); // To indicate loading of chats
+  const [loadingMessages, setLoadingMessages] = useState(false); // To indicate loading of messages
 
   const [chats, setChats] = useState<ChatListItemInterface[]>([]); // To store user's chats
   const [messages, setMessages] = useState<ChatMessageInterface[]>([]); // To store chat messages
@@ -43,9 +56,7 @@ const page = () => {
   /**
    *  A  function to update the last message of a specified chat to update the chat list
    */
-  const Server = process.env.NEXT_PUBLIC_SERVER_URI;
-
-  const updateChatMessage = (
+  const updateChatLastMessage = (
     chatToUpdateId: string,
     message: ChatMessageInterface // The new message to be set as the last message
   ) => {
@@ -60,164 +71,125 @@ const page = () => {
 
     // Update the state of chats, placing the updated chat at the beginning of the array
     setChats([
-      chatToUpdate,
+      chatToUpdate, // Place the updated chat first
       ...chats.filter((chat) => chat._id !== chatToUpdateId), // Include all other chats except the updated one
     ]);
   };
-
   /**
    *A function to update the chats last message specifically in case of deletion of message *
    **/
-  const updateChatLastMessageOnDeletion = async (
-    chatToUpdateId: string, // Chat to find the chat ID
-    message: ChatMessageInterface // The deleted message
+
+  const updateChatLastMessageOnDeletion = (
+    chatToUpdateId: string, //ChatId to find the chat
+    message: ChatMessageInterface //The deleted message
   ) => {
     // Search for the chat with the given ID in the chats array
     const chatToUpdate = chats.find((chat) => chat._id === chatToUpdateId)!;
 
     //Updating the last message of chat only in case of deleted message and chats last message is same
     if (chatToUpdate.lastMessage?._id === message._id) {
-      try {
-        const response = await fetch(
-          `${Server}/chat-app/messages/${chatToUpdateId}`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-        const data = await response.json();
-        if (data.success) {
-          chatToUpdate.lastMessage = data.data[0];
+      requestHandler(
+        async () => getChatMessages(chatToUpdateId),
+        null,
+        (req) => {
+          const { data } = req;
+
+          chatToUpdate.lastMessage = data[0];
           setChats([...chats]);
-          return;
-        }
-        toast(data.message);
-      } catch (error) {
-        console.log(error);
-      }
+        },
+        alert
+      );
     }
   };
-
   const getChats = async () => {
-    try {
-      const response = await fetch(`${Server}/chat-app/chats`, {
-        method: "GET",
-        credentials: "include",
-      });
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setChats(data.data);
-          return;
-        }
-        toast(data.message);
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    requestHandler(
+      async () => await getUserChats(),
+      setLoadingChats,
+      (res) => {
+        const { data } = res;
+        setChats(data || []);
+      },
+      alert
+    );
   };
 
-  // This function will going to run whenever user selects a chat
   const getMessages = async () => {
-    // Check if a chat is selected, if not, show a toast
-    if (!currentChat.current?._id) return toast("Select the chat first");
+    // Check if a chat is selected, if not, show an alert
+    if (!currentChat.current?._id) return alert("No chat is selected");
 
-    // Check if socket is available or not if not then show a toast and return
-    if (!socket) return toast("Socket is not available");
+    // Check if socket is available, if not, show an alert
+    if (!socket) return alert("Socket not available");
 
-    // Emit and event to join the current chat
-    socket.emit(JOIN_CHAT_EVENT, currentChat.current._id);
+    // Emit an event to join the current chat
+    socket.emit(JOIN_CHAT_EVENT, currentChat.current?._id);
 
     // Filter out unread messages from the current chat as those will be read
     setUnreadMessages(
       unreadMessages.filter((msg) => msg.chat !== currentChat.current?._id)
     );
 
-    try {
-      const response = await fetch(
-        `${Server}/chat-app/messages/${currentChat.current._id}`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setMessage(data.data);
-          return;
-        }
-        toast(data.message);
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    // Make an async request to fetch chat messages for the current chat
+    requestHandler(
+      // Fetching messages for the current chat
+      async () => await getChatMessages(currentChat.current?._id || ""),
+      // Set the state to loading while fetching the messages
+      setLoadingMessages,
+      // After fetching, set the chat messages to the state if available
+      (res) => {
+        const { data } = res;
+        setMessages(data || []);
+      },
+      // Display any error alerts if they occur during the fetch
+      alert
+    );
   };
 
   // Function to send a chat message
   const sendChatMessage = async () => {
     // If no current chat ID exists or there's no socket connection, exit the function
-    if (!currentChat.current?._id || !socket)
-      return toast("Chat doesn't exist");
+    if (!currentChat.current?._id || !socket) return;
 
     // Emit a STOP_TYPING_EVENT to inform other users/participants that typing has stopped
     socket.emit(STOP_TYPING_EVENT, currentChat.current?._id);
 
-    try {
-      if (!message && attachedFiles)
-        return toast("Please Enter message or Attach files");
-      const formData = new FormData();
-      if (message) formData.append("content", message);
-      if (attachedFiles)
-        attachedFiles.map((file) => formData.append("attachments", file));
-      const response = await fetch(
-        `${Server}/chat-app/messages/${currentChat.current._id}`,
-        {
-          method: "POST",
-          credentials: "include",
-          body: formData,
-        }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setMessage("");
-          setAttachedFiles([]);
-          setMessages((prev) => [data.data, ...prev]);
-          updateChatMessage(currentChat.current._id, data.data);
-          return;
-        }
-        toast(data.message);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    // Use the requestHandler to send the message and handle potential response or error
+    await requestHandler(
+      // Try to send the chat message with the given message and attached files
+      async () =>
+        await sendMessage(
+          currentChat.current?._id || "", // Chat ID or empty string if not available
+          message, // Actual text message
+          attachedFiles // Any attached files
+        ),
+      null,
+      // On successful message sending, clear the message input and attached files, then update the UI
+      (res) => {
+        setMessage(""); // Clear the message input
+        setAttachedFiles([]); // Clear the list of attached files
+        setMessages((prev) => [res.data, ...prev]); // Update messages in the UI
+        updateChatLastMessage(currentChat.current?._id || "", res.data); // Update the last message in the chat
+      },
 
+      // If there's an error during the message sending process, raise an alert
+      alert
+    );
+  };
   const deleteChatMessage = async (message: ChatMessageInterface) => {
     //ONClick delete the message and reload the chat when deleteMessage socket gives any response in chat.tsx
     //use request handler to prevent any errors
-    try {
-      const response = await fetch(
-        `${Server}/chat-app/messages/${message.chat}/${message._id}`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setMessages((prev) =>
-            prev.filter((msg) => msg._id !== data.data._id)
-          );
-          updateChatLastMessageOnDeletion(message.chat, message);
-          return;
-        }
-        toast(data.message);
-      }
-    } catch (error) {
-      console.log(error);
-    }
+
+    await requestHandler(
+      async () => await deleteMessage(message.chat, message._id),
+      null,
+      (res) => {
+        setMessages((prev) => prev.filter((msg) => msg._id !== res.data._id));
+        updateChatLastMessageOnDeletion(message.chat, message);
+      },
+      alert
+    );
   };
 
-  const handleOnMessageChange = (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleOnMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Update the message state with the current input value
     setMessage(e.target.value);
 
@@ -229,7 +201,7 @@ const page = () => {
       // Set the user as typing
       setSelfTyping(true);
 
-      //   Emit a typing event
+      // Emit a typing event to the server for the current chat
       socket.emit(TYPING_EVENT, currentChat.current?._id);
     }
 
@@ -251,16 +223,15 @@ const page = () => {
     }, timerLength);
   };
 
-
   const onConnect = () => {
-    setIsConnected(true)
-  }
+    setIsConnected(true);
+  };
 
   const onDisconnect = () => {
-    setIsConnected(false)
-  }
+    setIsConnected(false);
+  };
 
-   /**
+  /**
    * Handles the "typing" event on the socket.
    */
   const handleOnSocketTyping = (chatId: string) => {
@@ -269,10 +240,9 @@ const page = () => {
 
     // Set the typing state to true for the current chat.
     setIsTyping(true);
-  }
+  };
 
-
-    /**
+  /**
    * Handles the "stop typing" event on the socket.
    */
   const handleOnSocketStopTyping = (chatId: string) => {
@@ -283,8 +253,7 @@ const page = () => {
     setIsTyping(false);
   };
 
-
-   const onMessageDelete = (message: ChatMessageInterface) => {
+  const onMessageDelete = (message: ChatMessageInterface) => {
     if (message?.chat !== currentChat.current?._id) {
       setUnreadMessages((prev) =>
         prev.filter((msg) => msg._id !== message._id)
@@ -299,8 +268,7 @@ const page = () => {
   /**
    * Handles the event when a new message is received.
    */
-
-  const onMessageReceived = (message : ChatMessageInterface) => {
+  const onMessageReceived = (message: ChatMessageInterface) => {
     // Check if the received message belongs to the currently active chat
     if (message?.chat !== currentChat.current?._id) {
       // If not, update the list of unread messages
@@ -310,9 +278,9 @@ const page = () => {
       setMessages((prev) => [message, ...prev]);
     }
 
-     // Update the last message for the chat to which the received message belongs
-    updateChatMessage(message.chat || "", message);
-  }
+    // Update the last message for the chat to which the received message belongs
+    updateChatLastMessage(message.chat || "", message);
+  };
 
   const onNewChat = (chat: ChatListItemInterface) => {
     setChats((prev) => [chat, ...prev]);
@@ -324,18 +292,22 @@ const page = () => {
     if (chat._id === currentChat.current?._id) {
       // If the user is in the group chat they're leaving, close the chat window.
       currentChat.current = null;
+      // Remove the currentChat from local storage.
+      LocalStorage.remove("currentChat");
     }
     // Update the chats by removing the chat that the user left.
     setChats((prev) => prev.filter((c) => c._id !== chat._id));
   };
 
-   // Function to handle changes in group name
+  // Function to handle changes in group name
   const onGroupNameChange = (chat: ChatListItemInterface) => {
     // Check if the chat being changed is the currently active chat
     if (chat._id === currentChat.current?._id) {
       // Update the current chat with the new details
       currentChat.current = chat;
 
+      // Save the updated chat details to local storage
+      LocalStorage.set("currentChat", chat);
     }
 
     // Update the list of chats with the new chat details
@@ -352,11 +324,24 @@ const page = () => {
     ]);
   };
 
-
   useEffect(() => {
-    getChats()
-  },[])
+    // Fetch the chat list from the server.
+    getChats();
 
+    // Retrieve the current chat details from local storage.
+    const _currentChat = LocalStorage.get("currentChat");
+
+    // If there's a current chat saved in local storage:
+    if (_currentChat) {
+      // Set the current chat reference to the one from local storage.
+      currentChat.current = _currentChat;
+      // If the socket connection exists, emit an event to join the specific chat using its ID.
+      socket?.emit(JOIN_CHAT_EVENT, _currentChat.current?._id);
+      // Fetch the messages for the current chat.
+      getMessages();
+    }
+    // An empty dependency array ensures this useEffect runs only once, similar to componentDidMount.
+  }, []);
 
   // This useEffect handles the setting up and tearing down of socket event listeners.
   useEffect(() => {
@@ -404,7 +389,6 @@ const page = () => {
     // So, even if some socket callbacks are updating the `chats` state, it's not
     // updating on each `useEffect` call but on each socket call.
   }, [socket, chats]);
-
 
 
 
