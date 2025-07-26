@@ -22,7 +22,7 @@ export const requestHandler = async(
         const { data } = res;
         if(data.success) {
             // Call the onSuccess callback with the response data
-            onSuccess(data)
+            onSuccess(data) 
         }
     } catch (error: any) {
         // Handle error case
@@ -59,7 +59,7 @@ export const classNames = (...className: string[]) => {
 // It takes into consideration both group chats and individual chats.
 export const getChatObjectMetaData = (
     chat: ChatListItemInterface, // The chat item for which metadata is being generated.
-    loggedInUser : UserInterface // The currently logged-in user details.
+    loggedInUser : any // The currently logged-in user details.
 ) => {
       // Determine the content of the last message, if any.
   // If the last message contains only attachments, indicate their count.
