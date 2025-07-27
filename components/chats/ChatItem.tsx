@@ -1,3 +1,4 @@
+"use client"
 import {
   EllipsisVerticalIcon,
   PaperClipIcon,
@@ -13,6 +14,7 @@ import { classNames, getChatObjectMetaData, requestHandler } from "@/utils";
 import GroupChatDetailsModal from "./GroupChatDetailsModal";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { toast } from "sonner";
 
 const ChatItem: React.FC<{
   chat: ChatListItemInterface;
@@ -37,7 +39,7 @@ const ChatItem: React.FC<{
         onChatDelete(chat._id);
       },
       // The 'alert' function (likely to display error messages to the user.
-      alert
+      (err) => toast(err)
     );
   };
 
@@ -118,7 +120,7 @@ const ChatItem: React.FC<{
                     key={participant._id}
                     src={participant.avatar}
                     className={classNames(
-                      "w-8 h-8 border-[1px] border-white rounded-full absolute outline outline-4 outline-dark group-hover:outline-secondary",
+                      "w-8 h-8 border-[1px] border-white rounded-full absolute outline-4 outline-dark group-hover:outline-secondary",
                       i === 0
                         ? "left-0 z-[3]"
                         : i === 1

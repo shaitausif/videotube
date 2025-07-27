@@ -33,7 +33,7 @@ export async function PUT(req: NextRequest){
         cookieStore.set("refreshToken","",options)
 
         return NextResponse.json({success: true, message: "Logged out Successfully"})
-
+        
     } catch (error) {
         return NextResponse.json({success: false,message: error},{status : 500})
     }

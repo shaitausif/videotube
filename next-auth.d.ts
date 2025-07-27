@@ -9,7 +9,9 @@ declare module "next-auth" {
     user: {
       id: string
     //   Here, I want that my session should have the user object with id
-    } & DefaultSession["user"]
+    } & DefaultSession["user"],
+    accessToken : any,
+    refreshToken : any
   }
 
   interface Profile{

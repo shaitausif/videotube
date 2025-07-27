@@ -1,8 +1,8 @@
 'use client'
 import Image from 'next/image'
-import React, { useState } from 'react'
+import React from 'react'
 import { Button } from './ui/button'
-import {  EllipsisVertical, Plus, Search } from 'lucide-react'
+import {  EllipsisVertical, MessageSquareMore, Plus, Search } from 'lucide-react'
 import { Input } from './ui/input'
 import {
   DropdownMenu,
@@ -21,7 +21,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { persistor, RootState } from '@/store/store'
 import { clearUser } from '@/features/userSlice/UserSlice'
 import ThemeSwitcher from './ThemeSwitcher'
@@ -31,7 +31,7 @@ import { SidebarTrigger } from '@/components/ui/sidebar'
 const Navbar = () => {
 
   const user = useSelector((state: RootState) => state.user)  
-
+  const {data : session} = useSession()
   const dispatch = useDispatch();
   const router = useRouter();
   
@@ -44,15 +44,13 @@ const Navbar = () => {
                 credentials: "include"
             })
             const data = await response.json()
-            if(data.success){
+            if(response.ok){
                 
                 toast(data.message);
-                dispatch(clearUser());
-
+                window.location.reload()
                 // Using persistor to clear the redux store completely and purging
                 // Purge persisted state
-                persistor.purge();
-                router.push("/")
+               await persistor.purge();
                 return;
             }
             toast(data.message)
@@ -81,13 +79,17 @@ const Navbar = () => {
       </div>
 
         {/* Profile Icon and create button */}
-        <div className='flex gap-12 justify-center items-center'>
+        <div className='flex gap-9 justify-center items-center'>
             {user && user._id ? (
               <Button className='rounded-2xl'><Plus/>{" "}Create</Button>
             ) : (
               <Button onClick={() => router.push("/sign-in")} className='rounded-2xl'><Plus/>{" "}Sign in</Button>
             )}
-            
+            {user && user._id && (
+              <div className='p-2 rounded-full hover:dark:bg-gray-700 hover:shadow-2xl duration-300'>
+                <MessageSquareMore onClick={() => router.push("/chat")} />
+              </div>
+            )}            
              <DropdownMenu >
       <DropdownMenuTrigger asChild>
         <Button variant={'outline'} className='rounded-full w-10 h-10 p-0'>{
@@ -162,9 +164,16 @@ const Navbar = () => {
         <DropdownMenuSeparator />
         {
           user && user._id ? (
-            <DropdownMenuItem onClick={() => {
-          Logout();
-          signOut();
+            <DropdownMenuItem onClick={async(e) => {
+              e.preventDefault()
+              if(session?.user){
+                const purgeRes = await persistor.purge();
+                console.log(purgeRes)
+                signOut()
+              }else{
+                Logout()
+
+              }
         }}>
           Logout
 

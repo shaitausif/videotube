@@ -1,3 +1,4 @@
+"use client"
 import { Dialog, Switch, Transition } from "@headlessui/react";
 import {
   UserGroupIcon,
@@ -12,6 +13,7 @@ import { classNames , requestHandler } from "@/utils";
 import Button from "./Button";
 import Input from "./Input";
 import Select from "./Select";
+import { toast } from "sonner";
 
 const AddChatModal: React.FC<{
   open: boolean;
@@ -43,15 +45,14 @@ const AddChatModal: React.FC<{
         const { data } = res; // Extract data from response
         setUsers(data || []); // Set users data or an empty array if data is absent
       },
-      alert // Use the alert as the error handler
+      (err) => toast(err) // Use the alert as the error handler
     );
   };
 
   // Function to create a new chat with a user
   const createNewChat = async () => {
     // If no user is selected, show an alert
-    if (!selectedUserId) return alert("Please select a user");
-
+    if (!selectedUserId) return toast("Please select a user")
     // Handle the request to create a chat
     await requestHandler(
       // Callback to create a user chat
@@ -62,23 +63,23 @@ const AddChatModal: React.FC<{
         const { data } = res; // Extract data from response
         // If chat already exists with the selected user
         if (res.statusCode === 200) {
-          alert("Chat with selected user already exists");
+          toast("Chat with selected User already exist")
           return;
         }
         onSuccess(data); // Execute the onSuccess function with received data
         handleClose(); // Close the modal or popup
       },
-      alert // Use the alert as the error handler
+      (err) => toast(err) // Use the alert as the error handler
     );
   };
 
   // Function to create a new group chat
   const createNewGroupChat = async () => {
     // Check if a group name is provided
-    if (!groupName) return alert("Group name is required");
+    if (!groupName) return toast("Group name is required")
     // Ensure there are at least 2 group participants
     if (!groupParticipants.length || groupParticipants.length < 2)
-      return alert("There must be at least 2 group participants");
+      return toast("There must be atleast 2 group participants")
 
     // Handle the request to create a group chat
     await requestHandler(
@@ -95,7 +96,7 @@ const AddChatModal: React.FC<{
         onSuccess(data); // Execute the onSuccess function with received data
         handleClose(); // Close the modal or popup
       },
-      alert // Use the alert as the error handler
+      (err) => toast(err) // Use the alert as the error handler
     );
   };
 
@@ -181,7 +182,7 @@ const AddChatModal: React.FC<{
                       onChange={setIsGroupChat}
                       className={classNames(
                         isGroupChat ? "bg-secondary" : "bg-zinc-200",
-                        "relative outline outline-[1px] outline-white inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:ring-0"
+                        "relative outline-[1px] outline-white inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:ring-0"
                       )}
                     >
                       <span
@@ -192,7 +193,7 @@ const AddChatModal: React.FC<{
                             : "translate-x-0 bg-white",
                           "pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out"
                         )}
-                      />
+                      />  
                     </Switch>
                     <Switch.Label as="span" className="ml-3 text-sm">
                       <span

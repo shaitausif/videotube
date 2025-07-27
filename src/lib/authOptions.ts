@@ -42,6 +42,12 @@ export const authOptions: NextAuthOptions = {
               await user.save();
             }
 
+            //  Generate YOUR CUSTOM JWTs (accessToken, refreshToken)
+        // Use your Mongoose user schema methods.
+        const customAccessToken = await user.generateAccessToken();
+        const customRefreshToken = await user.generateRefreshToken();
+            token.accessToken = customAccessToken
+            token.refreshToken = customRefreshToken;
             token._id = user._id.toString()
         }
         return token
@@ -51,6 +57,8 @@ export const authOptions: NextAuthOptions = {
         if(session.user){
             session.user.id = token.id as string
         }
+        session.accessToken = token.accessToken
+        session.refreshToken = token.refreshToken
         return session
     }
 

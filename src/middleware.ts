@@ -29,7 +29,6 @@ export async function middleware(req: NextRequest) {
   const customToken = req.cookies.get("accessToken")?.value;
   const customJWT = customToken ? await verifyCustomJWT(customToken) : null;
 
-
   const userIsAuthenticated = !!nextAuthToken || !!customJWT;
 
   const publicRoutes = [

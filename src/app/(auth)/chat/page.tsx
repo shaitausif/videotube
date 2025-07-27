@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useRef, useState } from "react";
 import { socket } from "@/socket";
 import { ChatListItemInterface, ChatMessageInterface } from "@/interfaces/chat";
@@ -426,7 +427,7 @@ const page = () => {
             />
             <button
               onClick={() => setOpenAddChat(true)}
-              className="rounded-xl border-none bg-primary text-white py-4 px-5 flex flex-shrink-0"
+              className="rounded-xl border-none bg-primary text-white py-3 px-4 flex flex-shrink-0"
             >
               + Add chat
             </button>
@@ -442,7 +443,7 @@ const page = () => {
               .filter((chat) =>
                 // If there's a localSearchQuery, filter chats that contain the query in their metadata title
                 localSearchQuery
-                  ? getChatObjectMetaData(chat, user!)
+                  ? getChatObjectMetaData(chat, user)
                       .title?.toLocaleLowerCase()
                       ?.includes(localSearchQuery)
                   : // If there's no localSearchQuery, include all chats
@@ -497,7 +498,7 @@ const page = () => {
                               key={participant._id}
                               src={participant.avatar}
                               className={classNames(
-                                "w-9 h-9 border-[1px] border-white rounded-full absolute outline outline-4 outline-dark",
+                                "w-9 h-9 border-[1px] border-white rounded-full absolute outline-4 outline-dark",
                                 i === 0
                                   ? "left-0 z-30"
                                   : i === 1

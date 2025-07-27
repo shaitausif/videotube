@@ -5,8 +5,7 @@ import { NextRequest } from "next/server";
 
 export const getCurrentUser = async(req: NextRequest) => {
     const customJWTToken = req.cookies.get("accessToken")?.value
-    const nextAuthToken =  getToken({req, secret : process.env.NEXTAUTH_SECRET})
-
+    const nextAuthToken = await getToken({req, secret : process.env.NEXTAUTH_SECRET})
     try {
         if(!!customJWTToken){
             const { payload } = await jwtVerify(customJWTToken,new TextEncoder().encode(process.env.ACCESS_TOKEN_SECRET))

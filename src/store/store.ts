@@ -9,13 +9,13 @@ import socketReducer from '@/features/socketSlice/SocketSlice'
 
 const rootReducer = combineReducers({
   user: userReducer,
-  socket : socketReducer
+  
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user"], // only persist the 'user' slice
+  // whitelist: ["user"], // only persist the 'user' slice
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
