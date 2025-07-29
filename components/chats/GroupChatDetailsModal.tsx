@@ -249,7 +249,7 @@ const GroupChatDetailsModal: React.FC<{
                           {groupDetails?.participants.slice(0, 3).map((p) => {
                             return (
                               <img
-                                className="w-24 h-24 -ml-16 rounded-full outline outline-4 outline-secondary"
+                                className="w-24 h-24 -ml-16 rounded-full outline-4 outline-secondary"
                                 key={p._id}
                                 src={p.avatar}
                                 alt="avatar"
@@ -338,7 +338,7 @@ const GroupChatDetailsModal: React.FC<{
                                           onClick={() => {
                                             const ok = confirm(
                                               "Are you sure you want to remove " +
-                                                user.username +
+                                                part.username +
                                                 " ?"
                                             );
                                             if (ok) {

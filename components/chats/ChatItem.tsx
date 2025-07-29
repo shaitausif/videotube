@@ -15,6 +15,7 @@ import GroupChatDetailsModal from "./GroupChatDetailsModal";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { toast } from "sonner";
+import Image from "next/image";
 
 const ChatItem: React.FC<{
   chat: ChatListItemInterface;
@@ -73,7 +74,7 @@ const ChatItem: React.FC<{
           }}
           className="self-center p-1 relative"
         >
-          <EllipsisVerticalIcon className="h-6 group-hover:w-6 group-hover:opacity-100 w-0 opacity-0 transition-all ease-in-out duration-100 text-zinc-300" />
+          <EllipsisVerticalIcon className="h-6 group-hover:w-6 group-hover:opacity-100 w-0 opacity-0 transition-all ease-in-out duration-200 text-zinc-300" />
           <div
             className={classNames(
               "z-20 text-left absolute bottom-0 translate-y-full text-sm w-52 bg-dark rounded-2xl p-2 shadow-md border-[1px] border-secondary",
@@ -116,9 +117,12 @@ const ChatItem: React.FC<{
             <div className="w-12 relative h-12 flex-shrink-0 flex justify-start items-center flex-nowrap">
               {chat.participants.slice(0, 3).map((participant, i) => {
                 return (
-                  <img
+                  <Image
                     key={participant._id}
-                    src={participant.avatar}
+                    src={participant.avatar!}
+                    alt="Group Icon"
+                    width={20}
+                    height={20}
                     className={classNames(
                       "w-8 h-8 border-[1px] border-white rounded-full absolute outline-4 outline-dark group-hover:outline-secondary",
                       i === 0
@@ -134,8 +138,11 @@ const ChatItem: React.FC<{
               })}
             </div>
           ) : (
-            <img
-              src={getChatObjectMetaData(chat, user!).avatar}
+            <Image
+              alt="Profile Image"
+              height={40}
+              width={40}
+              src={getChatObjectMetaData(chat, user!).avatar!}
               className="w-12 h-12 rounded-full"
             />
           )}

@@ -76,7 +76,7 @@ export const getChatObjectMetaData = (
         avatar : "https://cdn-icons-png.flaticon.com/128/4121/4121044.png",
         title : chat.name,
         description : `${chat.participants.length} members in the chat`,//Description indicates the number of members
-        lastMessage: chat.lastMessage ? chat.lastMessage.sender._id + ": " + lastMessage : lastMessage
+        lastMessage: chat.lastMessage ? chat.lastMessage.sender.username + ": " + lastMessage : lastMessage
     }
     }
     else{

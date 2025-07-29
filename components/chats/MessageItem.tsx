@@ -11,6 +11,7 @@ import moment from "moment";
 import { useState } from "react";
 import { ChatMessageInterface } from "@/interfaces/chat";
 import { classNames } from "@/utils";
+import Image from "next/image";
 const MessageItem: React.FC<{
   isOwnMessage?: boolean;
   isGroupChatMessage?: boolean;
@@ -41,8 +42,11 @@ const MessageItem: React.FC<{
           isOwnMessage ? "ml-auto" : ""
         )}
       >
-        <img
-          src={message.sender?.avatar}
+        <Image
+          src={message.sender?.avatar!}
+          alt="Profile Image"
+          height={10}
+          width={10}
           className={classNames(
             "h-7 w-7 object-cover rounded-full flex flex-shrink-0",
             isOwnMessage ? "order-2" : "order-1"
@@ -54,7 +58,7 @@ const MessageItem: React.FC<{
           className={classNames(
             " p-4 rounded-3xl flex flex-col cursor-pointer group hover:bg-secondary",
             isOwnMessage
-              ? "order-1 rounded-br-none bg-primary"
+              ? "order-1 rounded-br-none bg-blue-700"
               : "order-2 rounded-bl-none bg-secondary"
           )}
         >
@@ -158,7 +162,7 @@ const MessageItem: React.FC<{
                   <EllipsisVerticalIcon className="group-hover:w-4 group-hover:opacity-100 w-0 opacity-0 transition-all ease-in-out duration-100 text-zinc-300" />
                   <div
                     className={classNames(
-                      "delete-menu z-20 text-left -translate-x-24 -translate-y-4 absolute botom-0  text-[10px] w-auto bg-dark rounded-2xl  shadow-md border-[1px] border-secondary",
+                      "delete-menu z-20 text-left -translate-x-24  -translate-y-4 absolute botom-0  text-[10px] w-auto bg-dark rounded-2xl  shadow-md border-[1px] border-secondary",
                       openOptions ? "block" : "hidden"
                     )}
                   >
