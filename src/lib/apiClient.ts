@@ -19,7 +19,7 @@ const getUserChats = () => {
 };
 
 const createorGetAIChat = () => {
-  return apiClient.post(`/chat-app/chat/ai`)
+  return apiClient.post(`/chat-app/chats/ai`)
 }
 
 const createUserChat = (receiverId: string) => {
@@ -74,7 +74,7 @@ const sendMessage = (chatId: string, content: string, attachments: File[]) => {
 
 
 const sendAIMessage = (chatId: string, content : string) => {
-  return apiClient.post(`/chat-app/messages/ai/${chatId}`,content)
+  return apiClient.post(`/chat-app/messages/ai/${chatId}`,{content: content})
 }
 
 

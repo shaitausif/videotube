@@ -140,10 +140,10 @@ const ChatItem: React.FC<{
           ) : (
             <Image
               alt="Profile Image"
-              height={40}
-              width={40}
+              height={100}
+              width={100}
               src={getChatObjectMetaData(chat, user!).avatar!}
-              className="w-12 h-12 rounded-full"
+              className="w-12 h-12 rounded-full object-cover"
             />
           )}
         </div>
@@ -157,7 +157,7 @@ const ChatItem: React.FC<{
               <PaperClipIcon className="text-white/50 h-3 w-3 mr-2 flex flex-shrink-0" />
             ) : null}
             <small className="text-white/50 truncate-1 text-sm text-ellipsis inline-flex items-center">
-              {getChatObjectMetaData(chat, user!).lastMessage}
+              {getChatObjectMetaData(chat, user!).lastMessage.slice(0,35) + "..."}
             </small>
           </div>
         </div>

@@ -60,6 +60,7 @@ const page = () => {
   const [localSearchQuery, setLocalSearchQuery] = useState(""); // For local search functionality
 
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]); // To store files attached to messages
+  const [isSendingMessage, setisSendingMessage] = useState(false)
 
   /**
    *  A  function to update the last message of a specified chat to update the chat list
@@ -164,10 +165,11 @@ const page = () => {
 
     await requestHandler(
       async() => await sendAIMessage(currentChat.current?._id || "", message),
-      null,
+      setisSendingMessage,
       (res) => {
         setMessage("");
-        setMessages((prev) => [res.data, ...prev]) // Updating message in the UI
+        setMessages((prev) => [...res.data, ...prev]) // Updating message in the UI
+        
         updateChatLastMessage(currentChat.current?._id || "",res.data)
       },
       (error) => toast(error)
@@ -193,7 +195,7 @@ const page = () => {
           message, // Actual text message
           attachedFiles // Any attached files
         ),
-      null,
+      setisSendingMessage,
       // On successful message sending, clear the message input and attached files, then update the UI
       (res) => {
         setMessage(""); // Clear the message input
@@ -356,13 +358,12 @@ const page = () => {
     ]);
   };
 
-  const getAIChat = async() => {
+  const createAIChat = async() => {
     await requestHandler(
       async() => await createorGetAIChat(),
       null,
       (res) => {
-        const {data} = res;
-        setChats([data,...chats])
+        console.log(res.message)
       },
       (error) => toast(error)
     )
@@ -371,8 +372,9 @@ const page = () => {
 
   useEffect(() => {
     // Fetch the chat list from the server.
+    createAIChat();
     getChats();
-    getAIChat();
+
 
     // Retrieve the current chat details from local storage.
     const _currentChat = LocalStorage.get("currentChat");
@@ -659,6 +661,7 @@ const page = () => {
                 <Input
                   placeholder="Message"
                   value={message}
+                  disabled={isSendingMessage}
                   onChange={handleOnMessageChange}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -672,7 +675,7 @@ const page = () => {
                 />
                 <button
                   onClick={currentChat.current.name === "AI Chat" ? sendAIChatMessage : sendChatMessage}
-                  disabled={!message && attachedFiles.length <= 0}
+                  disabled={!message && attachedFiles.length <= 0 || isSendingMessage}
                   className="p-4 rounded-full bg-dark hover:bg-secondary disabled:opacity-50"
                 >
                   <PaperAirplaneIcon className="w-6 h-6" />
