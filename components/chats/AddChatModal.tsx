@@ -121,7 +121,7 @@ const AddChatModal: React.FC<{
     // Check if the modal/dialog is not open
     if (!open) return;
     // Fetch users if the modal/dialog is open
-    getUsers();
+    getUsers(); 
     // The effect depends on the 'open' value. Whenever 'open' changes, the effect will re-run.
   }, [open]);
 

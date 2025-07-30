@@ -18,9 +18,16 @@ const getUserChats = () => {
   return apiClient.get(`/chat-app/chats`);
 };
 
+const createorGetAIChat = () => {
+  return apiClient.post(`/chat-app/chat/ai`)
+}
+
 const createUserChat = (receiverId: string) => {
   return apiClient.post(`/chat-app/chats/c/${receiverId}`);
 };
+
+
+
 
 const createGroupChat = (data: { name: string; participants: string[] }) => {
   return apiClient.post(`/chat-app/chats/group`, data);
@@ -65,6 +72,13 @@ const sendMessage = (chatId: string, content: string, attachments: File[]) => {
   return apiClient.post(`/chat-app/messages/${chatId}`, formData);
 };
 
+
+const sendAIMessage = (chatId: string, content : string) => {
+  return apiClient.post(`/chat-app/messages/ai/${chatId}`,content)
+}
+
+
+
 const deleteMessage = (chatId: string, messageId: string) => {
   return apiClient.delete(`/chat-app/messages/${chatId}/${messageId}`);
 };
@@ -84,4 +98,6 @@ export {
   sendMessage,
   updateGroupName,
   deleteMessage,
+  sendAIMessage,
+  createorGetAIChat
 };

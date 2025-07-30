@@ -45,8 +45,8 @@ const MessageItem: React.FC<{
         <Image
           src={message.sender?.avatar!}
           alt="Profile Image"
-          height={10}
-          width={10}
+          height={20}
+          width={20}
           className={classNames(
             "h-7 w-7 object-cover rounded-full flex flex-shrink-0",
             isOwnMessage ? "order-2" : "order-1"
@@ -54,7 +54,11 @@ const MessageItem: React.FC<{
         />
         {/* message box have to add the icon onhover here */}
         <div
-          onMouseLeave={() => setopenOptions(false)}
+          onMouseLeave={() => 
+            setTimeout(() => {
+              setopenOptions(false)
+            }, 500)
+          }
           className={classNames(
             " p-4 rounded-3xl flex flex-col cursor-pointer group hover:bg-secondary",
             isOwnMessage

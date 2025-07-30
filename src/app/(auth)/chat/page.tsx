@@ -4,7 +4,7 @@ import { socket } from "@/socket";
 import { ChatListItemInterface, ChatMessageInterface } from "@/interfaces/chat";
 import { toast } from "sonner";
 import { classNames, getChatObjectMetaData, LocalStorage, requestHandler } from "@/utils";
-import { deleteMessage, getChatMessages, getUserChats, sendMessage } from "@/lib/apiClient";
+import { createorGetAIChat, deleteMessage, getChatMessages, getUserChats, sendAIMessage, sendMessage } from "@/lib/apiClient";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import Input from "../../../../components/chats/Input";
@@ -13,6 +13,7 @@ import Typing from "../../../../components/chats/Typing";
 import ChatItem from "../../../../components/chats/ChatItem";
 import MessageItem from "../../../../components/chats/MessageItem";
 import { PaperAirplaneIcon, PaperClipIcon, XCircleIcon } from "@heroicons/react/20/solid";
+import Image from "next/image";
 
 const CONNECTED_EVENT = "connected";
 const DISCONNECT_EVENT = "disconnect";
@@ -152,6 +153,28 @@ const page = () => {
       (err) => toast(err)
     );
   };
+
+
+  // Function to send Message to the AI and then get the response on that message
+  const sendAIChatMessage = async() => {
+    // If no current chat ID exists or there's no socket connection, exit the function
+    if (!currentChat.current?._id || !socket) return;
+    // Emit a STOP_TYPING_EVENT to inform other users/participants that typing has stopped
+    socket.emit(STOP_TYPING_EVENT, currentChat.current?._id);
+
+    await requestHandler(
+      async() => await sendAIMessage(currentChat.current?._id || "", message),
+      null,
+      (res) => {
+        setMessage("");
+        setMessages((prev) => [res.data, ...prev]) // Updating message in the UI
+        updateChatLastMessage(currentChat.current?._id || "",res.data)
+      },
+      (error) => toast(error)
+    )
+
+  }
+
 
   // Function to send a chat message
   const sendChatMessage = async () => {
@@ -333,9 +356,23 @@ const page = () => {
     ]);
   };
 
+  const getAIChat = async() => {
+    await requestHandler(
+      async() => await createorGetAIChat(),
+      null,
+      (res) => {
+        const {data} = res;
+        setChats([data,...chats])
+      },
+      (error) => toast(error)
+    )
+  }
+  
+
   useEffect(() => {
     // Fetch the chat list from the server.
     getChats();
+    getAIChat();
 
     // Retrieve the current chat details from local storage.
     const _currentChat = LocalStorage.get("currentChat");
@@ -427,7 +464,7 @@ const page = () => {
             />
             <button
               onClick={() => setOpenAddChat(true)}
-              className="rounded-xl border-none bg-primary text-white py-3 px-4 flex flex-shrink-0"
+              className="rounded-xl border-none bg-blue-700 hover:bg-blue-700/80 transition-all text-white py-3 px-4 flex flex-shrink-0"
             >
               + Add chat
             </button>
@@ -494,9 +531,12 @@ const page = () => {
                         .slice(0, 3)
                         .map((participant, i) => {
                           return (
-                            <img
+                            <Image
+                              alt="Group Icon"
+                              height={30}
+                              width={30}
                               key={participant._id}
-                              src={participant.avatar}
+                              src={participant.avatar!}
                               className={classNames(
                                 "w-9 h-9 border-[1px] border-white rounded-full absolute outline-4 outline-dark",
                                 i === 0
@@ -512,10 +552,13 @@ const page = () => {
                         })}
                     </div>
                   ) : (
-                    <img
+                    <Image
+                      alt="Profile Icon"
+                      height={40}
+                      width={40}
                       className="h-14 w-14 rounded-full flex flex-shrink-0 object-cover"
                       src={
-                        getChatObjectMetaData(currentChat.current, user!).avatar
+                        getChatObjectMetaData(currentChat.current, user!).avatar!
                       }
                     />
                   )}
@@ -619,12 +662,16 @@ const page = () => {
                   onChange={handleOnMessageChange}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      sendChatMessage();
+                      if(currentChat.current?.name === "AI Chat"){
+                        sendAIChatMessage()
+                      }else{
+                        sendChatMessage()
+                      }
                     }
                   }}
                 />
                 <button
-                  onClick={sendChatMessage}
+                  onClick={currentChat.current.name === "AI Chat" ? sendAIChatMessage : sendChatMessage}
                   disabled={!message && attachedFiles.length <= 0}
                   className="p-4 rounded-full bg-dark hover:bg-secondary disabled:opacity-50"
                 >
