@@ -13,11 +13,12 @@ import { ChatMessageInterface } from "@/interfaces/chat";
 import { classNames } from "@/utils";
 import Image from "next/image";
 const MessageItem: React.FC<{
+  isAIMessage? : boolean
   isOwnMessage?: boolean;
   isGroupChatMessage?: boolean;
   message: ChatMessageInterface;
   deleteChatMessage: (message: ChatMessageInterface) => void;
-}> = ({ message, isOwnMessage, isGroupChatMessage, deleteChatMessage }) => {
+}> = ({ message, isOwnMessage, isGroupChatMessage, deleteChatMessage, isAIMessage }) => {
   const [resizedImage, setResizedImage] = useState<string | null>(null);
   const [openOptions, setopenOptions] = useState<boolean>(false); //To open delete menu option on hover
 
@@ -81,7 +82,7 @@ const MessageItem: React.FC<{
           {message?.attachments?.length > 0 ? (
             <div>
               {/*The option to delete message will only open in case of own messages*/}
-              {isOwnMessage ? (
+              {isOwnMessage  ? (
                 <button
                   className="self-center p-1 relative options-button"
                   onClick={() => setopenOptions(!openOptions)}
@@ -158,7 +159,7 @@ const MessageItem: React.FC<{
           {message.content ? (
             <div className="relative flex justify-between">
               {/*The option to delete message will only open in case of own messages*/}
-              {isOwnMessage ? (
+              {isOwnMessage || isAIMessage ? (
                 <button
                   className="self-center relative options-button"
                   onClick={() => setopenOptions(!openOptions)}
@@ -166,7 +167,7 @@ const MessageItem: React.FC<{
                   <EllipsisVerticalIcon className="group-hover:w-4 group-hover:opacity-100 w-0 opacity-0 transition-all ease-in-out duration-100 text-zinc-300" />
                   <div
                     className={classNames(
-                      "delete-menu z-20 text-left -translate-x-24  -translate-y-4 absolute botom-0  text-[10px] w-auto bg-dark rounded-2xl  shadow-md border-[1px] border-secondary",
+                      "delete-menu z-20 text-left -translate-x-24 -translate-y-4 absolute botom-0  text-[10px] w-auto bg-dark rounded-2xl  shadow-md border-[1px] border-secondary",
                       openOptions ? "block" : "hidden"
                     )}
                   >

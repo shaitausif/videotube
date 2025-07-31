@@ -1,10 +1,22 @@
-"use client"
+"use client";
 import React, { useEffect, useRef, useState } from "react";
 import { socket } from "@/socket";
 import { ChatListItemInterface, ChatMessageInterface } from "@/interfaces/chat";
 import { toast } from "sonner";
-import { classNames, getChatObjectMetaData, LocalStorage, requestHandler } from "@/utils";
-import { createorGetAIChat, deleteMessage, getChatMessages, getUserChats, sendAIMessage, sendMessage } from "@/lib/apiClient";
+import {
+  classNames,
+  getChatObjectMetaData,
+  LocalStorage,
+  requestHandler,
+} from "@/utils";
+import {
+  createorGetAIChat,
+  deleteMessage,
+  getChatMessages,
+  getUserChats,
+  sendAIMessage,
+  sendMessage,
+} from "@/lib/apiClient";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import Input from "../../../../components/chats/Input";
@@ -12,7 +24,11 @@ import AddChatModal from "../../../../components/chats/AddChatModal";
 import Typing from "../../../../components/chats/Typing";
 import ChatItem from "../../../../components/chats/ChatItem";
 import MessageItem from "../../../../components/chats/MessageItem";
-import { PaperAirplaneIcon, PaperClipIcon, XCircleIcon } from "@heroicons/react/20/solid";
+import {
+  PaperAirplaneIcon,
+  PaperClipIcon,
+  XCircleIcon,
+} from "@heroicons/react/20/solid";
 import Image from "next/image";
 
 const CONNECTED_EVENT = "connected";
@@ -27,9 +43,7 @@ const UPDATE_GROUP_NAME_EVENT = "updateGroupName";
 const MESSAGE_DELETE_EVENT = "messageDeleted";
 
 const page = () => {
-
-  const user = useSelector((state: RootState) => state.user)
-  const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.user);
 
 
   // Create a reference using 'useRef' to hold the currently selected chat.
@@ -60,11 +74,13 @@ const page = () => {
   const [localSearchQuery, setLocalSearchQuery] = useState(""); // For local search functionality
 
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]); // To store files attached to messages
-  const [isSendingMessage, setisSendingMessage] = useState(false)
+  const [isSendingMessage, setisSendingMessage] = useState(false);
 
   /**
    *  A  function to update the last message of a specified chat to update the chat list
    */
+
+
   const updateChatLastMessage = (
     chatToUpdateId: string,
     message: ChatMessageInterface // The new message to be set as the last message
@@ -119,14 +135,14 @@ const page = () => {
         setChats(data || []);
       },
       (error) => {
-        toast(error)
+        toast(error);
       }
     );
   };
 
   const getMessages = async () => {
     // Check if a chat is selected, if not, show an alert
-    if (!currentChat.current?._id) return toast("No Chat is selected")
+    if (!currentChat.current?._id) return toast("No Chat is selected");
 
     // Check if socket is available, if not, show an alert
     if (!socket) return toast("Socket not available");
@@ -155,33 +171,38 @@ const page = () => {
     );
   };
 
-
   // Function to send Message to the AI and then get the response on that message
-  const sendAIChatMessage = async() => {
+  const sendAIChatMessage = async () => {
     // If no current chat ID exists or there's no socket connection, exit the function
-    if (!currentChat.current?._id || !socket) return;
+    if (!currentChat.current?._id || !socket)
+      return toast("No chat is selected");
     // Emit a STOP_TYPING_EVENT to inform other users/participants that typing has stopped
     socket.emit(STOP_TYPING_EVENT, currentChat.current?._id);
 
+    if (!message) return toast("Enter the message first");
+
+
     await requestHandler(
-      async() => await sendAIMessage(currentChat.current?._id || "", message),
+      async () => await sendAIMessage(currentChat.current?._id || "", message),
       setisSendingMessage,
       (res) => {
         setMessage("");
-        setMessages((prev) => [...res.data, ...prev]) // Updating message in the UI
-        
-        updateChatLastMessage(currentChat.current?._id || "",res.data)
+        // setMessages((prev) => [...res.data, ...prev]); // Updating message in the UI
+        // updateChatLastMessage(currentChat.current?._id || "", res.data[0]);
+        setMessages((prev) => [res.data, ...prev]); // Updating message in the UI
+        updateChatLastMessage(currentChat.current?._id || "", res.data);
       },
       (error) => toast(error)
-    )
-
-  }
-
+    );
+  };
 
   // Function to send a chat message
   const sendChatMessage = async () => {
     // If no current chat ID exists or there's no socket connection, exit the function
-    if (!currentChat.current?._id || !socket) return;
+    if (!currentChat.current?._id || !socket)
+      return toast("No chat is selected");
+
+    if(!message && attachedFiles.length <= 0) return toast("Message or Attachment is required")
 
     // Emit a STOP_TYPING_EVENT to inform other users/participants that typing has stopped
     socket.emit(STOP_TYPING_EVENT, currentChat.current?._id);
@@ -195,7 +216,7 @@ const page = () => {
           message, // Actual text message
           attachedFiles // Any attached files
         ),
-      setisSendingMessage,
+      null,
       // On successful message sending, clear the message input and attached files, then update the UI
       (res) => {
         setMessage(""); // Clear the message input
@@ -358,23 +379,21 @@ const page = () => {
     ]);
   };
 
-  const createAIChat = async() => {
+  const createAIChat = async () => {
     await requestHandler(
-      async() => await createorGetAIChat(),
+      async () => await createorGetAIChat(),
       null,
       (res) => {
-        console.log(res.message)
+        console.log(res.message);
       },
       (error) => toast(error)
-    )
-  }
-  
+    );
+  };
 
   useEffect(() => {
     // Fetch the chat list from the server.
     createAIChat();
     getChats();
-
 
     // Retrieve the current chat details from local storage.
     const _currentChat = LocalStorage.get("currentChat");
@@ -438,10 +457,8 @@ const page = () => {
     // updating on each `useEffect` call but on each socket call.
   }, [socket, chats]);
 
-
-
   return (
-        <>
+    <>
       <AddChatModal
         open={openAddChat}
         onClose={() => {
@@ -455,8 +472,6 @@ const page = () => {
       <div className="w-full justify-between items-stretch h-screen flex flex-shrink-0">
         <div className="w-1/3 relative ring-white overflow-y-auto px-4">
           <div className="z-10 w-full sticky top-0 bg-dark py-4 flex justify-between items-center gap-4">
- 
-
             <Input
               placeholder="Search user or group..."
               value={localSearchQuery}
@@ -544,10 +559,10 @@ const page = () => {
                                 i === 0
                                   ? "left-0 z-30"
                                   : i === 1
-                                  ? "left-2 z-20"
-                                  : i === 2
-                                  ? "left-4 z-10"
-                                  : ""
+                                    ? "left-2 z-20"
+                                    : i === 2
+                                      ? "left-4 z-10"
+                                      : ""
                               )}
                             />
                           );
@@ -560,7 +575,8 @@ const page = () => {
                       width={40}
                       className="h-14 w-14 rounded-full flex flex-shrink-0 object-cover"
                       src={
-                        getChatObjectMetaData(currentChat.current, user!).avatar!
+                        getChatObjectMetaData(currentChat.current, user!)
+                          .avatar!
                       }
                     />
                   )}
@@ -598,6 +614,7 @@ const page = () => {
                         <MessageItem
                           key={msg._id}
                           isOwnMessage={msg.sender?._id === user?._id}
+                          isAIMessage={msg.sender._id === process.env.NEXT_PUBLIC_AI_BOT_ID}
                           isGroupChatMessage={currentChat.current?.isGroupChat}
                           message={msg}
                           deleteChatMessage={deleteChatMessage}
@@ -665,17 +682,23 @@ const page = () => {
                   onChange={handleOnMessageChange}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      if(currentChat.current?.name === "AI Chat"){
-                        sendAIChatMessage()
-                      }else{
-                        sendChatMessage()
+                      if (currentChat.current?.name === "AI Chat") {
+                        sendAIChatMessage();
+                      } else {
+                        sendChatMessage();
                       }
                     }
                   }}
                 />
                 <button
-                  onClick={currentChat.current.name === "AI Chat" ? sendAIChatMessage : sendChatMessage}
-                  disabled={!message && attachedFiles.length <= 0 || isSendingMessage}
+                  onClick={
+                    currentChat.current.name === "AI Chat"
+                      ? sendAIChatMessage
+                      : sendChatMessage
+                  }
+                  disabled={
+                    (!message && attachedFiles?.length <= 0) || isSendingMessage
+                  }
                   className="p-4 rounded-full bg-dark hover:bg-secondary disabled:opacity-50"
                 >
                   <PaperAirplaneIcon className="w-6 h-6" />

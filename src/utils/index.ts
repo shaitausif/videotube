@@ -64,7 +64,7 @@ export const getChatObjectMetaData = (
       // Determine the content of the last message, if any.
   // If the last message contains only attachments, indicate their count.
     const lastMessage = chat.lastMessage?.content ? chat.lastMessage.content : 
-        chat.lastMessage ? `${chat.lastMessage.attachments.length} attachment${
+        chat.lastMessage ? `${chat.lastMessage.attachments?.length} attachment${
             chat.lastMessage.attachments.length > 1 ? "s" : ""
         }` : "No messages yet"  // Placeholder text if there are no messages.
 
