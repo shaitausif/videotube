@@ -10,7 +10,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const cookieStore = await cookies();
     const options = {
       httpOnly: true,
-      secure: true,
+      secure: false,
     };
     if (!token || !token.accessToken) {
       cookieStore.set("accessToken", token?.accessToken as string, options);

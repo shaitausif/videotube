@@ -324,12 +324,14 @@ const page = () => {
    * Handles the event when a new message is received.
    */
   const onMessageReceived = (message: ChatMessageInterface) => {
+    console.log("Function got executed")
     // Check if the received message belongs to the currently active chat
     if (message?.chat !== currentChat.current?._id) {
       // If not, update the list of unread messages
       setUnreadMessages((prev) => [message, ...prev]);
     } else {
       // If it belongs to the current chat, update the messages list for the active chat
+      console.log("Hi, message Received")
       setMessages((prev) => [message, ...prev]);
     }
 

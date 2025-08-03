@@ -26,7 +26,7 @@ export async function PUT(req: NextRequest){
 
           const options = {
             httpOnly: true,
-            secure : true
+            secure : false
         }
         signOut
         cookieStore.set("accessToken","",options)

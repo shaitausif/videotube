@@ -41,7 +41,7 @@ export async function POST(req: NextRequest){
 
     const options = {
         httpOnly : true,
-        secure : true
+        secure : false
     }
 
 
