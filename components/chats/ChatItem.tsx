@@ -16,6 +16,17 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { toast } from "sonner";
 import Image from "next/image";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const ChatItem: React.FC<{
   chat: ChatListItemInterface;
@@ -60,7 +71,7 @@ const ChatItem: React.FC<{
         onClick={() => onClick(chat)}
         onMouseLeave={() => setOpenOptions(false)}
         className={classNames(
-          "group p-4 my-2 flex justify-between gap-3 items-start cursor-pointer rounded-3xl hover:bg-secondary",
+          "group p-2 md:p-4 my-2 flex justify-between gap-3 items-start cursor-pointer rounded-3xl hover:bg-secondary",
           isActive ? "border-[1px] border-zinc-500 bg-secondary" : "",
           unreadCount > 0
             ? "border-[1px] border-success bg-success/20 font-bold"
@@ -74,7 +85,7 @@ const ChatItem: React.FC<{
           }}
           className="self-center p-1 relative"
         >
-          <EllipsisVerticalIcon className="h-6 group-hover:w-6 group-hover:opacity-100 w-0 opacity-0 transition-all ease-in-out duration-200 text-zinc-300" />
+          <EllipsisVerticalIcon className="h-6 group-hover:w-6 w-5 opacity-100 group-hover:opacity-100 md:w-0 md:opacity-0 transition-all ease-in-out duration-200 text-zinc-300" />
           <div
             className={classNames(
               "z-20 text-left absolute bottom-0 translate-y-full text-sm w-52 bg-dark rounded-2xl p-2 shadow-md border-[1px] border-secondary",
@@ -93,24 +104,47 @@ const ChatItem: React.FC<{
                 <InformationCircleIcon className="h-4 w-4 mr-2" /> About group
               </p>
             ) : (
+              
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
               <p
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const ok = confirm(
-                    "Are you sure you want to delete this chat?"
-                  );
-                  if (ok) {
-                    deleteChat();
-                  }
-                }}
+              
                 role="button"
                 className="p-4 text-danger rounded-lg w-full inline-flex items-center hover:bg-secondary"
               >
                 <TrashIcon className="h-4 w-4 mr-2" />
                 Delete chat
-              </p>
+                </p>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you absolutely sure?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete this chat?
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => {
+                              deleteChat();
+                            }}
+                          >
+                            Continue
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                
+              
+              
+              </AlertDialog>
+              
             )}
+          
           </div>
+          
         </button>
         <div className="flex justify-center items-center flex-shrink-0">
           {chat.isGroupChat ? (
@@ -157,7 +191,7 @@ const ChatItem: React.FC<{
               <PaperClipIcon className="text-white/50 h-3 w-3 mr-2 flex flex-shrink-0" />
             ) : null}
             <small className="text-white/50 truncate-1 text-sm text-ellipsis inline-flex items-center">
-              {getChatObjectMetaData(chat, user!).lastMessage.slice(0,35) + "..."}
+              {getChatObjectMetaData(chat, user!).lastMessage.length < 30 ? getChatObjectMetaData(chat, user!).lastMessage : getChatObjectMetaData(chat, user!).lastMessage.slice(0,35) + "..."}
             </small>
           </div>
         </div>
@@ -172,8 +206,11 @@ const ChatItem: React.FC<{
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
+          
         </div>
+        
       </div>
+      
     </>
   );
 };

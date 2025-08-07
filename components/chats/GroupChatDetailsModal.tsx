@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Dialog, Transition } from "@headlessui/react";
 import {
   PencilIcon,
@@ -16,6 +16,17 @@ import {
   removeParticipantFromGroup,
   updateGroupName,
 } from "@/lib/apiClient";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 import { UserInterface } from "@/interfaces/user";
 import { ChatListItemInterface } from "@/interfaces/chat";
@@ -25,6 +36,7 @@ import Input from "./Input";
 import Select from "./Select";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { toast } from "sonner";
 
 const GroupChatDetailsModal: React.FC<{
   open: boolean;
@@ -32,7 +44,7 @@ const GroupChatDetailsModal: React.FC<{
   chatId: string;
   onGroupDelete: (chatId: string) => void;
 }> = ({ open, onClose, chatId, onGroupDelete }) => {
-  const user = useSelector((state: RootState) => state.user)
+  const user = useSelector((state: RootState) => state.user);
   // State to manage the UI flag for adding a participant
   const [addingParticipant, setAddingParticipant] = useState(false);
   // State to manage the UI flag for renaming a group
@@ -53,7 +65,7 @@ const GroupChatDetailsModal: React.FC<{
   // Function to handle the update of the group name.
   const handleGroupNameUpdate = async () => {
     // Check if the new group name is provided.
-    if (!newGroupName) return alert("Group name is required");
+    if (!newGroupName) return toast("Group name is required")
 
     // Request to update the group name.
     requestHandler(
@@ -66,9 +78,9 @@ const GroupChatDetailsModal: React.FC<{
         setGroupDetails(data); // Set the new group details.
         setNewGroupName(data.name); // Set the new group name state.
         setRenamingGroup(false); // Set the state to not renaming.
-        alert("Group name updated to " + data.name); // Alert the user about the update.
+        toast("Group name updated to " + data.name); // Alert the user about the update.
       },
-      alert // Use default alert for any error messages.
+      (err) => toast(err) // Use default alert for any error messages.
     );
   };
 
@@ -91,7 +103,7 @@ const GroupChatDetailsModal: React.FC<{
   const deleteGroupChat = async () => {
     // Check if the user is the admin of the group before deletion.
     if (groupDetails?.admin !== user?._id) {
-      return alert("You are not the admin of the group");
+      return toast("You are not admin of the group")
     }
 
     // Request to delete the group chat.
@@ -130,7 +142,7 @@ const GroupChatDetailsModal: React.FC<{
         // Update the state with the modified group details.
         setGroupDetails(updatedGroupDetails as ChatListItemInterface);
         // Inform the user that the participant has been removed.
-        alert("Participant removed");
+        toast("Participant Removed");
       },
       // This may be a generic error alert or error handling function if the request fails.
       alert
@@ -160,7 +172,7 @@ const GroupChatDetailsModal: React.FC<{
         // Update the group details state with the new details.
         setGroupDetails(updatedGroupDetails as ChatListItemInterface);
         // Alert the user that the participant was added.
-        alert("Participant added");
+        toast("Participant added");
       },
       // Use the `alert` function as the fallback error handler.
       alert
@@ -334,21 +346,38 @@ const GroupChatDetailsModal: React.FC<{
                                     </div>
                                     {groupDetails.admin === user?._id ? (
                                       <div>
-                                        <Button
-                                          onClick={() => {
-                                            const ok = confirm(
-                                              "Are you sure you want to remove " +
-                                                part.username +
-                                                " ?"
-                                            );
-                                            if (ok) {
-                                              removeParticipant(part._id || "");
-                                            }
-                                          }}
-                                          size="small"
-                                          severity="danger"
-                                        >
-                                          Remove
+                                        <Button size="small" severity="danger">
+                                          <AlertDialog>
+                                            <AlertDialogTrigger>
+                                              Remove
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                              <AlertDialogHeader>
+                                                <AlertDialogTitle>
+                                                  Are you absolutely sure?
+                                                </AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                  Are you sure you want to
+                                                  remove ${part.username} this
+                                                  chat?
+                                                </AlertDialogDescription>
+                                              </AlertDialogHeader>
+                                              <AlertDialogFooter>
+                                                <AlertDialogCancel>
+                                                  Cancel
+                                                </AlertDialogCancel>
+                                                <AlertDialogAction
+                                                  onClick={() => {
+                                                    removeParticipant(
+                                                      part._id || ""
+                                                    );
+                                                  }}
+                                                >
+                                                  Continue
+                                                </AlertDialogAction>
+                                              </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                          </AlertDialog>
                                         </Button>
                                       </div>
                                     ) : null}
@@ -395,20 +424,37 @@ const GroupChatDetailsModal: React.FC<{
                                     </Button>
                                   </div>
                                 )}
-                                <Button
-                                  fullWidth
-                                  severity="danger"
-                                  onClick={() => {
-                                    const ok = confirm(
-                                      "Are you sure you want to delete this group?"
-                                    );
-                                    if (ok) {
-                                      deleteGroupChat();
-                                    }
-                                  }}
-                                >
-                                  <TrashIcon className="w-5 h-5 mr-1" /> Delete
-                                  group
+                                <Button fullWidth severity="danger">
+                                  <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                      <div className="flex"><TrashIcon className="w-5 h-5 mr-1" />Delete group</div>
+                                      
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>
+                                            Are you absolutely sure?
+                                          </AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            Are you sure you want to delete this
+                                            chat?
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>
+                                            Cancel
+                                          </AlertDialogCancel>
+                                          <AlertDialogAction
+                                            onClick={() => {
+                                              deleteGroupChat();
+                                            }}
+                                          >
+                                            Continue
+                                          </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    
+                                  </AlertDialog>
                                 </Button>
                               </div>
                             ) : null}

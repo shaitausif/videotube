@@ -30,6 +30,8 @@ import {
   XCircleIcon,
 } from "@heroicons/react/20/solid";
 import Image from "next/image";
+import { X } from "lucide-react";
+
 
 const CONNECTED_EVENT = "connected";
 const DISCONNECT_EVENT = "disconnect";
@@ -75,6 +77,7 @@ const page = () => {
 
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]); // To store files attached to messages
   const [isSendingMessage, setisSendingMessage] = useState(false);
+  const [isInChat, setisInChat] = useState(false)
 
   /**
    *  A  function to update the last message of a specified chat to update the chat list
@@ -237,7 +240,8 @@ const page = () => {
       async () => await deleteMessage(message.chat, message._id),
       null,
       (res) => {
-        setMessages((prev) => prev.filter((msg) => msg._id !== res.data._id));
+        console.log(res)
+        setMessages((prev) => prev.filter((msg) => msg._id !== res?.data?._id || ""));
         updateChatLastMessageOnDeletion(message.chat, message);
       },
       (err) => toast(err)
@@ -394,23 +398,38 @@ const page = () => {
 
   useEffect(() => {
     // Fetch the chat list from the server.
-    createAIChat();
-    getChats();
-
-    // Retrieve the current chat details from local storage.
-    const _currentChat = LocalStorage.get("currentChat");
-
-    // If there's a current chat saved in local storage:
-    if (_currentChat) {
-      // Set the current chat reference to the one from local storage.
-      currentChat.current = _currentChat;
-      // If the socket connection exists, emit an event to join the specific chat using its ID.
-      socket?.emit(JOIN_CHAT_EVENT, _currentChat.current?._id);
-      // Fetch the messages for the current chat.
-      getMessages();
+    const starterFunction = async() => {
+      createAIChat();
+      await getChats();
     }
+    starterFunction()
     // An empty dependency array ensures this useEffect runs only once, similar to componentDidMount.
   }, []);
+
+
+// Second useEffect to handle logic that depends on the 'chats' state
+useEffect(() => {
+  // This code will only run after 'chats' has been updated
+  if (chats.length > 0) { // Check if chats has been populated
+    const _currentChat = LocalStorage.get("currentChat");
+    if(_currentChat){
+      const isChatExist = chats.find((chat) => chat._id === _currentChat._id);
+      
+
+    if (!isChatExist) {
+      localStorage.removeItem("currentChat");
+      currentChat.current = null;
+      return;
+    }
+  }
+    if (_currentChat) {
+      currentChat.current = _currentChat;
+      setisInChat(true)
+      socket?.emit(JOIN_CHAT_EVENT, _currentChat.current?._id);
+      getMessages();
+    }
+  }
+}, [chats]); // Dependency array includes 'chats'
 
   // This useEffect handles the setting up and tearing down of socket event listeners.
   useEffect(() => {
@@ -472,7 +491,7 @@ const page = () => {
       />
 
       <div className="w-full justify-between items-stretch h-screen flex flex-shrink-0">
-        <div className="w-1/3 relative ring-white overflow-y-auto px-4">
+        <div className={`${isInChat ? "hidden" : "block"} md:block w-full md:w-1/3 relative ring-white overflow-y-auto px-4`}>
           <div className="z-10 w-full sticky top-0 bg-dark py-4 flex justify-between items-center gap-4">
             <Input
               placeholder="Search user or group..."
@@ -483,7 +502,7 @@ const page = () => {
             />
             <button
               onClick={() => setOpenAddChat(true)}
-              className="rounded-xl border-none bg-blue-700 hover:bg-blue-700/80 transition-all text-white py-3 px-4 flex flex-shrink-0"
+              className="rounded-md md:rounded-xl border-none bg-blue-700 hover:bg-blue-700/80 transition-all text-white py-1 px-2 md:py-3 md:px-4 flex flex-shrink-0"
             >
               + Add chat
             </button>
@@ -508,6 +527,7 @@ const page = () => {
               .map((chat) => {
                 return (
                   <ChatItem
+
                     chat={chat}
                     isActive={chat._id === currentChat.current?._id}
                     unreadCount={
@@ -523,6 +543,7 @@ const page = () => {
                       currentChat.current = chat;
                       setMessage("");
                       getMessages();
+                      setisInChat(true)
                     }}
                     key={chat._id}
                     onChatDelete={(chatId) => {
@@ -539,7 +560,7 @@ const page = () => {
               })
           )}
         </div>
-        <div className="w-2/3 border-l-[0.1px] border-secondary">
+        <div className={`${isInChat ? "block" : 'hidden'} w-full md:block md:w-2/3 border-l-[0.1px] border-secondary`}>
           {currentChat.current && currentChat.current?._id ? (
             <>
               <div className="p-4 sticky top-0 bg-dark z-20 flex justify-between items-center w-full border-b-[0.1px] border-secondary">
@@ -554,6 +575,7 @@ const page = () => {
                               alt="Group Icon"
                               height={30}
                               width={30}
+                              
                               key={participant._id}
                               src={participant.avatar!}
                               className={classNames(
@@ -575,6 +597,7 @@ const page = () => {
                       alt="Profile Icon"
                       height={40}
                       width={40}
+                      
                       className="h-14 w-14 rounded-full flex flex-shrink-0 object-cover"
                       src={
                         getChatObjectMetaData(currentChat.current, user!)
@@ -593,11 +616,17 @@ const page = () => {
                       }
                     </small>
                   </div>
+                  
                 </div>
+                <X onClick={() => {
+                  setisInChat(false)
+                  currentChat.current = null
+                  localStorage.removeItem("currentChat")
+                }} className="w-5 md:hidden" />
               </div>
               <div
                 className={classNames(
-                  "p-8 overflow-y-auto flex flex-col-reverse gap-6 w-full",
+                  "md:p-8 p-3 overflow-y-auto flex flex-col-reverse gap-3 md:gap-6 w-full",
                   attachedFiles.length > 0
                     ? "h-[calc(100vh-336px)]"
                     : "h-[calc(100vh-176px)]"
@@ -619,7 +648,7 @@ const page = () => {
                           isAIMessage={msg.sender._id === process.env.NEXT_PUBLIC_AI_BOT_ID}
                           isGroupChatMessage={currentChat.current?.isGroupChat}
                           message={msg}
-                          deleteChatMessage={deleteChatMessage}
+                          deleteChatMessage={() => deleteChatMessage(msg)}
                         />
                       );
                     })}
@@ -656,7 +685,7 @@ const page = () => {
                   })}
                 </div>
               ) : null}
-              <div className="sticky top-full p-4 flex justify-between items-center w-full gap-2 border-t-[0.1px] border-secondary">
+              <div className="sticky top-full md:p-4 p-2 flex justify-between items-center w-full gap-2 border-t-[0.1px] border-secondary">
                 <input
                   hidden
                   id="attachments"
@@ -674,12 +703,13 @@ const page = () => {
                   htmlFor="attachments"
                   className="p-4 rounded-full bg-dark hover:bg-secondary"
                 >
-                  <PaperClipIcon className="w-6 h-6" />
+                  <PaperClipIcon className="md:w-6 md:h-6 w-4 h-4" />
                 </label>
 
                 <Input
                   placeholder="Message"
                   value={message}
+                  
                   disabled={isSendingMessage}
                   onChange={handleOnMessageChange}
                   onKeyDown={(e) => {
@@ -703,7 +733,7 @@ const page = () => {
                   }
                   className="p-4 rounded-full bg-dark hover:bg-secondary disabled:opacity-50"
                 >
-                  <PaperAirplaneIcon className="w-6 h-6" />
+                  <PaperAirplaneIcon className="md:w-6 md:h-6 w-4 h-4"  />
                 </button>
               </div>
             </>

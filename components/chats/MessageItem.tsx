@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
   ArrowDownTrayIcon,
   EllipsisVerticalIcon,
@@ -7,18 +7,35 @@ import {
   TrashIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import moment from "moment";
 import { useState } from "react";
 import { ChatMessageInterface } from "@/interfaces/chat";
 import { classNames } from "@/utils";
 import Image from "next/image";
 const MessageItem: React.FC<{
-  isAIMessage? : boolean
+  isAIMessage?: boolean;
   isOwnMessage?: boolean;
   isGroupChatMessage?: boolean;
   message: ChatMessageInterface;
   deleteChatMessage: (message: ChatMessageInterface) => void;
-}> = ({ message, isOwnMessage, isGroupChatMessage, deleteChatMessage, isAIMessage }) => {
+}> = ({
+  message,
+  isOwnMessage,
+  isGroupChatMessage,
+  deleteChatMessage,
+  isAIMessage,
+}) => {
   const [resizedImage, setResizedImage] = useState<string | null>(null);
   const [openOptions, setopenOptions] = useState<boolean>(false); //To open delete menu option on hover
 
@@ -39,7 +56,7 @@ const MessageItem: React.FC<{
       ) : null}
       <div
         className={classNames(
-          "flex justify-start items-end gap-3 max-w-lg min-w-",
+          "flex justify-start items-end gap-2 md:gap-3 max-w-lg min-w-",
           isOwnMessage ? "ml-auto" : ""
         )}
       >
@@ -55,10 +72,10 @@ const MessageItem: React.FC<{
         />
         {/* message box have to add the icon onhover here */}
         <div
-          onMouseLeave={() => 
+          onMouseLeave={() =>
             setTimeout(() => {
-              setopenOptions(false)
-            }, 500)
+              setopenOptions(false);
+            }, 1000)
           }
           className={classNames(
             " p-4 rounded-3xl flex flex-col cursor-pointer group hover:bg-secondary",
@@ -82,7 +99,7 @@ const MessageItem: React.FC<{
           {message?.attachments?.length > 0 ? (
             <div>
               {/*The option to delete message will only open in case of own messages*/}
-              {isOwnMessage  ? (
+              {isOwnMessage ? (
                 <button
                   className="self-center p-1 relative options-button"
                   onClick={() => setopenOptions(!openOptions)}
@@ -94,22 +111,40 @@ const MessageItem: React.FC<{
                       openOptions ? "block" : "hidden"
                     )}
                   >
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
                     <p
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const ok = confirm(
-                          "Are you sure you want to delete this message"
-                        );
-                        if (ok) {
-                          deleteChatMessage(message);
-                        }
-                      }}
+                      
                       role="button"
                       className="border border-red-500 p-4 text-danger rounded-lg w-auto inline-flex items-center hover:bg-secondary"
                     >
                       <TrashIcon className="h-4 w-4 mr-2" />
                       Delete Message
                     </p>
+                     <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you absolutely sure?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently
+                            delete your account and remove your data from our
+                            servers.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => {
+                              deleteChatMessage(message);
+                            }}
+                          >
+                            Continue
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialogTrigger>
+                    </AlertDialog>
                   </div>
                 </button>
               ) : null}
@@ -157,36 +192,61 @@ const MessageItem: React.FC<{
             </div>
           ) : null}
           {message.content ? (
-            <div className="relative flex justify-between">
+            <div
+              className={`relative flex ${isAIMessage ? "flex-row-reverse" : ""} justify-between`}
+            >
               {/*The option to delete message will only open in case of own messages*/}
               {isOwnMessage || isAIMessage ? (
                 <button
-                  className="self-center relative options-button"
+                  className={`${isAIMessage ? "self-baseline" : "self-center"} relative options-button`}
                   onClick={() => setopenOptions(!openOptions)}
                 >
                   <EllipsisVerticalIcon className="group-hover:w-4 group-hover:opacity-100 w-0 opacity-0 transition-all ease-in-out duration-100 text-zinc-300" />
                   <div
                     className={classNames(
-                      "delete-menu z-20 text-left -translate-x-24 -translate-y-4 absolute botom-0  text-[10px] w-auto bg-dark rounded-2xl  shadow-md border-[1px] border-secondary",
+                      "delete-menu z-20 text-left  absolute botom-0  text-[10px] w-auto bg-dark rounded-2xl  shadow-md border-[1px] border-secondary",
+                      isAIMessage
+                        ? "-translate-y-10 translate-x-10"
+                        : "-translate-x-24 -translate-y-4",
                       openOptions ? "block" : "hidden"
                     )}
                   >
-                    <p
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const ok = confirm(
-                          "Are you sure you want to delete this message"
-                        );
-                        if (ok) {
-                          deleteChatMessage(message);
-                        }
-                      }}
-                      role="button"
-                      className=" p-2 text-danger rounded-lg w-auto inline-flex items-center hover:bg-secondary"
-                    >
-                      <TrashIcon className="h-4 w-auto mr-1" />
-                      Delete Message
-                    </p>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <p
+                        
+                        role="button"
+                        className=" p-2 text-danger rounded-lg w-auto inline-flex items-center hover:bg-secondary"
+                      >
+                        <TrashIcon className="h-4 w-auto mr-1" />
+                        Delete Message
+                      </p>
+                      </AlertDialogTrigger>
+
+                      
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you absolutely sure?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently
+                            delete your account and remove your data from our
+                            servers.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => {
+                              deleteChatMessage(message);
+                            }}
+                          >
+                            Continue
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </button>
               ) : null}
