@@ -4,3 +4,6 @@
 
 
 - I am going to use a package named as next-themes to allow the user to switch between themes like light and dark mode Since React context is not supported in server components. Trying to create a context at the root of your application will cause an error. and so to not make our whole application a client side application I am using next-theme to avoid that
+
+
+- My getCurrentUser function is going to do the work of verifying JWT in each component even though i know it's very repititive thing but still I don't have any other option as Next.js runs on edge serverless function so that means each function or endpoint is running independently.
