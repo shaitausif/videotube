@@ -1,0 +1,48 @@
+import ConnectDB from "@/lib/dbConnect";
+import { Comment } from "@/models/comment.model";
+import { NextRequest, NextResponse } from "next/server";
+
+
+
+export async function PATCH(req: NextRequest,
+    { params } : { params : { commentId : string } }
+){
+    try {
+        const { commentId } = params
+        const { content } = await req.json()
+        if(!content) return NextResponse.json({success : false, message : "Content is required"},{status : 400})
+    
+        await ConnectDB();
+        const isCommentExist = await Comment.findByIdAndUpdate(
+            commentId,
+            {
+                content
+            },
+            { new : true }
+        )
+        if(!isCommentExist) return NextResponse.json({success : false, message : "Comment not found"},{status : 404})
+        
+        return NextResponse.json({success : true, data : isCommentExist, message : "Comment updated successfully"},{status : 200})
+    } catch (error) {
+        return NextResponse.json({success : false, message : error},{status : 500})
+    }
+}
+
+
+
+
+export async function DELETE(req: NextRequest,
+    { params } : { params : {commentId : string} }
+){
+    try {
+        const { commentId } = params
+    
+        await ConnectDB()
+        const isCommentExist = await Comment.findByIdAndDelete(commentId)
+        if(!isCommentExist) return NextResponse.json({success : false, message : "Comment not found"},{status : 404})
+    
+        NextResponse.json({success : true, message : "Comment deleted successfully."},{status : 200})
+    } catch (error) {
+        return NextResponse.json({success : false, message : error},{status : 500})
+    }
+}
