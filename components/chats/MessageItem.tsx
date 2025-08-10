@@ -38,6 +38,7 @@ const MessageItem: React.FC<{
 }) => {
   const [resizedImage, setResizedImage] = useState<string | null>(null);
   const [openOptions, setopenOptions] = useState<boolean>(false); //To open delete menu option on hover
+  
 
   return (
     <>
@@ -121,6 +122,7 @@ const MessageItem: React.FC<{
                       <TrashIcon className="h-4 w-4 mr-2" />
                       Delete Message
                     </p>
+                    </AlertDialogTrigger>
                      <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>
@@ -143,7 +145,7 @@ const MessageItem: React.FC<{
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
-                    </AlertDialogTrigger>
+                    
                     </AlertDialog>
                   </div>
                 </button>
@@ -171,11 +173,12 @@ const MessageItem: React.FC<{
                         <MagnifyingGlassPlusIcon className="h-6 w-6 text-white" />
                         <a
                           href={file.url}
-                          download
+                          download={file.url}
                           onClick={(e) => e.stopPropagation()}
                         >
                           <ArrowDownTrayIcon
                             title="download"
+                            
                             className="hover:text-zinc-400 h-6 w-6 text-white cursor-pointer"
                           />
                         </a>
@@ -261,7 +264,7 @@ const MessageItem: React.FC<{
             )}
           >
             {message.attachments?.length > 0 ? (
-              <PaperClipIcon className="h-4 w-4 mr-2 " />
+              <PaperClipIcon className="h-4 w-4 mr-2" />
             ) : null}
             {moment(message.updatedAt).add("TIME_ZONE", "hours").fromNow(true)}{" "}
             ago

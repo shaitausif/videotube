@@ -77,16 +77,17 @@ export async function GET(req: NextRequest){
 
 
 export async function POST(req: NextRequest){
-    try {
-        const {title , description} = await req.json()
-
-        if(!title || !description) return NextResponse.json({success : false, message : "Title and Description are required"},{status : 400})
+    try { 
 
         // Verifying user tokens
         const payload = await getCurrentUser(req)
         if(!payload) return NextResponse.json({success : false, message : "Unauthorized"},{status : 401})
 
         const data: FormData = await req.formData()
+        const title = data.get("title")
+        const description = data.get("description")
+
+         if(!title || !description) return NextResponse.json({success : false, message : "Title and Description are required"},{status : 400})
 
         if(!data) return NextResponse.json({success : false, message : "Data is required"},{status : 400})
 

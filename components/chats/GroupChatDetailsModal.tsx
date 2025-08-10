@@ -348,7 +348,7 @@ const GroupChatDetailsModal: React.FC<{
                                       <div>
                                         <Button size="small" severity="danger">
                                           <AlertDialog>
-                                            <AlertDialogTrigger>
+                                            <AlertDialogTrigger asChild>
                                               Remove
                                             </AlertDialogTrigger>
                                             <AlertDialogContent>

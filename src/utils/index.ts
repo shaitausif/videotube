@@ -31,7 +31,7 @@ export const requestHandler = async(
             store.dispatch(clearUser())
             if(isBrowser) window.location.href = '/sign-in'
         }
-        onError(error.res.data.message || "Something Went wrong")
+        onError(error?.res?.data?.message || "Something Went wrong")
     } finally {
 
         setLoading && setLoading(false)

@@ -39,9 +39,10 @@ export async function DELETE(req: NextRequest,
     
         await ConnectDB()
         const isCommentExist = await Comment.findByIdAndDelete(commentId)
+        console.log(isCommentExist)
         if(!isCommentExist) return NextResponse.json({success : false, message : "Comment not found"},{status : 404})
     
-        NextResponse.json({success : true, message : "Comment deleted successfully."},{status : 200})
+        return NextResponse.json({success : true, message : "Comment deleted successfully."},{status : 200})
     } catch (error) {
         return NextResponse.json({success : false, message : error},{status : 500})
     }

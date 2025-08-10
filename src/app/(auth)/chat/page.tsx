@@ -76,7 +76,7 @@ const page = () => {
   const [localSearchQuery, setLocalSearchQuery] = useState(""); // For local search functionality
 
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]); // To store files attached to messages
-  const [isSendingMessage, setisSendingMessage] = useState(false);
+  const [isSendingMessageToAI, setisSendingMessageToAI] = useState(false);
   const [isInChat, setisInChat] = useState(false)
 
   /**
@@ -136,6 +136,16 @@ const page = () => {
       (res) => {
         const { data } = res;
         setChats(data || []);
+
+        const _currentChat = LocalStorage.get("currentChat")
+        if(_currentChat){
+          const isChatExist = data.find((data: any) => data._id === currentChat.current?._id || "")
+        if(!isChatExist) {
+          LocalStorage.remove("currentChat")
+          currentChat.current = null
+        }
+        }
+        
       },
       (error) => {
         toast(error);
@@ -187,9 +197,9 @@ const page = () => {
 
     await requestHandler(
       async () => await sendAIMessage(currentChat.current?._id || "", message),
-      setisSendingMessage,
+      setisSendingMessageToAI,
       (res) => {
-        setMessage("");
+        
         // setMessages((prev) => [...res.data, ...prev]); // Updating message in the UI
         // updateChatLastMessage(currentChat.current?._id || "", res.data[0]);
         setMessages((prev) => [res.data, ...prev]); // Updating message in the UI
@@ -222,7 +232,7 @@ const page = () => {
       null,
       // On successful message sending, clear the message input and attached files, then update the UI
       (res) => {
-        setMessage(""); // Clear the message input
+         // Clear the message input
         setAttachedFiles([]); // Clear the list of attached files
         setMessages((prev) => [res.data, ...prev]); // Update messages in the UI
         updateChatLastMessage(currentChat.current?._id || "", res.data); // Update the last message in the chat
@@ -240,7 +250,7 @@ const page = () => {
       async () => await deleteMessage(message.chat, message._id),
       null,
       (res) => {
-        console.log(res)
+
         setMessages((prev) => prev.filter((msg) => msg._id !== res?.data?._id || ""));
         updateChatLastMessageOnDeletion(message.chat, message);
       },
@@ -250,7 +260,6 @@ const page = () => {
 
   const handleOnMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Update the message state with the current input value
-    setMessage(e.target.value);
 
     // If socket doesn't exist or isn't connected, exit the function
     if (!socket || !isConnected) return;
@@ -328,14 +337,14 @@ const page = () => {
    * Handles the event when a new message is received.
    */
   const onMessageReceived = (message: ChatMessageInterface) => {
-    console.log("Function got executed")
+
     // Check if the received message belongs to the currently active chat
     if (message?.chat !== currentChat.current?._id) {
       // If not, update the list of unread messages
       setUnreadMessages((prev) => [message, ...prev]);
     } else {
       // If it belongs to the current chat, update the messages list for the active chat
-      console.log("Hi, message Received")
+
       setMessages((prev) => [message, ...prev]);
     }
 
@@ -400,7 +409,18 @@ const page = () => {
     // Fetch the chat list from the server.
     const starterFunction = async() => {
       createAIChat();
+ 
       await getChats();
+      const _currentChat = LocalStorage.get("currentChat")
+      // If there's a current chat saved in local storage:
+    if (_currentChat) {
+      // Set the current chat reference to the one from local storage.
+      currentChat.current = _currentChat;
+      // If the socket connection exists, emit an event to join the specific chat using its ID.
+      socket?.emit(JOIN_CHAT_EVENT, _currentChat.current?._id);
+      // Fetch the messages for the current chat.
+      getMessages();
+    }
     }
     starterFunction()
     // An empty dependency array ensures this useEffect runs only once, similar to componentDidMount.
@@ -408,28 +428,27 @@ const page = () => {
 
 
 // Second useEffect to handle logic that depends on the 'chats' state
-useEffect(() => {
-  // This code will only run after 'chats' has been updated
-  if (chats.length > 0) { // Check if chats has been populated
-    const _currentChat = LocalStorage.get("currentChat");
-    if(_currentChat){
-      const isChatExist = chats.find((chat) => chat._id === _currentChat._id);
+// useEffect(() => {
+//   // This code will only run after 'chats' has been updated
+//   if (chats.length > 0) { // Check if chats has been populated
+//     const _currentChat = LocalStorage.get("currentChat");
+//     if(_currentChat){
+//       const isChatExist = chats.find((chat) => chat._id === _currentChat._id);
       
 
-    if (!isChatExist) {
-      localStorage.removeItem("currentChat");
-      currentChat.current = null;
-      return;
-    }
-  }
-    if (_currentChat) {
-      currentChat.current = _currentChat;
-      setisInChat(true)
-      socket?.emit(JOIN_CHAT_EVENT, _currentChat.current?._id);
-      getMessages();
-    }
-  }
-}, [chats]); // Dependency array includes 'chats'
+//     if (!isChatExist) {
+//       localStorage.removeItem("currentChat");
+//       currentChat.current = null;
+//       return;
+//     }
+//     currentChat.current = _currentChat;
+//       setisInChat(true)
+//       socket?.emit(JOIN_CHAT_EVENT, _currentChat.current?._id);
+//       getMessages();
+//   }
+
+//   }
+// }, []); // Dependency array includes 'chats'
 
   // This useEffect handles the setting up and tearing down of socket event listeners.
   useEffect(() => {
@@ -542,6 +561,7 @@ useEffect(() => {
                       LocalStorage.set("currentChat", chat);
                       currentChat.current = chat;
                       setMessage("");
+                      
                       getMessages();
                       setisInChat(true)
                     }}
@@ -641,11 +661,13 @@ useEffect(() => {
                   <>
                     {isTyping ? <Typing /> : null}
                     {messages?.map((msg) => {
+                      
                       return (
+                        
                         <MessageItem
                           key={msg._id}
                           isOwnMessage={msg.sender?._id === user?._id}
-                          isAIMessage={msg.sender._id === process.env.NEXT_PUBLIC_AI_BOT_ID}
+                          isAIMessage={msg.sender._id === process.env.NEXT_PUBLIC_AI_BOT_ID}  
                           isGroupChatMessage={currentChat.current?.isGroupChat}
                           message={msg}
                           deleteChatMessage={() => deleteChatMessage(msg)}
@@ -710,13 +732,18 @@ useEffect(() => {
                   placeholder="Message"
                   value={message}
                   
-                  disabled={isSendingMessage}
-                  onChange={handleOnMessageChange}
+                  // disabled={isSendingMessageToAI}
+                  onChange={(e) => {
+                    setMessage(e.target.value)
+                    // handleOnMessageChange(e)
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       if (currentChat.current?.name === "AI Chat") {
+                        setMessage("");
                         sendAIChatMessage();
                       } else {
+                        setMessage("");
                         sendChatMessage();
                       }
                     }
@@ -724,12 +751,21 @@ useEffect(() => {
                 />
                 <button
                   onClick={
+                    
                     currentChat.current.name === "AI Chat"
-                      ? sendAIChatMessage
-                      : sendChatMessage
+
+                      ? () => {
+                        setMessage("");
+                        sendAIChatMessage()
+                        
+                      }
+                      : () => {
+                        setMessage("");
+                        sendChatMessage()
+                      }
                   }
                   disabled={
-                    (!message && attachedFiles?.length <= 0) || isSendingMessage
+                    (!message && attachedFiles?.length <= 0) || isSendingMessageToAI
                   }
                   className="p-4 rounded-full bg-dark hover:bg-secondary disabled:opacity-50"
                 >
