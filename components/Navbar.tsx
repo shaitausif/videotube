@@ -63,7 +63,7 @@ const Navbar = () => {
 
 
   return (
-    <div className='md:w-full py-4 fixed dark:bg-[#161616]/50 flex pr-12 pl-6 justify-between items-center backdrop-blur-3xl'>
+    <div className='md:w-full py-4 fixed dark:bg-[#161616]/50 flex pr-12 pl-6 justify-between items-center backdrop-blur-3xl z-10'>
 
         {/* Logo */}
         
@@ -103,7 +103,11 @@ const Navbar = () => {
         {
           user && user._id ? (
             <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={(e) => {
+            e.preventDefault()
+            router.push("/profile")
+
+          }}>
             Profile
     
           </DropdownMenuItem>

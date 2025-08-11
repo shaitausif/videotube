@@ -56,7 +56,7 @@ export async function PUT(req: NextRequest) {
       { new: true } // optional: returns the updated document
     );
   
-    return NextResponse.json({success : true, message : "Cover Image updated successfully"})
+    return NextResponse.json({success : true,data : user.coverImage, message : "Cover Image updated successfully"})
   } catch (error) {
     return NextResponse.json({success : false , message : error},{status : 500})
   }

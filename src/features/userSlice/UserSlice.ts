@@ -26,7 +26,8 @@ const userSlice = createSlice({
     reducers : {
         // It will fill the state
         setUser : (state,action) => {
-           return  {...action.payload}
+           return  {...state,
+            ...action.payload}
         },
         // It will clear the state
         clearUser : (state) => {
