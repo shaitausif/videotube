@@ -9,7 +9,6 @@ import { uploadOnCloudinary } from "@/lib/cloudinary";
 
 
 
-
 export async function GET(req: NextRequest){
     try {
         await ConnectDB(); // Establish database connection
@@ -47,18 +46,24 @@ export async function GET(req: NextRequest){
     // Use Promise.all to fetch videos and total count concurrently
     const [videos, total] = await Promise.all([
         Video.find(filter)
+            .populate({
+                path : 'owner',
+                select : "username avatar fullName"
+            })
             .sort(sortOptions)
             .skip(skip)
             .limit(limit)
             .exec(), // Use .exec() for a proper Promise from Mongoose
         Video.countDocuments(filter),
     ]);
+    console.log("Hi")
 
     // Return the response using Next.js's NextResponse
     return NextResponse.json({
         success : true,
-        data : {
-            videos,
+        data : videos,
+        metaData : {
+
         pagination: {
             total,
             page: Number(page),

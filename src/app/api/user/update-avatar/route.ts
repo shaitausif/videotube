@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
-import { uploadOnCloudinary } from "@/lib/cloudinary";
+import { deleteFromCloudinary, uploadOnCloudinary } from "@/lib/cloudinary";
 import ConnectDB from "@/lib/dbConnect";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { User } from "@/models/user.model";
@@ -50,13 +50,16 @@ export async function PUT(req: NextRequest) {
     }
   
     await ConnectDB();
-    const user = await User.findByIdAndUpdate(
-      payload._id, // Pass ID directly
-      { avatar: avatar.secure_url },
-      { new: true } // optional: returns the updated document
-    );
-  
-    return NextResponse.json({success : true,data: user.avatar, message : "Avatar updated successfully"})
+    const user = await User.findById(payload?._id)
+    const oldAvatar = user.avatar
+    const deleted = await deleteFromCloudinary(oldAvatar)
+    if(deleted.result !== "ok") return NextResponse.json({success : false, message : "Unable to delete the old avatar."},{status : 500})
+
+    // Now, as the Old one has been deleted then, update the new one
+    user.avatar = avatar.url
+    await user.save({validateBeforeSave : false})
+
+    return NextResponse.json({success : true,data: avatar?.url, message : "Avatar updated successfully"})
   } catch (error) {
     return NextResponse.json({success : false , message : error},{status : 500})
   }

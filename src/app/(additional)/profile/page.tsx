@@ -1,14 +1,13 @@
 'use client'
 import React from 'react'
-import UserProfile from '../../../../components/UserProfile'
-import Navbar from '../../../../components/Navbar'
+import CurrentUserProfile from '../../../../components/CurrentUserProfile'
 
 const page = () => {
   return (
     <>
     {/* <Navbar /> */}
       <div className='flex h-full w-full justify-center mx-auto md:px-12 px-4 py-3'>
-      <UserProfile/>
+      <CurrentUserProfile/>
     </div>
     </>
   )

@@ -45,14 +45,14 @@ const AddChatModal: React.FC<{
         const { data } = res; // Extract data from response
         setUsers(data || []); // Set users data or an empty array if data is absent
       },
-      (err) => toast(err) // Use the alert as the error handler
+      (err) => toast.error(err) // Use the alert as the error handler
     );
   };
 
   // Function to create a new chat with a user
   const createNewChat = async () => {
     // If no user is selected, show an alert
-    if (!selectedUserId) return toast("Please select a user")
+    if (!selectedUserId) return toast.warning("Please select a user")
     // Handle the request to create a chat
     await requestHandler(
       // Callback to create a user chat
@@ -63,23 +63,23 @@ const AddChatModal: React.FC<{
         const { data } = res; // Extract data from response
         // If chat already exists with the selected user
         if (res.statusCode === 200) {
-          toast("Chat with selected User already exist")
+          toast.warning("Chat with selected User already exist")
           return;
         }
         onSuccess(data); // Execute the onSuccess function with received data
         handleClose(); // Close the modal or popup
       },
-      (err) => toast(err) // Use the alert as the error handler
+      (err) => toast.error(err) // Use the alert as the error handler
     );
   };
 
   // Function to create a new group chat
   const createNewGroupChat = async () => {
     // Check if a group name is provided
-    if (!groupName) return toast("Group name is required")
+    if (!groupName) return toast.warning("Group name is required")
     // Ensure there are at least 2 group participants
     if (!groupParticipants.length || groupParticipants.length < 2)
-      return toast("There must be atleast 2 group participants")
+      return toast.warning("There must be atleast 2 group participants")
 
     // Handle the request to create a group chat
     await requestHandler(
@@ -96,7 +96,7 @@ const AddChatModal: React.FC<{
         onSuccess(data); // Execute the onSuccess function with received data
         handleClose(); // Close the modal or popup
       },
-      (err) => toast(err) // Use the alert as the error handler
+      (err) => toast.error(err) // Use the alert as the error handler
     );
   };
 

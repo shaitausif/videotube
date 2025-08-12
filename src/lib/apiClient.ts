@@ -8,6 +8,11 @@ const apiClient = axios.create({
     timeout : 120000
 })
 
+const nativeApiClient = axios.create({
+  withCredentials : true,
+  timeout : 120000
+})
+
 export default apiClient;
 
 const getAvailableUsers = () => {
@@ -83,6 +88,44 @@ const deleteMessage = (chatId: string, messageId: string) => {
   return apiClient.delete(`/chat-app/messages/${chatId}/${messageId}`);
 };
 
+
+const editAvatar = (file : File) => {
+  const formData = new FormData();
+  if(formData){
+    formData.append("avatar",file)
+    return nativeApiClient.put('/api/user/update-avatar',formData)
+  }
+  console.log("Hey , These is an error in editAvatar")
+  throw new Error("Avatar is required")
+}
+
+const editCoverImage = (file: File) => {
+  const formData = new FormData()
+  if(formData){
+    formData.append("coverImage",file)
+    return nativeApiClient.put('/api/user/update-cover-image',formData)
+  }
+  console.log("Hey, The error is inside editCoverImage")
+  throw new Error("CoverImage is required")
+}
+
+const getUserSubscriberCount = () => {
+  return nativeApiClient.get('/api/user/get-current-user-subscriber-count')
+}
+
+
+const getUserInfo = () => {
+  return nativeApiClient.get('/api/auth/get-user-info')
+}
+
+const setOauthCustomToken = () => {
+  return nativeApiClient.post('/api/user/set-custom-cookies')
+}
+
+const getAllVideos = (page? : number, limit? : number , query? : string, sortBy? : any, sortType? : any, userId? : string) => {
+  return nativeApiClient.get(`/api/video/videos`)
+}
+
 // Export all the API functions
 export {
   addParticipantToGroup,
@@ -99,5 +142,11 @@ export {
   updateGroupName,
   deleteMessage,
   sendAIMessage,
-  createorGetAIChat
+  createorGetAIChat,
+  editAvatar,
+  editCoverImage,
+  getUserSubscriberCount,
+  getUserInfo,
+  setOauthCustomToken,
+  getAllVideos
 };

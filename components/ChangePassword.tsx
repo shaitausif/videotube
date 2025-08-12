@@ -34,12 +34,12 @@ const ChangePassword = ({email}: {email: string}) => {
         })
         const dataa = await response.json()
         if(dataa.success){
-          toast(dataa.message)
+          toast.success(dataa.message)
           router.replace("/sign-in")            
           form.reset()
           return;
         }
-        toast(dataa.message)
+        toast.error(dataa.message)
         form.reset();
       }  catch (error) {
           console.log(error)

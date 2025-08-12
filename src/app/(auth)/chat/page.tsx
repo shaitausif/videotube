@@ -148,7 +148,7 @@ const page = () => {
         
       },
       (error) => {
-        toast(error);
+        toast.error(error);
       }
     );
   };
@@ -158,7 +158,7 @@ const page = () => {
     if (!currentChat.current?._id) return toast("No Chat is selected");
 
     // Check if socket is available, if not, show an alert
-    if (!socket) return toast("Socket not available");
+    if (!socket) return toast.warning("Socket not available");
 
     // Emit an event to join the current chat
     socket.emit(JOIN_CHAT_EVENT, currentChat.current?._id);
@@ -180,7 +180,7 @@ const page = () => {
         setMessages(data || []);
       },
       // Display any error toasts if they occur during the fetch
-      (err) => toast(err)
+      (err) => toast.error(err)
     );
   };
 
@@ -188,11 +188,11 @@ const page = () => {
   const sendAIChatMessage = async () => {
     // If no current chat ID exists or there's no socket connection, exit the function
     if (!currentChat.current?._id || !socket)
-      return toast("No chat is selected");
+      return toast.warning("No chat is selected");
     // Emit a STOP_TYPING_EVENT to inform other users/participants that typing has stopped
     socket.emit(STOP_TYPING_EVENT, currentChat.current?._id);
 
-    if (!message) return toast("Enter the message first");
+    if (!message) return toast.warning("Enter the message first");
 
 
     await requestHandler(
@@ -205,7 +205,7 @@ const page = () => {
         setMessages((prev) => [res.data, ...prev]); // Updating message in the UI
         updateChatLastMessage(currentChat.current?._id || "", res.data);
       },
-      (error) => toast(error)
+      (error) => toast.error(error)
     );
   };
 
@@ -213,9 +213,9 @@ const page = () => {
   const sendChatMessage = async () => {
     // If no current chat ID exists or there's no socket connection, exit the function
     if (!currentChat.current?._id || !socket)
-      return toast("No chat is selected");
+      return toast.warning("No chat is selected");
 
-    if(!message && attachedFiles.length <= 0) return toast("Message or Attachment is required")
+    if(!message && attachedFiles.length <= 0) return toast.warning("Message or Attachment is required")
 
     // Emit a STOP_TYPING_EVENT to inform other users/participants that typing has stopped
     socket.emit(STOP_TYPING_EVENT, currentChat.current?._id);
@@ -239,7 +239,7 @@ const page = () => {
       },
 
       // If there's an error during the message sending process, raise a toast
-      (err) => toast(err)
+      (err) => toast.error(err)
     );
   };
   const deleteChatMessage = async (message: ChatMessageInterface) => {
@@ -254,7 +254,7 @@ const page = () => {
         setMessages((prev) => prev.filter((msg) => msg._id !== res?.data?._id || ""));
         updateChatLastMessageOnDeletion(message.chat, message);
       },
-      (err) => toast(err)
+      (err) => toast.error(err)
     );
   };
 
@@ -401,7 +401,7 @@ const page = () => {
       (res) => {
         console.log(res.message);
       },
-      (error) => toast(error)
+      (error) => toast.error(error)
     );
   };
 

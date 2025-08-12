@@ -5,7 +5,9 @@ const nextConfig = {
     domains: [
       'lh3.googleusercontent.com', // ✅ Google profile pictures
       'avatars.githubusercontent.com', // ✅ GitHub profile pictures
-      'res.cloudinary.com'
+      'res.cloudinary.com',
+      'craftsnippets.com',
+      'encrypted-tbn0.gstatic.com'
     ],
   },
 };

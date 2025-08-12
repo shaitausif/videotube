@@ -53,7 +53,7 @@ function getPublicIdFromUrl(url: string) {
         const public_Id = getPublicIdFromUrl(url)
         console.log(public_Id)
         const res = await cloudinary.uploader.destroy(public_Id)
-   
+        
         return res
     } catch (error) {
         return NextResponse.json({success : false, message : "Unable to delete file from the cloudinary"},{status : 500})

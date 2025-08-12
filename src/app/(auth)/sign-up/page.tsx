@@ -53,7 +53,7 @@ const page = () => {
         !data.username ||
         !data.password
       ) {
-        toast("All fields are required");
+        toast.warning("All fields are required");
         return;
       }
       const formData = new FormData();
@@ -76,11 +76,11 @@ const page = () => {
       });
       const res = await dataa.json();
       if (res.success) {
-        toast(res.message);
+        toast.success(res.message);
         router.push(`/verify-code/${data.email}`);
         return;
       }
-      toast(res.message);
+      toast.warning(res.message);
     } catch (error) {
       console.log(error);
     } finally {

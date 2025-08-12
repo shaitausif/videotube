@@ -1,8 +1,9 @@
+import { UserInterface } from "@/interfaces/user";
 import mongoose,{Schema, Document} from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 
-export interface Video extends Document{
+export interface VideoInterface extends Document{
 
     videoFile : string,
     thumbnail : string,
@@ -11,13 +12,13 @@ export interface Video extends Document{
     duration : number,
     views : number,
     isPublished : boolean,
-    owner : mongoose.Types.ObjectId,
+    owner? : any,
     createdAt? : Date,
     updatedAt? : Date,
 }
 
 
-const videoSchema = new Schema<Video>(
+const videoSchema = new Schema<VideoInterface>(
     {
         videoFile : {
             type : String,  // cloudinary url
@@ -60,4 +61,4 @@ const videoSchema = new Schema<Video>(
 videoSchema.plugin(mongooseAggregatePaginate)   
 // And now here we can write aggregation pipeline queries of mongodb easily
 
-export const Video =  mongoose.models.Video || mongoose.model<Video>("Video",videoSchema)
+export const Video =  mongoose.models.Video || mongoose.model<VideoInterface>("Video",videoSchema)

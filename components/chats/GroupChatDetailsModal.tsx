@@ -78,9 +78,9 @@ const GroupChatDetailsModal: React.FC<{
         setGroupDetails(data); // Set the new group details.
         setNewGroupName(data.name); // Set the new group name state.
         setRenamingGroup(false); // Set the state to not renaming.
-        toast("Group name updated to " + data.name); // Alert the user about the update.
+        toast.success("Group name updated to " + data.name); // Alert the user about the update.
       },
-      (err) => toast(err) // Use default alert for any error messages.
+      (err) => toast.error(err) // Use default alert for any error messages.
     );
   };
 
@@ -103,7 +103,7 @@ const GroupChatDetailsModal: React.FC<{
   const deleteGroupChat = async () => {
     // Check if the user is the admin of the group before deletion.
     if (groupDetails?.admin !== user?._id) {
-      return toast("You are not admin of the group")
+      return toast.warning("You are not admin of the group")
     }
 
     // Request to delete the group chat.
@@ -142,10 +142,10 @@ const GroupChatDetailsModal: React.FC<{
         // Update the state with the modified group details.
         setGroupDetails(updatedGroupDetails as ChatListItemInterface);
         // Inform the user that the participant has been removed.
-        toast("Participant Removed");
+        toast.success("Participant Removed");
       },
       // This may be a generic error alert or error handling function if the request fails.
-      alert
+      (err) => toast.error(err)
     );
   };
 
@@ -172,10 +172,10 @@ const GroupChatDetailsModal: React.FC<{
         // Update the group details state with the new details.
         setGroupDetails(updatedGroupDetails as ChatListItemInterface);
         // Alert the user that the participant was added.
-        toast("Participant added");
+        toast.success("Participant added");
       },
       // Use the `alert` function as the fallback error handler.
-      alert
+      (err) => toast.error(err) 
     );
   };
 
@@ -193,7 +193,7 @@ const GroupChatDetailsModal: React.FC<{
         setNewGroupName(data?.name || "");
       },
       // If the request fails, show an alert
-      alert
+      (err) => toast.error(err)
     );
   };
 
@@ -261,7 +261,7 @@ const GroupChatDetailsModal: React.FC<{
                           {groupDetails?.participants.slice(0, 3).map((p) => {
                             return (
                               <img
-                                className="w-24 h-24 -ml-16 rounded-full outline-4 outline-secondary"
+                                className="w-24 h-24 object-cover -ml-16 rounded-full outline-4 outline-secondary"
                                 key={p._id}
                                 src={p.avatar}
                                 alt="avatar"
@@ -327,7 +327,7 @@ const GroupChatDetailsModal: React.FC<{
                                   <div className="flex justify-between items-center w-full py-4">
                                     <div className="flex justify-start items-start gap-3 w-full">
                                       <img
-                                        className="h-12 w-12 rounded-full"
+                                        className="h-12 w-12 object-cover rounded-full"
                                         src={part.avatar}
                                       />
                                       <div>

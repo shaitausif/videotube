@@ -3,7 +3,7 @@ import { FreeAPISuccessResponseInterface } from "@/interfaces/api";
 import { store } from "@/store/store";
 import { clearUser } from "@/features/userSlice/UserSlice";
 import { ChatListItemInterface } from "@/interfaces/chat";
-import { UserInterface } from "@/interfaces/user";
+
 // No LocalStorage import here for authentication purposes. but if needed for any other stuff i can use that as well
 
 
@@ -31,7 +31,8 @@ export const requestHandler = async(
             store.dispatch(clearUser())
             if(isBrowser) window.location.href = '/sign-in'
         }
-        onError(error?.res?.data?.message || "Something Went wrong")
+        console.log(error)
+        onError(error?.message || "Something Went wrong")
     } finally {
 
         setLoading && setLoading(false)

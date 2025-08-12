@@ -23,12 +23,12 @@ const LogoutButton = () => {
             })
             const data = await response.json()
             if(data.success){
-                toast(data.message)
+                toast.success(data.message)
                 dispatch(clearUser());
                 router.push("/sign-in")
                 return;
             }
-            toast(data.message)
+            toast.error(data.message)
         } catch (error) {
             console.log("Error",error)
         } finally {

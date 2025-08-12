@@ -43,7 +43,7 @@ import OAuthProviders from "../../../../components/OAuthProviders";
           !data.identifier ||
           !data.password
         ) {
-          toast("All fields are required");
+          toast.warning("All fields are required");
           return;
         }
 
@@ -57,11 +57,11 @@ import OAuthProviders from "../../../../components/OAuthProviders";
         });
         const res = await dataa.json();
         if (res.success) {
-          toast("User Logged in successfully");
+          toast.success("User Logged in successfully");
           router.push("/")
           return;
         }
-        toast(res.message);
+        toast.error(res.message);
       } catch (error) {
         console.log(error);
       } finally {
@@ -74,7 +74,7 @@ import OAuthProviders from "../../../../components/OAuthProviders";
 
         const identifier = form.getValues("identifier")
         if(!identifier || identifier.trim() == "" || identifier.length < 2){
-          toast("Please Enter your Email or Username before proceeding")
+          toast.warning("Please Enter your Email or Username before proceeding")
           return;
         }
         setforgetSubmitting(true)
@@ -83,12 +83,12 @@ import OAuthProviders from "../../../../components/OAuthProviders";
         const data = await response.json();
         
         if(data?.success){
-          toast(data?.message);
+          toast.success(data?.message);
           router.push(`reset-password/${data?.email}`)
           return;
         }
         console.log(data)
-        toast(data.message)
+        toast.warning(data.message)
       } catch (error) {
         console.log("Error:",error)
       } finally {

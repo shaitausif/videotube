@@ -34,7 +34,7 @@ const VerifyCode = ({email, redirect, setverify, verify}: {email: string, redire
     e.preventDefault();
     setisSubmitting(true);
     if (!code || code.trim().length < 1) {
-      toast("Please Enter the Code");
+      toast.warning("Please Enter the Code");
       return;
     }
 
@@ -49,7 +49,7 @@ const VerifyCode = ({email, redirect, setverify, verify}: {email: string, redire
     const data = await response.json();
 
     if (data?.success) {
-      toast(data.message);
+      toast.success(data.message);
       dispatch(setUser(data?.data))
       setverify?.(true); // ✅ update parent state
 
@@ -59,7 +59,7 @@ const VerifyCode = ({email, redirect, setverify, verify}: {email: string, redire
       return;
     }
 
-    toast(data.message);
+    toast.error(data.message);
   } catch (error) {
     console.log(error);
   } finally {

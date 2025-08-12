@@ -46,14 +46,14 @@ const Navbar = () => {
             const data = await response.json()
             if(response.ok){
                 
-                toast(data.message);
+                toast.success(data.message);
                 window.location.reload()
                 // Using persistor to clear the redux store completely and purging
                 // Purge persisted state
                await persistor.purge();
                 return;
             }
-            toast(data.message)
+            toast.error(data.message)
         } catch (error) {
             console.log("Error",error)
         } 
@@ -92,9 +92,9 @@ const Navbar = () => {
             )}            
              <DropdownMenu >
       <DropdownMenuTrigger asChild>
-        <Button variant={'outline'} className='rounded-full w-10 h-10 p-0'>{
+        <Button variant={'outline'} className='rounded-full relative w-10 h-10 p-0'>{
           user && user._id ? (
-            <Image className='rounded-full' src={user.avatar ||"/AltProfile.png"} alt='Profile Icon' height={40} width={40} />
+            <Image className='rounded-full object-cover'  src={user.avatar ||"/AltProfile.png"} alt='Profile Icon' fill />
           ) : <EllipsisVertical />
           }</Button>
       </DropdownMenuTrigger>
