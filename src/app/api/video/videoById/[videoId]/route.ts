@@ -5,10 +5,11 @@ import path from "path";
 import fs from 'fs/promises'
 import { deleteFromCloudinary, uploadOnCloudinary } from "@/lib/cloudinary";
 import ConnectDB from "@/lib/dbConnect";
+import { User } from "@/models/user.model";
 
 
 
-
+// This function is responsible for getting the video by the video ID and appending the video ID in the user's watchHistory document field
 export async function GET(req : NextRequest,
     { params } : { params : { videoId : string }}
 ){
@@ -17,10 +18,21 @@ export async function GET(req : NextRequest,
         if(!payload) return NextResponse.json({success : false, message : "Unauthorized"},{status : 401})
         const { videoId } = params 
         
-        const isVideoExist = await Video.findById(videoId)
-        if(!isVideoExist)return NextResponse.json({success : false, message : "Video don't exist"},{status : 404})
+        await ConnectDB();
+        // append the videoId in the user's watchHistory
+        const user = await User.findById(payload._id)
+        if(!user.watchHistory.includes(videoId)){
+            user.watchHistory.push(videoId)
+            user.save({validateBeforeSave: false})
+        }
+        
+        const video = await Video.findById(videoId).populate({
+            path : "owner",
+            select : "username fullName avatar"
+        })
+        if(!video)return NextResponse.json({success : false, message : "Video don't exist"},{status : 404})
 
-        return NextResponse.json({success : true, data : isVideoExist , message : "Video Data fetched successfully"},{status : 200})
+        return NextResponse.json({success : true, data : video , message : "Video Data fetched successfully"},{status : 200})
         
     } catch (error) {
         return NextResponse.json({success : false , message : error},{status : 500})

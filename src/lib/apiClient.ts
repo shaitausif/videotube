@@ -126,6 +126,18 @@ const getAllVideos = (page? : number, limit? : number , query? : string, sortBy?
   return nativeApiClient.get(`/api/video/videos`)
 }
 
+
+const getWatchHistory = () => {
+  return nativeApiClient.get('/api/user/get-user-watch-history')
+}
+
+const getVideoById = (videoId : any) => {
+    
+    return nativeApiClient.get(`/api/video/videoById/${videoId}`)
+  
+}
+
+
 // Export all the API functions
 export {
   addParticipantToGroup,
@@ -148,5 +160,7 @@ export {
   getUserSubscriberCount,
   getUserInfo,
   setOauthCustomToken,
-  getAllVideos
+  getAllVideos,
+  getWatchHistory,
+  getVideoById
 };

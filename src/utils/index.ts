@@ -3,6 +3,7 @@ import { FreeAPISuccessResponseInterface } from "@/interfaces/api";
 import { store } from "@/store/store";
 import { clearUser } from "@/features/userSlice/UserSlice";
 import { ChatListItemInterface } from "@/interfaces/chat";
+import { format , set} from 'date-fns'
 
 // No LocalStorage import here for authentication purposes. but if needed for any other stuff i can use that as well
 
@@ -132,3 +133,17 @@ export class LocalStorage {
     }
 
 }
+
+export const formatVideoDuration = (durationInSeconds: number): string => {
+    // Create a timezone-safe date by explicitly setting its values
+    const referenceDate = set(new Date(0), {
+        hours: 0,
+        minutes: 0,
+        seconds: durationInSeconds
+    });
+
+    if (durationInSeconds >= 3600) {
+        return format(referenceDate, 'HH:mm:ss');
+    }
+    return format(referenceDate, 'mm:ss');
+};
