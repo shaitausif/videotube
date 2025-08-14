@@ -18,26 +18,18 @@ export default function Home() {
   const user = useSelector((state: RootState) => state.user);
   const { data: session } = useSession();
 
+  // Setting the custom cookies if the user has signed in using oauth providers like google and github
   if (!!session?.user) {
     console.log("Hi");
     const setOAuthCustomCookie = async () => {
-      // try {
-      //   const res = await fetch("/api/user/set-custom-cookies", {
-      //     method: "POST",
-      //     credentials: "include",
-      //   });
-      //   const data = await res.json();
-      //   console.log(data.success);
-      // } catch (error) {
-      //   console.error(error);
-      // }
+     
       requestHandler(
         async() => await setOauthCustomToken(),
         null,
         (res) => {
           console.log(res)
         },
-        (err) => toast.error(err)
+        (err) => console.log(err)
       )
     };
     setOAuthCustomCookie();
@@ -54,7 +46,7 @@ export default function Home() {
         (res) => {
           dispatch(setUser(res.data))
         },
-        (err) => toast.error(err)
+        (err) => console.log(err)
       )
     };
     fetchUserData();

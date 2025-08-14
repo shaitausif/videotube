@@ -12,6 +12,7 @@ export async function POST(req : NextRequest,
     try {
         const { channelId } = params
         const payload = await getCurrentUser(req)
+        if(!payload) return NextResponse.json({success : false, message : "Unauthorized"},{status : 401})
         await ConnectDB()
         const isSubsbribed = await Subscription.findOne({ channel : channelId , subscriber : payload?._id })
         if(!isSubsbribed) {
@@ -27,7 +28,7 @@ export async function POST(req : NextRequest,
         if(deletedCount !== 1) return NextResponse.json({success : false, message : "Unable to unsubscribe the channel"},{status : 500})
         return NextResponse.json({
             success : true ,
-            data : false, 
+            data : false,   
             message : "Channel Unsubscribed Successfully."
     },{status : 200})
     } catch (error) {

@@ -42,8 +42,8 @@ export  async function GET(req : NextRequest,
    try {
      const { videoId } = params
      const { searchParams } = new URL(req.url)
-     const page = searchParams.get("page")
-     const limit: any = searchParams.get("limit")
+     const page = searchParams.get("page") || 1
+     const limit: any = searchParams.get("limit") || 10
      const skip = (Number(page) -1) * Number(limit)
  
      const filter: any = {}

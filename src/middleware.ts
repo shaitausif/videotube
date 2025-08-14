@@ -37,22 +37,29 @@ export async function middleware(req: NextRequest) {
     "/login",
     "/register",
     "/api/auth/login",
-    "/api/auth/signup",    
+    "/api/auth/signup"
   ];
 
-  const wildcardRoutes = ["/reset-password","/verify-code"];
+  const wildcardRoutes = ["/reset-password","/verify-code",'/api','/video'];
 
   const isPublic =
     publicRoutes.includes(pathname) ||
     wildcardRoutes.some((route) => pathname.startsWith(route));
+
+
+  
   // If not authenticated and accessing not a public route then redirect to login page
-  if (!userIsAuthenticated && !isPublic) {
+  console.log(pathname.startsWith('/api'))
+  if (!userIsAuthenticated && !isPublic && !pathname.startsWith('/api')) {
+    console.log("redirecting to sign-in page")
     return NextResponse.redirect(new URL("/sign-in", req.url));
   }
   
 
-  // If authenticated and accessing login or signup page
-  if (userIsAuthenticated && isPublic) {
+
+  // If authenticated and accessing login or signup page 
+  if (userIsAuthenticated && isPublic && !pathname.startsWith('/api') && !pathname.startsWith('/video')) {
+    console.log("Redirecting to home page")
     return NextResponse.redirect(new URL("/", req.url));
   }
   return NextResponse.next();
@@ -60,5 +67,5 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   // "These are exception routes it also includes "/" or homepage of the application"
-  matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico|$).*)"],
+  matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico|/|$).*)"],
 }

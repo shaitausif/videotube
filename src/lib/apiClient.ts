@@ -138,6 +138,16 @@ const getVideoById = (videoId : any) => {
 }
 
 
+const getVideoComments = (videoId: any) => {
+  return nativeApiClient.get(`/api/comment/get-or-set/${videoId}`)
+}
+
+
+const toggleSubscribe = (channelId : string) => {
+  return nativeApiClient.post(`/api/subscription/toggle-subscribers/${channelId}`)
+}
+
+
 // Export all the API functions
 export {
   addParticipantToGroup,
@@ -162,5 +172,7 @@ export {
   setOauthCustomToken,
   getAllVideos,
   getWatchHistory,
-  getVideoById
+  getVideoById,
+  getVideoComments,
+  toggleSubscribe
 };

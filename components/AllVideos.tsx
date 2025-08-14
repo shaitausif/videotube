@@ -17,14 +17,16 @@ const AllVideos = () => {
 
   useEffect(() => {
     const fetchAllVideos = async () => {
+      console.log("Fetching videos")
       requestHandler(
         async () => await getAllVideos(),
         setloadingVideos,
         (res) => {
           setvideos(res.data);
+          console.log(res.data)
           console.log(videos);
           console.log(res.data[0].thumbnail);
-          toast.success("Videos fetched successfully.");
+          toast.success("Videos fetched successfully.");  
         },
         (err) => toast.error(err)
       );
