@@ -599,7 +599,7 @@ const page = () => {
                               key={participant._id}
                               src={participant.avatar!}
                               className={classNames(
-                                "w-9 h-9 border-[1px] border-white rounded-full absolute outline-4 outline-dark",
+                                "w-9 h-9 border-[1px] object-cover border-white rounded-full absolute outline-4 outline-dark",
                                 i === 0
                                   ? "left-0 z-30"
                                   : i === 1

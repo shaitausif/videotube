@@ -14,8 +14,8 @@ export async function POST(req : NextRequest,
         const payload = await getCurrentUser(req)
         if(!payload) return NextResponse.json({success : false, message : "Unauthorized"},{status : 401})
         await ConnectDB()
-        const isSubsbribed = await Subscription.findOne({ channel : channelId , subscriber : payload?._id })
-        if(!isSubsbribed) {
+        const isSubscribed = await Subscription.findOne({ channel : channelId , subscriber : payload?._id })
+        if(!isSubscribed) {
             const subscribe = await Subscription.create({
                 channel : channelId,
                 subscriber : payload?._id
@@ -24,7 +24,7 @@ export async function POST(req : NextRequest,
             return NextResponse.json({success : true , data : true , message : "Channel subscribed successfully."})
         }
 
-        const { deletedCount } = await isSubsbribed.deleteOne()
+        const { deletedCount } = await isSubscribed.deleteOne()
         if(deletedCount !== 1) return NextResponse.json({success : false, message : "Unable to unsubscribe the channel"},{status : 500})
         return NextResponse.json({
             success : true ,

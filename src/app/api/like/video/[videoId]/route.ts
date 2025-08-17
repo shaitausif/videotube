@@ -24,8 +24,8 @@ export async function POST(req: NextRequest,
                 video : videoId,
                 likedBy : payload._id
             })
-            if(likedVideo) return NextResponse.json({success : false, message : "Unable to like the video"})
-            return NextResponse.json({success : true, data : likedVideo, message : "Video liked successfully."})
+            if(!likedVideo) return NextResponse.json({success : false, message : "Unable to like the video"})
+            return NextResponse.json({success : true, data : true, message : "Video liked successfully."})
         }
     
         const { deletedCount } = await isLiked.deleteOne()

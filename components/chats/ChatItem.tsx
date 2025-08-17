@@ -158,7 +158,7 @@ const ChatItem: React.FC<{
                     width={20}
                     height={20}
                     className={classNames(
-                      "w-8 h-8 border-[1px] border-white rounded-full absolute outline-4 outline-dark group-hover:outline-secondary",
+                      "w-8 h-8 border-[1px] object-cover border-white rounded-full absolute outline-4 outline-dark group-hover:outline-secondary",
                       i === 0
                         ? "left-0 z-[3]"
                         : i === 1

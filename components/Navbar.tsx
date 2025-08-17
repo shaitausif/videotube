@@ -51,6 +51,7 @@ const Navbar = () => {
                 // Using persistor to clear the redux store completely and purging
                 // Purge persisted state
                await persistor.purge();
+               router.push("/")
                 return;
             }
             toast.error(data.message)
@@ -173,7 +174,8 @@ const Navbar = () => {
               if(session?.user){
                 const purgeRes = await persistor.purge();
                 console.log(purgeRes)
-                signOut()
+                signOut({callbackUrl : "/"})
+                
               }else{
                 Logout()
 

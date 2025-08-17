@@ -53,7 +53,7 @@ export async function PUT(req: NextRequest) {
     const user = await User.findById(payload?._id)
     const oldAvatar = user.avatar
     const deleted = await deleteFromCloudinary(oldAvatar)
-    if(deleted.result !== "ok") return NextResponse.json({success : false, message : "Unable to delete the old avatar."},{status : 500})
+    // if(deleted.result !== "ok") return NextResponse.json({success : false, message : "Unable to delete the old avatar."},{status : 500})
 
     // Now, as the Old one has been deleted then, update the new one
     user.avatar = avatar.url

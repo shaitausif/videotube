@@ -15,6 +15,8 @@ export interface VideoInterface extends Document{
     owner? : any,
     createdAt? : Date,
     updatedAt? : Date,
+    likes? : number,
+    isLiked? : boolean
 }
 
 

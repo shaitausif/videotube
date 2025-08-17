@@ -42,7 +42,6 @@ export async function GET(
     //     path : "owner",
     //     select : "username fullName avatar"
     // })
-
    const video = await Video.aggregate([
   {
     $match: {
@@ -69,7 +68,8 @@ export async function GET(
                 isSubscribed: {
           $cond: {
             // Here we're checking that the current logged in user is present or not in any of the channel's subscribers field
-            if: { $in: [payload?._id, "$subscribers.subscriber"] },
+            // Converting the payload._id to mongoose object ID for accurate comparison
+            if: { $in: [new mongoose.Types.ObjectId(payload?._id as string), "$subscribers.subscriber"] },
             then: true,
             else: false,
           },
@@ -93,6 +93,26 @@ export async function GET(
         },
       ],
     },
+  },
+  {
+    $lookup : {
+      from : "likes",
+      localField : "_id",
+      foreignField : "video",
+      as : "likes"
+    },
+    
+  },
+  {
+    $addFields : { likes : { $size : "$likes" },
+    isLiked : { 
+      $cond : {
+        if : { $in : [new mongoose.Types.ObjectId(payload?._id as string), "$likes.likedBy"]},
+        then : true,
+        else : false
+      }
+    }
+  }
   },
   { $unwind: "$owner" },
 ]);

@@ -148,6 +148,11 @@ const toggleSubscribe = (channelId : string) => {
 }
 
 
+const toggleVideoLike = (videoId: string) => {
+  return nativeApiClient.post(`/api/like/video/${videoId}`)
+}
+
+
 // Export all the API functions
 export {
   addParticipantToGroup,
@@ -174,5 +179,6 @@ export {
   getWatchHistory,
   getVideoById,
   getVideoComments,
-  toggleSubscribe
+  toggleSubscribe,
+  toggleVideoLike
 };

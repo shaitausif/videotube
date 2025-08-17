@@ -38,7 +38,8 @@ export const authOptions: NextAuthOptions = {
                     isVerified: true
                 },{validateBeforeSave : false})
             }else{
-              user.avatar = profile.picture || profile.avatar_url || ""
+              // Don't update the avatar if the User is already exist
+              // user.avatar = profile.picture || profile.avatar_url || ""
               await user.save();
             }
 

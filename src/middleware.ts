@@ -18,7 +18,6 @@ async function verifyCustomJWT(token: string) {
 
 export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
-  console.log(pathname)
 
 
   // Try to get next-auth token for o-auth user
@@ -49,7 +48,6 @@ export async function middleware(req: NextRequest) {
 
   
   // If not authenticated and accessing not a public route then redirect to login page
-  console.log(pathname.startsWith('/api'))
   if (!userIsAuthenticated && !isPublic && !pathname.startsWith('/api')) {
     console.log("redirecting to sign-in page")
     return NextResponse.redirect(new URL("/sign-in", req.url));
