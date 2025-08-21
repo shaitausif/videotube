@@ -258,7 +258,7 @@ const MessageItem: React.FC<{
                 <div key={i}>
                   {string.replace("*","")}<br/>
                 </div>
-              )) : message.content}</p>``
+              )) : message.content}</p>
             </div>
           ) : null}
           <p

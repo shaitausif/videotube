@@ -28,9 +28,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
+import VideoSkel from "../../../../../components/skeletons/VideoSkel";
 // import { AdvancedVideo } from '@cloudinary/react'
 // import { Resize } from '@cloudinary/url-gen/actions'
 
@@ -119,20 +119,7 @@ const page = () => {
   return (
     <div className="flex justify-center">
       {loadingVideo ? (
-        <div className="grid grid-cols-3 w-full md:px-8 px-4">
-          <div className="col-span-2 space-y-5">
-            {/* First part with two columns width */}
-            <div className="flex flex-col h-[70vh] w-full  space-y-3 col-span-1">
-              <Skeleton className="h-[70vh] w-[60vw] rounded-xl" />
-            </div>
-            <div className="space-y-2 px-2">
-              <Skeleton className="h-4 w-full md:w-[40vw]" />
-              <Skeleton className="h-4 w-full  md:w-[50vw]" />
-            </div>
-
-            {/* Second part with 1 column width */}
-          </div>
-        </div>
+        <VideoSkel />
       ) : (
         video && (
           <div className="grid grid-cols-3 w-full md:px-8 px-4">
@@ -152,7 +139,13 @@ const page = () => {
                   {/* Channel of the Video */}
                   <div className="flex justify-between items-center">
                     {/* Avatar of the Channel */}
-                    <div className="flex items-center gap-6">
+                    <div onClick={() => {
+                      if(user._id === video.owner._id){
+                        router.push('/profile')
+                        return;
+                      }
+                      // Push User's to the Channel Profile
+                    }} className="flex items-center gap-6  cursor-pointer rounded-full transition-all duration-300 dark:hover:bg-black/50">
                       <div className="relative w-[50px] h-[50px]">
                         <Image
                           className="object-cover rounded-full"
@@ -160,9 +153,9 @@ const page = () => {
                           fill
                           src={video?.owner?.avatar!}
                         />
-                      </div>
+                      </div>  
                       {/* Channel Name */}
-                      <div className="flex flex-col">
+                      <div className="flex flex-col ">
                         <p>{video?.owner.fullName}</p>
                         <p>{subscribersCount} Subscribers</p>
                       </div>
@@ -172,7 +165,7 @@ const page = () => {
                           user._id === video.owner._id ? (
                             // Button if it's user's own channel
                             <Button
-                              onClick={() => router.push("/profile")}
+                              
                               className={`
                     rounded-3xl font-semibold text-md
                     `}

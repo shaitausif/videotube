@@ -1,13 +1,13 @@
 "use client";
 import { getAllVideos } from "@/lib/apiClient";
-import { Video, VideoInterface } from "@/models/video.model";
+import { VideoInterface } from "@/models/video.model";
 import { formatVideoDuration, requestHandler } from "@/utils";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { useRouter } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
+import AllVideosSkel from "./skeletons/AllVideosSkel";
 
 const AllVideos = () => {
   const [videos, setvideos] = useState<VideoInterface[]>([]);
@@ -38,12 +38,8 @@ const AllVideos = () => {
     <div className="md:grid gap-5 grid-cols-3 w-full flex flex-col">
       {loadingVideos
         ? skeleton.map((skel) => (
-            <div key={skel} className="flex flex-col h-[45vh] space-y-3 col-span-1">
-              <Skeleton className="h-[220px] w-full rounded-xl" />
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-full md:w-[250px]" />
-                <Skeleton className="h-4 w-full  md:w-[200px]" />
-              </div>
+          <div key={skel}>
+            <AllVideosSkel />
             </div>
           ))
         : videos.map((video) => (

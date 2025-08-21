@@ -153,6 +153,11 @@ const toggleVideoLike = (videoId: string) => {
 }
 
 
+const userChannelProfile = (username: string) => {
+  return nativeApiClient.get(`/api/user/get-user-channel-profile/${username}`)
+}
+
+
 // Export all the API functions
 export {
   addParticipantToGroup,
@@ -180,5 +185,6 @@ export {
   getVideoById,
   getVideoComments,
   toggleSubscribe,
-  toggleVideoLike
+  toggleVideoLike,
+  userChannelProfile
 };
