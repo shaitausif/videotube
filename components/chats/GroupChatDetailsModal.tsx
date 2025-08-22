@@ -263,7 +263,7 @@ const GroupChatDetailsModal: React.FC<{
                               <img
                                 className="w-24 h-24 object-cover -ml-16 rounded-full outline-4 outline-secondary"
                                 key={p._id}
-                                src={p.avatar}
+                                src={p.avatar || '/public/AltProfile.png'}
                                 alt="avatar"
                               />
                             );

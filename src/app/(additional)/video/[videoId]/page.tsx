@@ -146,7 +146,11 @@ const page = () => {
                       }
                       // Push User's to the Channel Profile
                     }} className="flex items-center gap-6  cursor-pointer rounded-full transition-all duration-300 dark:hover:bg-black/50">
-                      <div className="relative w-[50px] h-[50px]">
+                      <div onClick={() => {
+                        if(user._id !== video.owner._id){
+                          router.push(`/c/${video.owner.username}`)
+                        }
+                      }} className="relative w-[50px] h-[50px]">
                         <Image
                           className="object-cover rounded-full"
                           alt="Avatar of the video owner"
@@ -155,7 +159,11 @@ const page = () => {
                         />
                       </div>  
                       {/* Channel Name */}
-                      <div className="flex flex-col ">
+                      <div onClick={() => {
+                        if(user._id !== video.owner._id){
+                          router.push(`/c/${video.owner.username}`)
+                        }
+                      }} className="flex flex-col ">
                         <p>{video?.owner.fullName}</p>
                         <p>{subscribersCount} Subscribers</p>
                       </div>

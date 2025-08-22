@@ -48,6 +48,7 @@ const page = () => {
   const user = useSelector((state: RootState) => state.user);
 
 
+
   // Create a reference using 'useRef' to hold the currently selected chat.
   // 'useRef' is used here because it ensures that the 'currentChat' value within socket event callbacks
   // will always refer to the latest value, even if the component re-renders.
@@ -137,6 +138,7 @@ const page = () => {
         const { data } = res;
         setChats(data || []);
 
+        // If user's localStorage contains a chat which doesn't exists in the user's chat then remove the currentChat from localStorage
         const _currentChat = LocalStorage.get("currentChat")
         if(_currentChat){
           const isChatExist = data.find((data: any) => data._id === currentChat.current?._id || "")

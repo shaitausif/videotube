@@ -14,6 +14,7 @@ import Button from "./Button";
 import Input from "./Input";
 import Select from "./Select";
 import { toast } from "sonner";
+import Image from "next/image";
 
 const AddChatModal: React.FC<{
   open: boolean;
@@ -263,10 +264,14 @@ const AddChatModal: React.FC<{
                                 className="inline-flex bg-secondary rounded-full p-2 border-[1px] border-zinc-400 items-center gap-2"
                                 key={participant._id}
                               >
-                                <img
-                                  className="h-6 w-6 rounded-full object-cover"
+                                <span className="relative h-6 w-6">
+                                  <Image
+                                  alt="Participant Icon"
+                                  className="absolute h-6 w-6 rounded-full object-cover"
                                   src={participant.avatar}
+                                  fill
                                 />
+                                </span>
                                 <p className="text-white">
                                   {participant.username}
                                 </p>

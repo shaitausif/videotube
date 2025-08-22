@@ -40,7 +40,7 @@ export async function GET(
       // Here i am going to write lookup stage for left joining two documents on the basis of a similar field value
       // Here from this lookup i will get the subscribers this user have where the logic is simple that when a user subscribes to a channel a new subscription document got created and then in this lookup we're matching for all the channels which has similar _id like this user from this we'll get the subscribers
       $lookup: {
-        from: "subscription",
+        from: "subscriptions",
         localField: "_id",
         foreignField: "channel",
         as: "subscribers",
@@ -50,7 +50,7 @@ export async function GET(
     {
       //  This lookup is to find out the channels this user has subscribed
       $lookup: {
-        from: "subscription",
+        from: "subscriptions",
         localField: "_id",
         foreignField: "subscriber",
         as: "subscribedTo",
@@ -90,6 +90,7 @@ export async function GET(
         isSubscribed: 1,
         avatar: 1,
         coverImage: 1,
+        isAcceptingMessages : 1
       },
     },
   ]);
