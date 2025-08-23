@@ -52,6 +52,7 @@ const UserProfile = ({ username }: { username: any }) => {
         (res) => {
           setchannelInfo(res.data);
           setsubscribersCount(res.data.subscribersCount);
+          console.log(res)
           setisSubscribed(res.data.isSubscribed);
         },
         (err) => {
@@ -192,6 +193,9 @@ const UserProfile = ({ username }: { username: any }) => {
                 <Button onClick={() => handleMessageUser()} className="rounded-3xl font-semibold text-md">Message</Button>
               )
             }
+          </div>
+          <div className="px-2 dark:hover:text-gray-400 cursor-pointer transition-all duration-300 dark:text-gray-300">
+            <p>{channelInfo.subscribedToCount} {subscribersCount.toString().length > 1 ? "Subscriptions" : "Subscription"}</p>
           </div>
         </div>
         

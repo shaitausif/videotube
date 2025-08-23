@@ -2,6 +2,7 @@ import { User } from "@/models/user.model";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import ConnectDB from "@/lib/dbConnect";
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 
 export async function GET(
   req: NextRequest,
@@ -71,7 +72,7 @@ export async function GET(
         isSubscribed: {
           $cond: {
             // Here we're checking that the current logged in user is present or not in the channel's subscribers field
-            if: { $in: [payload._id, "$subscribers.subscriber"] },
+            if: { $in: [new mongoose.Types.ObjectId(payload._id as string), "$subscribers.subscriber"] },
             then: true,
             else: false,
           },

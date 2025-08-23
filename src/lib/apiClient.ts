@@ -158,6 +158,10 @@ const userChannelProfile = (username: string) => {
 }
 
 
+const postComment = (videoId: string, content: string) => {
+  return nativeApiClient.post(`/api/comment/get-or-set/${videoId}`,{content})
+}
+
 // Export all the API functions
 export {
   addParticipantToGroup,
@@ -186,5 +190,6 @@ export {
   getVideoComments,
   toggleSubscribe,
   toggleVideoLike,
-  userChannelProfile
+  userChannelProfile,
+  postComment
 };

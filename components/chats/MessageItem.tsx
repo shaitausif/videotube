@@ -255,9 +255,9 @@ const MessageItem: React.FC<{
               ) : null}
 
               <p className="text-sm">{isAIMessage ? message.content.split("**").map((string ,i) => (
-                <div key={i}>
+                <span key={i}>
                   {string.replace("*","")}<br/>
-                </div>
+                </span>
               )) : message.content}</p>
             </div>
           ) : null}
