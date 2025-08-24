@@ -1,9 +1,9 @@
 'use client'
 import Image from 'next/image'
 import React from 'react'
-import { Button } from './ui/button'
+import { Button } from '@/components/ui/button'
 import {  EllipsisVertical, MessageSquareMore, Plus, Search } from 'lucide-react'
-import { Input } from './ui/input'
+import { Input } from '@/components/ui/input'
 import {
   DropdownMenu,
   DropdownMenuContent,

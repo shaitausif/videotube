@@ -58,7 +58,6 @@ const UserProfile = ({ username }: { username: any }) => {
         (err) => {
           // @ts-ignore
           if (err?.status == 404) {
-            console.log("redirecting");
             router.replace("/not-found");
             return;
           }

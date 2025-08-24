@@ -8,15 +8,13 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../../../components/ui/form";
-import { Input } from "../../../../components/ui/input";
-import { Button } from "../../../../components/ui/button";
-import ThemeSwitcher from "../../../../components/ThemeSwitcher";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";

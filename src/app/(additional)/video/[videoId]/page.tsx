@@ -1,11 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import React, { Suspense, useEffect, useState } from "react";
+import { notFound, useParams } from "next/navigation";
 import { VideoInterface } from "@/models/video.model";
 import { requestHandler } from "@/utils";
 import {
   getVideoById,
-  getVideoComments,
   postComment,
   toggleSubscribe,
   toggleVideoLike,
@@ -29,22 +28,19 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { formatDate, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import VideoSkel from "../../../../../components/skeletons/VideoSkel";
-import { string, z } from "zod";
-import { Input } from "../../../../../components/ui/input";
+import { z } from "zod";
+import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PostCommentSchema } from "@/schemas/PostCommentSchema";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "../../../../../components/ui/form";
-import { Comments } from "@/models/comment.model";
+
+
+import AllComments from "../../../../../components/AllComments";
+import CommentLoader from "../../../../../components/skeletons/Loader";
+import SuggestVideos from "../../../../../components/SuggestVideos";
 // import { AdvancedVideo } from '@cloudinary/react'
 // import { Resize } from '@cloudinary/url-gen/actions'
 
@@ -55,20 +51,28 @@ import { Comments } from "@/models/comment.model";
 // })
 
 const page = () => {
+  const router = useRouter();
+
   const params = useParams();
+
+  const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
+
+  if (!isValidObjectId(params.videoId as string)) {
+    return notFound();
+  }
+
   const [video, setvideo] = useState<VideoInterface>();
-  const [videoComments, setvideoComments] = useState<Comments[]>([]);
+  const [videoComments, setvideoComments] = useState<any[]>([]);
   const [loadingVideo, setloadingVideo] = useState(false);
-  const [loadingComments, setloadingComments] = useState({});
+  const [loadingComments, setloadingComments] = useState({}); 
   const [isSubscribed, setisSubscribed] = useState(false);
   const [subscribersCount, setsubscribersCount] = useState(0);
   const [likesCount, setlikesCount] = useState(0);
   const [isLiked, setisLiked] = useState(false);
   const [commentsCount, setcommentsCount] = useState(0);
   const [openDescription, setopenDescription] = useState(false);
-  const [isPostingComment, setisPostingComment] = useState(false)
+  const [isPostingComment, setisPostingComment] = useState(false);
   const user = useSelector((state: RootState) => state.user);
-  const router = useRouter();
 
   useEffect(() => {
     const getVideoInfo = async () => {
@@ -78,28 +82,24 @@ const page = () => {
         (res) => {
           setvideo(res.data);
           setisSubscribed(res.data.owner.isSubscribed);
-
           setsubscribersCount(res.data.owner.subscribers);
-
           setisLiked(res.data.isLiked);
           setlikesCount(res.data.likes);
         },
-        (err) => toast.error(err)
+        (err) => {
+          // @ts-ignore
+          if (err?.status == 404) {
+            console.log("redirecting");
+            router.replace("/not-found");
+            return;
+          }
+          toast.error(err);
+        }
       );
     };
     getVideoInfo();
 
-    const getvideoComments = async () => {
-      requestHandler(
-        async () => await getVideoComments(params.videoId),
-        setloadingComments,
-        (res) => {
-          setcommentsCount(res.data.total);
-          setvideoComments(res.data.comments);
-        },
-        (err) => toast.error(err)
-      );
-    };
+    
   }, []);
 
   const form = useForm<z.infer<typeof PostCommentSchema>>({
@@ -126,7 +126,7 @@ const page = () => {
     );
   };
 
-  const handleToggVideoleLike = async (videoId: string) => {
+  const handleToggleVideoLike = async (videoId: string) => {
     requestHandler(
       async () => await toggleVideoLike(videoId),
       null,
@@ -140,26 +140,29 @@ const page = () => {
   };
 
   // Function for handling comments Post
-  const handleCommentPost = (data: z.infer<typeof PostCommentSchema>) => {
+  const handleCommentPost = async (data: z.infer<typeof PostCommentSchema>) => {
     requestHandler(
-      async() => await postComment(video?._id as string , data.comment),
+      async () => await postComment(video?._id as string, data.comment),
       setisPostingComment,
       (res) => {
-        setvideoComments((prev) => [res.data , ...prev])
+        setvideoComments((prev) => [res.data, ...prev]);
+        setcommentsCount((prev) => prev + 1)
         form.reset();
+        toast.success("Comment Posted Successfully")
       },
       (err) => toast.error(err)
-    ) 
+    );
   };
 
+
   return (
-    <div className="flex justify-center">
+    <div className="flex w-full justify-center">
       {loadingVideo ? (
         <VideoSkel />
       ) : (
         video && (
-          <div className="grid grid-cols-3 w-full md:px-8 px-4">
-            <div className="col-span-2 space-y-5">
+          <div className="grid grid-cols-5 w-full  mx-2 md:mx-12">
+            <div className="col-span-3 space-y-5">
               {/* Video */}
               <div className="flex flex-col gap-5">
                 <video
@@ -287,16 +290,24 @@ const page = () => {
 
                     <div className="flex gap-5 justify-center items-center">
                       <button
-                        onClick={() =>
-                          handleToggVideoleLike(video._id as string)
-                        }
-                        className={`p-1  w-15 h-15 rounded-full hover:bg-gray-600 transition-all duration-300 flex items-center justify-center ${isLiked ? "bg-gray-500" : ""}`}
+                        className={`w-15 h-15 rounded-full  transition-all duration-300 flex items-center justify-center `}
                       >
-                        <ThumbsUp className="w-6 h-6" />{" "}
+                        <span
+                          onClick={() =>
+                            handleToggleVideoLike(video._id as string)
+                          }
+                          className={`transition-all duration-300 p-2 rounded-full dark:hover:bg-gray-800 ${isLiked ? "bg-gray-600" : ""}`}
+                        >
+                          <ThumbsUp className="w-6 h-6" />
+                        </span>{" "}
                         <span className="px-2">{likesCount}</span>
                       </button>
-                      <button className="p-1 w-15 h-15 rounded-full hover:bg-gray-600 transition-all duration-300 flex items-center justify-center">
-                        <ThumbsDown className="w-6 h-6" />
+                      <button className="w-15 h-15 rounded-full transition-all duration-300 flex items-center justify-center">
+                        <span
+                          className={`transition-all duration-300 p-2 rounded-full dark:hover:bg-gray-800 ${isLiked ? "bg-gray-600" : ""}`}
+                        >
+                          <ThumbsDown className="w-6 h-6" />
+                        </span>{" "}
                       </button>
                     </div>
                   </div>
@@ -354,72 +365,16 @@ const page = () => {
                       </div>
                     )}
                   </div>
-                  {/* Post Comment */}
                   
-                    <Form {...form}>
-                      <form
-                        onSubmit={form.handleSubmit(handleCommentPost)}
-                        className="flex md:gap-4 gap-4 w-full"
-                      >
-                        <FormField 
-                          control={form.control}
-                          name="comment"
-                          render={({ field }) => (
-                            <FormItem className="flex-1">
-                              <FormControl>
-                                <Input
-                                  className="placeholder:text-[#A1A1A1] w-full"
-                                  placeholder="Enter a comment"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <Button type="submit">Comment</Button>
-                      </form>
-                    </Form>
-                  
+                  {/* Video Comments POST and GET */}
+                <AllComments videoId={video._id as string} />
                 </div>
               </div>
-              {/* Video Comments */}
-              <div className="w-full m-5">
-                {
-                  !commentsCount? (
-                    <div className="flex flex-col gap-5">
-                      {
-                        videoComments.map((comment) => (
-                          <div className="flex gap-5 ">
-                          {/* Avatar Icon */}
-                          <div className="relative w-10 h-10">
-                            <Image
-                            className="object-cover rounded-full"
-                            alt="Avatar Icon"
-                            fill
-                            src={comment?.owner.toString() || "/AltProfile.png"}
-                            />
-                          </div>
-                          <div className="flex flex-col">
-                            {/* Username and time */}
-                            <span><span className="text-sm">@shaitausif</span>{" "}<span className="dark:text-gray-300">3 months ago</span></span>
-                            {/* Comment by the User */}
-                            <span>I did this comment by my own</span>
-                          </div>
-                      </div>
-                        ))
-                      }
-                    </div>
-                  ) : (
-                    <div className="flex justify-center items-center h-[10vh]">
-                      No Comments yet.
-                    </div>
-                  )
-                }
-              </div>
             </div>
-            {/* Suggesting Videos */}
-            <div className="col-span-1">Hell</div>
+            {/* Suggesting Videos */} 
+            <div className="col-span-2 w-full">
+              <SuggestVideos videoId={video._id as string} />
+            </div>
           </div>
         )
       )}

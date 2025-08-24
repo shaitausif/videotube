@@ -11,7 +11,7 @@ import AllVideosSkel from "./skeletons/AllVideosSkel";
 
 const AllVideos = () => {
   const [videos, setvideos] = useState<VideoInterface[]>([]);
-  const [loadingVideos, setloadingVideos] = useState(false);
+  const [loadingVideos, setloadingVideos] = useState(false);  
   const router = useRouter();
   const skeleton = [1, 2, 3, 4, 5, 6];
 
@@ -23,9 +23,6 @@ const AllVideos = () => {
         setloadingVideos,
         (res) => {
           setvideos(res.data);
-          console.log(res.data)
-          console.log(videos);
-          console.log(res.data[0].thumbnail);
           toast.success("Videos fetched successfully.");  
         },
         (err) => toast.error(err)
@@ -45,12 +42,12 @@ const AllVideos = () => {
         : videos.map((video) => (
             <div
               key={video._id as string}
-              className="col-span-1 rounded-lg h-[45vh] group hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-900 transition-all duration-300"
+              className="col-span-1 rounded-lg h-[50vh] group hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-900 transition-all duration-300"
               onClick={() => {
                 router.push(`/video/${video._id}`);
               }}
             >
-              <div className="w-full object-cover relative h-[70%] ">
+              <div className="w-full object-cover relative h-[68i%] ">
                 <div className="absolute z-10 text-white bg-black/90 p-1 rounded-md bottom-2 right-5">
                   {formatVideoDuration(video.duration)}
                 </div>
@@ -87,7 +84,7 @@ const AllVideos = () => {
                     {formatDistanceToNow(new Date(video.createdAt!), {
                       addSuffix: true,
                     })}
-                  </span>
+                  </span> 
                 </div>
               </div>
             </div>

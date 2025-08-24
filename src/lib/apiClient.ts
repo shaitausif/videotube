@@ -123,7 +123,7 @@ const setOauthCustomToken = () => {
 }
 
 const getAllVideos = (page? : number, limit? : number , query? : string, sortBy? : any, sortType? : any, userId? : string) => {
-  return nativeApiClient.get(`/api/video/videos`)
+  return nativeApiClient.get(`/api/video/videos`) 
 }
 
 
@@ -162,6 +162,15 @@ const postComment = (videoId: string, content: string) => {
   return nativeApiClient.post(`/api/comment/get-or-set/${videoId}`,{content})
 }
 
+
+const deleteComment = (commentId : string) => {
+  return nativeApiClient.delete(`/api/comment/update-or-delete/${commentId}`)
+}
+
+const toggleCommentLike = (commentId: string) => {
+  return nativeApiClient.post(`/api/like/comment/${commentId}`)
+}
+
 // Export all the API functions
 export {
   addParticipantToGroup,
@@ -191,5 +200,7 @@ export {
   toggleSubscribe,
   toggleVideoLike,
   userChannelProfile,
-  postComment
+  postComment,
+  deleteComment,
+  toggleCommentLike
 };

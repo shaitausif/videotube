@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import { socket } from "@/socket";
 import { ChatListItemInterface, ChatMessageInterface } from "@/interfaces/chat";
 import { toast } from "sonner";
@@ -31,6 +31,7 @@ import {
 } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import { X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 
 const CONNECTED_EVENT = "connected";
@@ -79,6 +80,7 @@ const page = () => {
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]); // To store files attached to messages
   const [isSendingMessageToAI, setisSendingMessageToAI] = useState(false);
   const [isInChat, setisInChat] = useState(false)
+  const router = useRouter();
 
   /**
    *  A  function to update the last message of a specified chat to update the chat list
@@ -616,6 +618,12 @@ const page = () => {
                     </div>
                   ) : (
                     <Image
+                    onClick={() =>  {
+                      if(currentChat.current?.isGroupChat) return;
+                      const otherUser = currentChat.current?.participants.find((p) => p.username !== user.username)
+                      if(otherUser?._id === process.env.NEXT_PUBLIC_AI_BOT_ID) return
+                      router.push(`/c/${otherUser?.username}`)
+                    }}
                       alt="Profile Icon"
                       height={40}
                       width={40}
@@ -627,10 +635,18 @@ const page = () => {
                       }
                     />
                   )}
-                  <div>
-                    <p className="font-bold">
+                  <div onClick={() =>  {
+                      if(currentChat.current?.isGroupChat) return;
+                      const otherUser = currentChat.current?.participants.find((p) => p.username !== user.username)
+                      if(otherUser?._id === process.env.NEXT_PUBLIC_AI_BOT_ID) return
+                      router.push(`/c/${otherUser?.username}`)
+                    }}>
+                    <p className="cursor-pointer font-bold flex md:gap-5">
                       {getChatObjectMetaData(currentChat.current, user!).title}
+                     
+                      
                     </p>
+
                     <small className="text-zinc-400">
                       {
                         getChatObjectMetaData(currentChat.current, user!)
@@ -638,6 +654,7 @@ const page = () => {
                       }
                     </small>
                   </div>
+                  
                   
                 </div>
                 <X onClick={() => {

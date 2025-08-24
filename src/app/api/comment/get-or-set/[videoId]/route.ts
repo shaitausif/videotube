@@ -79,17 +79,20 @@ export  async function GET(req : NextRequest,
      const page = searchParams.get("page") || 1
      const limit: any = searchParams.get("limit") || 10
      const skip = (Number(page) -1) * Number(limit)
+     const payload = await getCurrentUser(req)
  
-     const filter: any = {}
-     if(videoId){
-         filter.video = videoId
-     }
+    //  const filter: any = {}
+    //  if(videoId){
+    //      filter.video = videoId
+    //  }
  
  
      await ConnectDB()
-     const result = await Comment.aggregate([
+const result = await Comment.aggregate([
   {
-    $match: filter
+    $match: {
+      video: new mongoose.Types.ObjectId(videoId)
+    }
   },
   {
     $lookup: {
@@ -97,19 +100,65 @@ export  async function GET(req : NextRequest,
       localField: "owner",
       foreignField: "_id",
       as: "owner",
-      pipeline : [
+      pipeline: [
         {
-            $project : {
-                avatar : 1,
-                fullName : 1,
-                username : 1
-            }
+          $project: {
+            avatar: 1,
+            fullName: 1,
+            username: 1
+          }
         }
       ]
     },
-
+    
   },
-  
+  {
+    $lookup : {
+      from : "likes",
+      localField : "_id",
+      foreignField : "comment",
+      as : "likesCount",
+      pipeline : [
+        {
+          $project : {
+            comment : 1,
+            likedBy : 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    $addFields : {
+      isLiked : {
+        $cond : {
+          if: { $in: [new mongoose.Types.ObjectId(payload?._id as string), "$likesCount.likedBy"] },
+                      then: true,
+                      else: false,
+        }
+      },
+      likesCount : {
+        $size : "$likesCount"
+      },
+      
+    }
+  },
+  {
+    $unwind: {
+      path: "$owner",
+      preserveNullAndEmptyArrays: true
+    }
+  },
+  {
+    $project: {
+      video: 0 // remove video field
+    }
+  },
+  {
+    $sort : {
+      createdAt : -1
+    }
+  },
   {
     $facet: {
       data: [
@@ -137,3 +186,6 @@ const total = result[0]?.total || 0;
     return NextResponse.json({success : false, message : error},{status : 500})
    }
 }
+
+
+
