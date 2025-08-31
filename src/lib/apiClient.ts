@@ -1,5 +1,8 @@
 // Import necessary modules and utilities
+import { postSchema } from '@/schemas/PostSchema';
+import { UploadVideoSchema } from '@/schemas/UploadVideoSchema';
 import axios from 'axios'
+import z from 'zod';
 
 
 const apiClient = axios.create({
@@ -171,6 +174,62 @@ const toggleCommentLike = (commentId: string) => {
   return nativeApiClient.post(`/api/like/comment/${commentId}`)
 }
 
+
+const getUserVideos = (userId : string) => {
+  return nativeApiClient.get(`/api/video/videosById/${userId}`)
+}
+
+
+
+const uploadVideo = (data: z.infer<typeof UploadVideoSchema>) => {
+  try {
+    const formData = new FormData()
+    formData.append("title",data.title)
+    formData.append("description",data.description)
+    formData.append("videoFile",data.videoFile)
+    formData.append("thumbnail",data.thumbnail)
+    
+    return nativeApiClient.post(`/api/video/videos`,formData)
+  } catch (error) {
+    console.log("Error",error)
+  }
+}
+
+
+const deleteVideo = (videoId: string) => {
+  return nativeApiClient.delete(`/api/video/videoById/${videoId}`)
+}
+
+
+
+const uploadPost = (data: z.infer<typeof postSchema>) => {
+  try {
+    const formData = new FormData()
+    formData.append("postImg",data.postImg)
+    formData.append("caption",data.caption)
+    
+    return nativeApiClient.post(`/api/post/create-or-get`,formData)
+  } catch (error) {
+    console.log("Error",error)
+  }
+}
+
+
+const allPosts = () => {
+  return nativeApiClient.get(`/api/post/create-or-get`)
+}
+
+
+const deletePost = (postId : string) => {
+  return nativeApiClient.delete(`/api/post/delete-post/${postId}`)
+}
+
+
+const userPosts = (userId : string) => {
+  return nativeApiClient.get(`/api/post/get-user-posts/${userId}`)
+}
+
+
 // Export all the API functions
 export {
   addParticipantToGroup,
@@ -202,5 +261,12 @@ export {
   userChannelProfile,
   postComment,
   deleteComment,
-  toggleCommentLike
+  toggleCommentLike,
+  getUserVideos,
+  uploadVideo,
+  deleteVideo,
+  uploadPost,
+  allPosts,
+  userPosts,
+  deletePost
 };

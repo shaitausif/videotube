@@ -21,7 +21,7 @@ const page = () => {
     },[])
 
   return (
-    <div className='flex h-full w-full justify-center mx-auto md:px-12 px-4 py-3'>
+    <div className='flex h-full w-[80vw] justify-center mx-auto md:px-12 px-4 py-3'>
       <Suspense fallback={<UserProfileSkeleton />}>
         <UserProfile username={params.username?.toString()}/>
       </Suspense>

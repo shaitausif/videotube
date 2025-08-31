@@ -55,8 +55,7 @@ export async function GET(req: NextRequest){
             .limit(limit)
             .exec(), // Use .exec() for a proper Promise from Mongoose
         Video.countDocuments(filter),
-    ]);
-    console.log("Hi")
+    ]); 
 
     // Return the response using Next.js's NextResponse
     return NextResponse.json({

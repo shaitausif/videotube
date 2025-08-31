@@ -7,7 +7,11 @@ import { RootState } from "@/store/store";
 import { toast } from "sonner";
 import { LocalStorage, requestHandler } from "@/utils";
 import { useRouter } from "next/navigation";
-import { createUserChat, toggleSubscribe, userChannelProfile } from "@/lib/apiClient";
+import {
+  createUserChat,
+  toggleSubscribe,
+  userChannelProfile,
+} from "@/lib/apiClient";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -20,7 +24,8 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-
+import UserVideos from "../UserVideos";
+import UserPosts from "./user/UserPosts";
 
 interface Channel {
   _id?: string;
@@ -32,7 +37,7 @@ interface Channel {
   subscribersCount?: number;
   subscribedToCount?: number;
   isSubscribed?: boolean;
-  isAcceptingMessages? : boolean
+  isAcceptingMessages?: boolean;
 }
 
 const UserProfile = ({ username }: { username: any }) => {
@@ -43,6 +48,9 @@ const UserProfile = ({ username }: { username: any }) => {
 
   const [subscribersCount, setsubscribersCount] = useState(0);
   const [channelInfo, setchannelInfo] = useState<Channel>({});
+  const [activeTab, setactiveTab] = useState<"Home" | "Videos" | "Posts" | "Tweets">('Home')
+  
+
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -52,12 +60,15 @@ const UserProfile = ({ username }: { username: any }) => {
         (res) => {
           setchannelInfo(res.data);
           setsubscribersCount(res.data.subscribersCount);
-          console.log(res)
+          console.log(res);
           setisSubscribed(res.data.isSubscribed);
         },
         (err) => {
+          console.log("Hello");
+          console.log(err);
           // @ts-ignore
           if (err?.status == 404) {
+            console.log("Hi");
             router.replace("/not-found");
             return;
           }
@@ -87,18 +98,18 @@ const UserProfile = ({ username }: { username: any }) => {
   const handleMessageUser = () => {
     // First If the chat with the User don't exist then create one
     requestHandler(
-      async() => await createUserChat(channelInfo._id!),
+      async () => await createUserChat(channelInfo._id!),
       null,
       (res) => {
-        console.log(res.data)
-        LocalStorage.set('currentChat', res.data)
-        router.push('/chat')
+        console.log(res.data);
+        LocalStorage.set("currentChat", res.data);
+        router.push("/chat");
       },
       (err) => toast.error(err)
-    )
-  }
+    );
+  };
 
-
+  
 
   const placeholderAvatar =
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfj3Bm37Nn_rBQHkIzxnpmGMv3AnLWNYvA1_GwXzebfQ7rxLHl0fRsKo6mIi1SmoOiCL4&usqp=CAU";
@@ -108,7 +119,7 @@ const UserProfile = ({ username }: { username: any }) => {
   return (
     <div className="flex gap-5 flex-col">
       {/* CoverImage */}
-      <div className="w-[85vw] h-[18vw] relative flex justify-end items-end group transition-all duration-300">
+      <div className="w-[85vw] h-[18vw] aspect-video relative flex justify-end items-end group transition-all duration-300">
         <Image
           alt="Cover Image"
           className="object-cover rounded-2xl group-hover:opacity-90 transition-all duration-300"
@@ -143,7 +154,6 @@ const UserProfile = ({ username }: { username: any }) => {
             {subscribersCount > 1 ? "Subscribers" : "Subscriber"}
           </span>
           <div className="flex gap-4">
-          
             {isSubscribed ? (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -187,18 +197,55 @@ const UserProfile = ({ username }: { username: any }) => {
                 Subscribe
               </Button>
             )}
-            {
-              channelInfo.isAcceptingMessages && (
-                <Button onClick={() => handleMessageUser()} className="rounded-3xl font-semibold text-md">Message</Button>
-              )
-            }
+            {channelInfo.isAcceptingMessages && (
+              <Button
+                onClick={() => handleMessageUser()}
+                className="rounded-3xl font-semibold text-md"
+              >
+                Message
+              </Button>
+            )}
           </div>
           <div className="px-2 dark:hover:text-gray-400 cursor-pointer transition-all duration-300 dark:text-gray-300">
-            <p>{channelInfo.subscribedToCount} {subscribersCount.toString().length > 1 ? "Subscriptions" : "Subscription"}</p>
+            <p>
+              {channelInfo.subscribedToCount}{" "}
+              {subscribersCount.toString().length > 1
+                ? "Subscriptions"
+                : "Subscription"}
+            </p>
           </div>
         </div>
-        
       </div>
+      {/* Section Bar to show home, videos, posts and tweets of the User */}
+      <div className="px-4 rounded-lg md:px-12 flex items-center gap-12 md:text-lg">
+        {["Home", "Videos", "Posts", "Tweets"].map((item) => (
+          <span
+          onClick={() => {
+            //@ts-ignore
+            setactiveTab(item)
+          }}
+          key={item} className="cursor-pointer relative pb-2 group">
+            <span className={` ${activeTab === item ? 'text-gray-200' : "text-gray-400"}`}>{item}</span>
+            <span className={`absolute left-0 bottom-0 w-0 h-[3px] bg-red-500 rounded-full transition-all duration-500 ease-out group-hover:w-full group-hover:shadow-[0_0_8px_2px_rgba(239,68,68,0.7)] ${activeTab === item ? 'shadow-[0_0_8px_2px_rgba(239,68,68,0.7)] w-full' : ''}`}></span>
+          </span>
+        ))}
+      </div>
+
+      <hr />
+        { activeTab === 'Home' && (
+          <div className="flex justify-center items-center w-full h-[30vh]">Home</div>
+        )}
+
+        { activeTab === 'Videos' && (
+          <UserVideos userId={channelInfo._id?.toString()!} /> 
+        )}
+        { activeTab === 'Posts' && (
+          <UserPosts userId={channelInfo._id?.toString()!} />
+        )}
+        { activeTab === 'Tweets' && (
+          <div className="flex justify-center items-center w-full h-[30vh]">Tweets</div>
+        )}
+
     </div>
   );
 };

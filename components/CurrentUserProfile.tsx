@@ -13,7 +13,8 @@ import {
   editCoverImage,
   getUserSubscriberCount,
 } from "@/lib/apiClient";
-import loading from "@/app/loading";
+import UserVideos from "../UserVideos";
+import UserPosts from "./user/UserPosts";
 
 const CurrentUserProfile = () => {
   const user = useSelector((state: RootState) => state?.user);
@@ -23,6 +24,7 @@ const CurrentUserProfile = () => {
   const coverImageFileInputRef = useRef<HTMLInputElement>(null);
   const [avatarLoading, setavatarLoading] = useState(false);
   const [coverImageLoading, setcoverImageLoading] = useState(false);
+  const [activeTab, setactiveTab] = useState<"Home" | "Videos" | "Posts" | "Tweets">("Home")
 
   useEffect(() => {
     const fetchUserSubscriberCount = async () => {
@@ -40,6 +42,10 @@ const CurrentUserProfile = () => {
 
   const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
+    if(!file?.type.startsWith("image")){
+      toast.error("Please provide a valid image file")
+      return;
+    }
     if (file) {
       handleEditAvatar(file); // Call the API function with the new file
     }
@@ -49,7 +55,11 @@ const CurrentUserProfile = () => {
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = e.target.files?.[0] || null;
-    console.log("Hi");
+
+    if(!file?.type.startsWith("image")){
+      toast.error("Please provide a valid image file")
+      return;
+    }
     if (file) {
       console.log("File found");
       handleEditCoverImage(file);
@@ -99,7 +109,7 @@ const CurrentUserProfile = () => {
   return (
     <div className="flex gap-5 flex-col">
       {/* CoverImage */}
-      <div className="w-[85vw] h-[18vw] relative flex justify-end items-end group transition-all duration-300">
+      <div className="w-[85vw] h-[18vw] aspect-video relative flex justify-end items-end group transition-all duration-300">
         <div
           className="absolute bg-black/50 text-white flex justify-center items-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer bottom-5 right-5  z-10"
           onClick={triggerCoverImageFileInput}
@@ -186,6 +196,35 @@ const CurrentUserProfile = () => {
           </span>
         </div>
       </div>
+       {/* Section Bar to show home, videos, posts and tweets of the User */}
+      <div className="px-4 rounded-lg md:px-12 flex items-center gap-12 md:text-lg">
+        {["Home", "Videos", "Posts", "Tweets"].map((item) => (
+          <span
+          onClick={() => {
+            //@ts-ignore
+            setactiveTab(item)
+          }}
+          key={item} className="cursor-pointer relative pb-2 group">
+            <span className={` ${activeTab === item ? 'text-gray-200' : "text-gray-400"}`}>{item}</span>
+            <span className={`absolute left-0 bottom-0 w-0 h-[3px] bg-red-500 rounded-full transition-all duration-500 ease-out group-hover:w-full group-hover:shadow-[0_0_8px_2px_rgba(239,68,68,0.7)] ${activeTab === item ? 'shadow-[0_0_8px_2px_rgba(239,68,68,0.7)] w-full' : ''}`}></span>
+          </span>
+        ))}
+      </div>
+
+      <hr />
+        { activeTab === 'Home' && (
+          <div className="flex justify-center items-center w-full h-[30vh]">Home</div>
+        )}
+
+        { activeTab === 'Videos' && (
+          <UserVideos userId={user._id?.toString()!} /> 
+        )}
+        { activeTab === 'Posts' && (
+          <UserPosts userId={user._id?.toString()!} />
+        )}
+        { activeTab === 'Tweets' && (
+          <div className="flex justify-center items-center w-full h-[30vh]">Tweets</div>
+        )}
     </div>
   );
 };

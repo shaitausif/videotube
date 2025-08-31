@@ -46,7 +46,7 @@ const WatchHistory = () => {
             videoHistory.map((video) => (
                 <div
                 onClick={() => router.push(`/video/${video._id}`)}
-                key={video._id as string} className='flex gap-4 md:gap-8 group hover:bg-gray-100 dark:bg-gray-800 rounded-2xl w-full md:w-[70vw] dark:hover:bg-gray-900 transition-all duration-300'>
+                key={video._id as string} className='flex gap-4 md:gap-4 group hover:bg-gray-100  rounded-2xl w-full md:w-[70vw] dark:hover:bg-gray-900 transition-all duration-300'>
                 
                 
             <div className='relative h-full w-[25vw] md:w-[15vw] md:h-[10vw]'>

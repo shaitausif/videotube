@@ -10,7 +10,7 @@ import { format , set} from 'date-fns'
 
 // requestHandler: It's a wrapper for your Axios calls to standardize UI feedback (loading, success, error messages) and authentication redirects.
 export const requestHandler = async(
-    api : () => Promise<AxiosResponse<FreeAPISuccessResponseInterface>>,
+    api : () => Promise<AxiosResponse<FreeAPISuccessResponseInterface>>,    
     setLoading : ((loading: boolean) => void) | null,
     onSuccess : (data: FreeAPISuccessResponseInterface) => void,
     onError: (error: string) => void

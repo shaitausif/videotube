@@ -9,7 +9,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "../../components/App-Sidebar";
 import { useSession } from "next-auth/react";
 import AllVideos from "../../components/AllVideos";
-import { requestHandler } from "@/utils";
+import { LocalStorage, requestHandler } from "@/utils";
 import { getUserInfo, setOauthCustomToken } from "@/lib/apiClient";
 import { toast } from "sonner";
 
@@ -17,23 +17,30 @@ export default function Home() {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
   const { data: session } = useSession();
+  
 
   // Setting the custom cookies if the user has signed in using oauth providers like google and github
-  if (!!session?.user) {
-    console.log("Hi");
-    const setOAuthCustomCookie = async () => {
+  
+    useEffect(() => {
+      const isCookieSet = LocalStorage.get("isCookieSet")
+    if(!isCookieSet){
+      const setOAuthCustomCookie = async () => {
      
       requestHandler(
         async() => await setOauthCustomToken(),
         null,
         (res) => {
           console.log(res)
+          LocalStorage.set("isCookieSet",true)
         },
         (err) => console.log(err)
       )
     };
     setOAuthCustomCookie();
-  }
+    }
+    },[])
+    
+
 
   useEffect(() => {
     if (user && user._id) return;

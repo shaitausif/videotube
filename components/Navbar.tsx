@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image'
-import React from 'react'
+import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {  EllipsisVertical, MessageSquareMore, Plus, Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
@@ -26,12 +26,23 @@ import { persistor, RootState } from '@/store/store'
 import { clearUser } from '@/features/userSlice/UserSlice'
 import ThemeSwitcher from './ThemeSwitcher'
 import { SidebarTrigger } from '@/components/ui/sidebar'
+// Using dynamic imports for lazy loading that means the component will only load when it's needed not on initial render of the page
+import dynamic from 'next/dynamic'
+import { AnimatePresence } from 'motion/react'
+
+const DynamicModal = dynamic(() => import('./user/UploadContentModal'),
+  {
+    ssr : false
+  }
+)
+
 
 
 const Navbar = () => {
 
   const user = useSelector((state: RootState) => state.user)  
   const {data : session} = useSession()
+  const [isModalOpen, setisModalOpen] = useState(false)
   const dispatch = useDispatch();
   const router = useRouter();
   
@@ -63,8 +74,19 @@ const Navbar = () => {
 
 
 
+
   return (
-    <div className='md:w-full py-4 fixed dark:bg-[#161616]/50 flex pr-12 pl-6 justify-between items-center backdrop-blur-3xl z-10'>
+    <>
+    <AnimatePresence>
+    {
+      isModalOpen && (
+       
+          <DynamicModal onClose={() => setisModalOpen(false)}/>
+        
+      )
+    }
+    </AnimatePresence>
+      <div className='md:w-full py-4 fixed dark:bg-[#161616]/50 flex pr-12 pl-6 justify-between items-center backdrop-blur-3xl z-10'>
 
         {/* Logo */}
         
@@ -82,7 +104,7 @@ const Navbar = () => {
         {/* Profile Icon and create button */}
         <div className='flex gap-9 justify-center items-center'>
             {user && user._id ? (
-              <Button className='rounded-2xl'><Plus/>{" "}Create</Button>
+              <Button onClick={() => setisModalOpen(true)} className='rounded-2xl'><Plus/>{" "}Create</Button>
             ) : (
               <Button onClick={() => router.push("/sign-in")} className='rounded-2xl'><Plus/>{" "}Sign in</Button>
             )}
@@ -173,7 +195,7 @@ const Navbar = () => {
               e.preventDefault()
               if(session?.user){
                 const purgeRes = await persistor.purge();
-                console.log(purgeRes)
+                
                 signOut({callbackUrl : "/"})
                 
               }else{
@@ -198,6 +220,8 @@ const Navbar = () => {
         </div>
 
     </div>
+    
+    </>
   )
 }
 

@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     const avatarArrayBuffer = await avatarFile.arrayBuffer();
     const avatarBuffer = Buffer.from(avatarArrayBuffer);
     const avatarFilePath = path.join(
-      process.cwd(),
+      process.cwd(),  
       "public",
       "temp",
       avatarFile.name

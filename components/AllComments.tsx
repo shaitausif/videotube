@@ -218,9 +218,9 @@ const AllComments = ({ videoId }: { videoId: string }) => {
                    <span className="flex items-center gap-5 mt-3">
                   <span className="flex items-center">
                     <span
-                      className={`${comment.isLiked ? "bg-gray-700" : ""} dark:hover:bg-gray-800 rounded-full transition-all duration-300 p-2`}
+                      className={` dark:hover:bg-gray-800 rounded-full transition-all duration-300 p-2`}
                     >
-                      <ThumbsUp
+                      <ThumbsUp fill={`${comment.isLiked ? "white" : ""}`}
                         onClick={() =>
                           handleToggleCommentLike(comment._id as string)
                         }
@@ -240,7 +240,7 @@ const AllComments = ({ videoId }: { videoId: string }) => {
                       0
                     }
                     <span className=" dark:hover:bg-gray-800 rounded-full transition-all duration-300 p-2">
-                      <ThumbsDown className="w-4 h-4" />
+                      <ThumbsDown fill={`${comment.isLiked ? 'white' : ''}`} className="w-4 h-4" />
                     </span>
                   </span>
                 </span>

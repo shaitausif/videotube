@@ -9,7 +9,7 @@ const Page = () => {
 
 
   return (
-    <main className='w-full h-full flex flex-col md:px-8 px-4 md:py-4 py-2'>
+    <main className='w-full h-full flex md:gap-4 gap-2 flex-col md:px-8 px-4 md:py-4 py-2'>
         <WatchHistory /> 
     </main>
   )

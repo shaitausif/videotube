@@ -93,7 +93,8 @@ const page = () => {
             router.replace("/not-found");
             return;
           }
-          toast.error(err);
+          //@ts-ignore
+          toast.error(err?.message);
         }
       );
     };
@@ -135,24 +136,14 @@ const page = () => {
         setlikesCount((prev) => (res.data ? prev + 1 : prev - 1));
         console.log(res.message, res.data);
       },
-      (err) => toast.error(err)
+      (err) => {
+        toast.error("Sign in to like the video")
+        // console.log(err)
+      }
     );
   };
 
-  // Function for handling comments Post
-  const handleCommentPost = async (data: z.infer<typeof PostCommentSchema>) => {
-    requestHandler(
-      async () => await postComment(video?._id as string, data.comment),
-      setisPostingComment,
-      (res) => {
-        setvideoComments((prev) => [res.data, ...prev]);
-        setcommentsCount((prev) => prev + 1)
-        form.reset();
-        toast.success("Comment Posted Successfully")
-      },
-      (err) => toast.error(err)
-    );
-  };
+
 
 
   return (
@@ -296,17 +287,17 @@ const page = () => {
                           onClick={() =>
                             handleToggleVideoLike(video._id as string)
                           }
-                          className={`transition-all duration-300 p-2 rounded-full dark:hover:bg-gray-800 ${isLiked ? "bg-gray-600" : ""}`}
+                          className={`transition-all duration-300 p-2 rounded-full dark:hover:bg-gray-800 `}
                         >
-                          <ThumbsUp className="w-6 h-6" />
+                          <ThumbsUp fill={`${isLiked ? 'white' : ""}`} className="w-6 h-6" />
                         </span>{" "}
                         <span className="px-2">{likesCount}</span>
                       </button>
                       <button className="w-15 h-15 rounded-full transition-all duration-300 flex items-center justify-center">
                         <span
-                          className={`transition-all duration-300 p-2 rounded-full dark:hover:bg-gray-800 ${isLiked ? "bg-gray-600" : ""}`}
+                          className={`transition-all duration-300 p-2 rounded-full dark:hover:bg-gray-800 `}
                         >
-                          <ThumbsDown className="w-6 h-6" />
+                          <ThumbsDown  fill={`${isLiked ? 'white' : ""}`} className="w-6 h-6" />
                         </span>{" "}
                       </button>
                     </div>

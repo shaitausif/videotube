@@ -3,7 +3,7 @@ import React from "react";
 
 const AllVideosSkel = () => {
   return (
-    <div  className="flex flex-col h-[45vh] space-y-3 col-span-1">
+    <div  className="flex flex-col h-[40vh] space-y-3 col-span-1">
       <Skeleton className="h-[220px] w-full rounded-xl" />
       <div className="space-y-2">
         <Skeleton className="h-4 w-full md:w-[250px]" />
