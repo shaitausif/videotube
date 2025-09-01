@@ -19,6 +19,7 @@
   import { SigninSchema } from "@/schemas/SigninSchema";
   import {motion} from 'motion/react'
 import OAuthProviders from "../../../../components/OAuthProviders";
+import { LocalStorage } from "@/utils";
 
   const page = () => {
     const form = useForm<z.infer<typeof SigninSchema>>({
@@ -57,6 +58,7 @@ import OAuthProviders from "../../../../components/OAuthProviders";
         });
         const res = await dataa.json();
         if (res.success) {
+          LocalStorage.set("isLoggedIn",true)
           toast.success("User Logged in successfully");
           router.push("/")
           return;
@@ -83,6 +85,7 @@ import OAuthProviders from "../../../../components/OAuthProviders";
         const data = await response.json();
         
         if(data?.success){
+          
           toast.success(data?.message);
           router.push(`reset-password/${data?.email}`)
           return;

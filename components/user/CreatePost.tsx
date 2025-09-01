@@ -38,8 +38,8 @@ const CreatePost = () => {
       // @ts-ignore
       async() => await uploadPost(data),
       setisPosting,
-      (res) => {
-        console.log(res)
+      (res) => {  
+        window.location.reload()  
         toast.success(res.message)
       },
       (err) => {

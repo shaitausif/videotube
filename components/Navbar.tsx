@@ -29,6 +29,7 @@ import { SidebarTrigger } from '@/components/ui/sidebar'
 // Using dynamic imports for lazy loading that means the component will only load when it's needed not on initial render of the page
 import dynamic from 'next/dynamic'
 import { AnimatePresence } from 'motion/react'
+import { LocalStorage } from '@/utils'
 
 const DynamicModal = dynamic(() => import('./user/UploadContentModal'),
   {
@@ -56,13 +57,14 @@ const Navbar = () => {
             })
             const data = await response.json()
             if(response.ok){
-                
+                await persistor.purge();
                 toast.success(data.message);
                 window.location.reload()
+                LocalStorage.set("isLoggedIn",false)
                 // Using persistor to clear the redux store completely and purging
                 // Purge persisted state
-               await persistor.purge();
-               router.push("/")
+               
+              //  router.push("/")
                 return;
             }
             toast.error(data.message)
@@ -194,13 +196,20 @@ const Navbar = () => {
             <DropdownMenuItem onClick={async(e) => {
               e.preventDefault()
               if(session?.user){
-                const purgeRes = await persistor.purge();
+                const response = await fetch(`/api/auth/auth-logout`,{
+                  method : "PUT",
+                  credentials : 'include'
+                })
+                if(response.ok){
+           
+                  await persistor.purge();
+                  LocalStorage.set("isLoggedIn",false)
+              LocalStorage.set("isCookieSet",false)
+                  signOut( { callbackUrl : '/' } )
+                }
+              } else {
                 
-                signOut({callbackUrl : "/"})
-                
-              }else{
-                Logout()
-
+                await Logout()
               }
         }}>
           Logout

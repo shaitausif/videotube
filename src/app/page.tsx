@@ -23,7 +23,9 @@ export default function Home() {
   
     useEffect(() => {
       const isCookieSet = LocalStorage.get("isCookieSet")
-    if(!isCookieSet){
+      console.log(session?.accessToken)
+      // Only set the custom cookies if the user is logged in Using Oauth Providers such as Github or Google
+    if(!isCookieSet && session?.user){
       const setOAuthCustomCookie = async () => {
      
       requestHandler(
@@ -44,8 +46,10 @@ export default function Home() {
 
   useEffect(() => {
     if (user && user._id) return;
-
-    const fetchUserData = async () => {
+    
+    const isLoggedIn = LocalStorage.get("isLoggedIn")
+    if(isLoggedIn){
+      const fetchUserData = async () => {
       
       requestHandler(
         async () => await getUserInfo(),
@@ -57,6 +61,8 @@ export default function Home() {
       )
     };
     fetchUserData();
+    }
+    
   }, [session, user]);
 
   return (

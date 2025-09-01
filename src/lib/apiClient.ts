@@ -230,6 +230,12 @@ const userPosts = (userId : string) => {
 }
 
 
+const togglePostLike = (postId: string) => {
+  return nativeApiClient.post(`/api/like/post/${postId}`)
+}
+
+
+
 // Export all the API functions
 export {
   addParticipantToGroup,
@@ -268,5 +274,6 @@ export {
   uploadPost,
   allPosts,
   userPosts,
-  deletePost
+  deletePost,
+  togglePostLike
 };

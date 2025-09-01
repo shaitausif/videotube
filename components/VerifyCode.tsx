@@ -15,6 +15,7 @@ import { Loader2 } from 'lucide-react';
 import {motion} from "motion/react"
 import { useDispatch } from 'react-redux';
 import { setUser } from '@/features/userSlice/UserSlice';
+import { LocalStorage } from '@/utils';
 
 
 
@@ -49,6 +50,7 @@ const VerifyCode = ({email, redirect, setverify, verify}: {email: string, redire
     const data = await response.json();
 
     if (data?.success) {
+      LocalStorage.set("isLoggedIn",true)
       toast.success(data.message);
       dispatch(setUser(data?.data))
       setverify?.(true); // ✅ update parent state

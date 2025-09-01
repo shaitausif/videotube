@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { signIn } from "next-auth/react";
 import { Loader2 } from 'lucide-react';
+import { LocalStorage } from '@/utils';
 
 
 const OAuthProviders = () => {
@@ -17,7 +18,9 @@ const OAuthProviders = () => {
                 <button disabled={googleSubmit || githubSubmit}
                   onClick={() => {
                     setgoogleSubmit((prev) => !prev)
+                    
                     signIn("google", { callbackUrl: "/" })
+                    LocalStorage.set("isLoggedIn",true)
           
     
                   }}
@@ -91,6 +94,7 @@ const OAuthProviders = () => {
                   onClick={() => {
                     setgithubSubmit((prev) => !prev)
                     signIn("github", { callbackUrl: "/" });
+                    LocalStorage.set("isLoggedIn",true)
                     
                   }}
                   className="flex items-center w-64 bg-white border border-gray-300 rounded-lg shadow-md max-w-xs px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
