@@ -1,13 +1,13 @@
 import mongoose, { Schema , Document} from "mongoose";
 
-export interface Tweet extends Document{
+export interface TweetInterface extends Document{
     owner: mongoose.Types.ObjectId,
     content : string,
         createdAt? : Date,
     updatedAt? : Date,
 }
 
-const tweetSchema = new Schema<Tweet>(
+const tweetSchema = new Schema<TweetInterface>(
     {
         owner : {
             type : Schema.Types.ObjectId,
@@ -21,4 +21,4 @@ const tweetSchema = new Schema<Tweet>(
     {timestamps : true}
 )
 
-export const Tweet = mongoose.models.Tweet || mongoose.model<Tweet>("Tweet",tweetSchema)
+export const Tweet = mongoose.models.Tweet || mongoose.model<TweetInterface>("Tweet",tweetSchema)

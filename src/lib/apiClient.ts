@@ -235,6 +235,16 @@ const togglePostLike = (postId: string) => {
 }
 
 
+const createTweet = (tweet: string) => {
+  return nativeApiClient.post(`/api/tweet/create`,{content : tweet})
+}
+
+
+const userTweets = (userId: string) => {
+  return nativeApiClient.get(`/api/tweet/get-tweet/${userId}`)
+}
+
+
 
 // Export all the API functions
 export {
@@ -275,5 +285,7 @@ export {
   allPosts,
   userPosts,
   deletePost,
-  togglePostLike
+  togglePostLike,
+  createTweet,
+  userTweets
 };

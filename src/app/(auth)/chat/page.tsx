@@ -128,7 +128,10 @@ const page = () => {
           chatToUpdate.lastMessage = data[0];
           setChats([...chats]);
         },
-        (error) => toast(error)
+        (error) => {
+          // @ts-ignore
+          toast.error(error.message)
+        }
       );
     }
   };
@@ -152,7 +155,8 @@ const page = () => {
         
       },
       (error) => {
-        toast.error(error);
+        // @ts-ignore
+        toast.error(error.message)
       }
     );
   };
@@ -184,7 +188,8 @@ const page = () => {
         setMessages(data || []);
       },
       // Display any error toasts if they occur during the fetch
-      (err) => toast.error(err)
+      // @ts-ignore
+      (err) => toast.error(err.message)
     );
   };
 
@@ -209,7 +214,8 @@ const page = () => {
         setMessages((prev) => [res.data, ...prev]); // Updating message in the UI
         updateChatLastMessage(currentChat.current?._id || "", res.data);
       },
-      (error) => toast.error(error)
+      // @ts-ignore
+      (error) => toast.error(error.message)
     );
   };
 
@@ -243,7 +249,10 @@ const page = () => {
       },
 
       // If there's an error during the message sending process, raise a toast
-      (err) => toast.error(err)
+      (err) => {
+        // @ts-ignore
+        toast.error(err.message)
+      }
     );
   };
   const deleteChatMessage = async (message: ChatMessageInterface) => {
@@ -258,7 +267,10 @@ const page = () => {
         setMessages((prev) => prev.filter((msg) => msg._id !== res?.data?._id || ""));
         updateChatLastMessageOnDeletion(message.chat, message);
       },
-      (err) => toast.error(err)
+      (err) => {
+        // @ts-ignore
+        toast.error(err.message)
+      }
     );
   };
 
@@ -405,7 +417,8 @@ const page = () => {
       (res) => {
         console.log(res.message);
       },
-      (error) => toast.error(error)
+      // @ts-ignore
+      (error) => toast.error(error.message)
     );
   };
 

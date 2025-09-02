@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import AllVideosSkel from './components/skeletons/AllVideosSkel'
+import AllVideosSkel from '../skeletons/AllVideosSkel'
 import { VideoInterface } from '@/models/video.model'
 import { useRouter } from 'next/navigation'
 import { formatVideoDuration, requestHandler } from '@/utils'

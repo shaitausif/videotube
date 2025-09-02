@@ -83,17 +83,17 @@ const UploadContentModal: React.FC<UploadContentModalProps> = ({ onClose, childr
        
               {
                 active === 'Video' && (
-                  <UploadVideo />
+                  <UploadVideo onClose={onClose} />
                 )
               }
               {
                 active === "Post" && (
-                  <CreatePost />
+                  <CreatePost onClose={onClose} />
                 )
               }
               {
                 active === 'Tweet' && (
-                  <CreateTweet />
+                  <CreateTweet onClose={onClose} />
                 )
               }
             

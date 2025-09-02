@@ -22,7 +22,7 @@ import { Check, Upload } from "lucide-react";
 import { requestHandler } from "@/utils";
 import { uploadPost } from "@/lib/apiClient";
 
-const CreatePost = () => {
+const CreatePost = ({onClose}: {onClose: () => void}) => {
   const [isPosting, setisPosting] = useState(false);
   const [isImageSelected, setisImageSelected] = useState(false);
 

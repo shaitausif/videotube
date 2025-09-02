@@ -25,7 +25,7 @@ import { useRouter } from "next/navigation";
 import Loader from "../skeletons/Loader";
 
 
-const UploadVideo = () => {
+const UploadVideo = ({onClose}: {onClose: () => void}) => {
 
 
   const [isVideoSelected, setisVideoselected] = useState(false)
@@ -47,11 +47,11 @@ const UploadVideo = () => {
       async ()=> await uploadVideo(data),
       setisPublishing,
       (res) => {
-        console.log(res)
+        
         toast.success(res.message)
         setisPublishing(false)
         form.reset()
-        router.push('/')
+        onClose()
       },
       (err) => {
         

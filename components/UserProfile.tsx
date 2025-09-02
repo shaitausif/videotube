@@ -24,8 +24,9 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import UserVideos from "../UserVideos";
+import UserVideos from "./user/UserVideos";
 import UserPosts from "./user/UserPosts";
+import UserTweets from "./user/UserTweets";
 
 interface Channel {
   _id?: string;
@@ -243,7 +244,7 @@ const UserProfile = ({ username }: { username: any }) => {
           <UserPosts userId={channelInfo._id?.toString()!} />
         )}
         { activeTab === 'Tweets' && (
-          <div className="flex justify-center items-center w-full h-[30vh]">Tweets</div>
+          <UserTweets userId={channelInfo._id?.toString()!} />
         )}
 
     </div>

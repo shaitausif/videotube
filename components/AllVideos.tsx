@@ -87,6 +87,7 @@ const AllVideos = () => {
                   alt="Video Thumbnail"
                   className="object-cover rounded-lg dark:rounded-t-lg group-hover:opacity-90 transition-all duration-300"
                   fill
+                  priority
                 />
               </div>
               <div className="flex  py-4 px-2 gap-3">
@@ -100,6 +101,7 @@ const AllVideos = () => {
                     alt="avatar"
                     className="object-cover object-center rounded-full"
                     fill
+                    priority
                   />
                 </div>
                 <div className="flex flex-col w-full">

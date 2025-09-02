@@ -6,24 +6,24 @@ import { getToken } from "next-auth/jwt";
 export async function POST(req: NextRequest, res: NextResponse) {
   try {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-
+    
     const cookieStore = await cookies();
     const options = {
       httpOnly: true,
       secure: false,
     };
     if (!token || !token.accessToken) {
-      cookieStore.set("accessToken", token?.accessToken as string, options);
-      cookieStore.set("refreshToken", token?.refreshToken as string, options);
+      // cookieStore.set("accessToken", token?.accessToken as string, options);
+      // cookieStore.set("refreshToken", token?.refreshToken as string, options);
       return NextResponse.json(
-        { success: false, message: "Unaothorized" },
+        { success: false, message: "Unauthorized" },
         { status: 401 }
       );
     }
 
     //   Now, setting my custom cookies in the user browser
     cookieStore.set("accessToken", token.accessToken as string, options);
-    cookieStore.set("refreshToken", token.refreshToken as string, options);
+    // cookieStore.set("refreshToken", token.refreshToken as string, options);
 
     return NextResponse.json(
       { success: true, message: "User cookies set successfully" },

@@ -13,8 +13,9 @@ import {
   editCoverImage,
   getUserSubscriberCount,
 } from "@/lib/apiClient";
-import UserVideos from "../UserVideos";
+import UserVideos from "./user/UserVideos";
 import UserPosts from "./user/UserPosts";
+import UserTweets from "./user/UserTweets";
 
 const CurrentUserProfile = () => {
   const user = useSelector((state: RootState) => state?.user);
@@ -223,7 +224,7 @@ const CurrentUserProfile = () => {
           <UserPosts userId={user._id?.toString()!} />
         )}
         { activeTab === 'Tweets' && (
-          <div className="flex justify-center items-center w-full h-[30vh]">Tweets</div>
+          <UserTweets userId={user._id?.toString()!} />
         )}
     </div>
   );
