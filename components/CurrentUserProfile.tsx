@@ -16,6 +16,7 @@ import {
 import UserVideos from "./user/UserVideos";
 import UserPosts from "./user/UserPosts";
 import UserTweets from "./user/UserTweets";
+import { useRouter } from "next/navigation";
 
 const CurrentUserProfile = () => {
   const user = useSelector((state: RootState) => state?.user);
@@ -27,6 +28,7 @@ const CurrentUserProfile = () => {
   const [avatarLoading, setavatarLoading] = useState(false);
   const [coverImageLoading, setcoverImageLoading] = useState(false);
   const [activeTab, setactiveTab] = useState<"Home" | "Videos" | "Posts" | "Tweets">("Home")
+  const router = useRouter()
 
   useEffect(() => {
     const fetchUserSubscriberCount = async () => {
@@ -197,7 +199,7 @@ const CurrentUserProfile = () => {
             @{user.username} • {subscribersCount}{" "}
             {subscribersCount > 1 ? "Subscribers" : "Subscriber"}
           </span>
-          <p className="px-2 dark:hover:text-gray-400 cursor-pointer transition-all duration-300 dark:text-gray-300">
+          <p onClick={() => router.push(`/subscription/${user._id}`)} className="px-2 dark:hover:text-gray-400 cursor-pointer transition-all duration-300 dark:text-gray-300">
             {subscribedToCount}{" "}
               {subscribersCount.toString().length > 1
                 ? "Subscriptions"

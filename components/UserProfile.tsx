@@ -144,7 +144,7 @@ const UserProfile = ({ username }: { username: any }) => {
 
         <div className="px-6 py-2 flex flex-col gap-1">
           {/* Additional user information */}
-          <span className="text-4xl font-semibold">{user.fullName}</span>
+          <span className="text-4xl font-semibold">{channelInfo.fullName}</span>
           <span>
             @
             {
@@ -207,8 +207,10 @@ const UserProfile = ({ username }: { username: any }) => {
               </Button>
             )}
           </div>
-          <div className="px-2 dark:hover:text-gray-400 cursor-pointer transition-all duration-300 dark:text-gray-300">
-            <p>
+          <div  className="px-2 dark:hover:text-gray-400 cursor-pointer transition-all duration-300 dark:text-gray-300">
+            <p
+            onClick={() => router.push(`/subscription/${channelInfo._id}`)}
+            >
               {channelInfo.subscribedToCount}{" "}
               {subscribersCount.toString().length > 1
                 ? "Subscriptions"

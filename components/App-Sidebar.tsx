@@ -1,3 +1,4 @@
+"use client"
 import { Calendar, History, Home, Inbox, Search, Settings } from "lucide-react"
 
 
@@ -12,8 +13,18 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
+import { useSelector } from "react-redux"
+import { RootState } from "@/store/store"
 
-// Menu items.
+
+
+
+
+export function AppSidebar() {
+  const user = useSelector((state: RootState) => state.user)
+
+
+  // Menu items.
 const items = [
   {
     title: "Home",
@@ -22,7 +33,7 @@ const items = [
   },
   {
     title: "Subscriptions",
-    url: "#",
+    url: `/subscription/${user._id}`,
     icon: Inbox,
   },
   {
@@ -41,8 +52,6 @@ const items = [
     icon: Settings,
   },
 ]
-
-export function AppSidebar() {
   return (
     <Sidebar >
       <SidebarContent className="dark:bg-[#161616]">

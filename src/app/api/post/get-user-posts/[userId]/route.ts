@@ -41,6 +41,9 @@ export async function GET(
         },
       },
       {
+        $sort : { createdAt : -1 }
+      },
+      {
         $lookup: {
           from: "users", // ✅ actual collection name
           localField: "owner",

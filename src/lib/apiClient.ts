@@ -255,6 +255,10 @@ const deleteTweet = (tweetId: string) => {
 }
 
 
+const getSubscription = (channelId : string) => {
+  return nativeApiClient.get(`/api/subscription/toggle-subscribers/${channelId}`)
+}
+
 
 // Export all the API functions
 export {
@@ -299,5 +303,6 @@ export {
   createTweet,
   userTweets,
   toggleTweetLikes,
-  deleteTweet
+  deleteTweet,
+  getSubscription
 };

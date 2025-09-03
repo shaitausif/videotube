@@ -19,7 +19,7 @@ export async function GET(req: NextRequest,
 
         const videos = await Video.find({
             owner : new mongoose.Types.ObjectId(userId)
-        })
+        }).sort({ createdAt : -1 })
 
         if(videos.length === 0) return NextResponse.json({success : true,data : [], message : "No Videos Found"},{status : 200})
 

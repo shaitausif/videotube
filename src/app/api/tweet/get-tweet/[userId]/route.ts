@@ -27,6 +27,9 @@ export async function GET(
         }
       },
       {
+        $sort : { createdAt : -1 }
+      },
+      {
         $lookup : {
           from : "users",
           localField : "owner",
