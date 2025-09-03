@@ -20,6 +20,7 @@ import UserTweets from "./user/UserTweets";
 const CurrentUserProfile = () => {
   const user = useSelector((state: RootState) => state?.user);
   const [subscribersCount, setsubscribersCount] = useState(0);
+  const [subscribedToCount, setsubscribedToCount] = useState(0)
   const dispatch = useDispatch();
   const fileInputRef = useRef<HTMLInputElement>(null); // Ref for the hidden file input
   const coverImageFileInputRef = useRef<HTMLInputElement>(null);
@@ -33,7 +34,8 @@ const CurrentUserProfile = () => {
         async () => await getUserSubscriberCount(),
         null,
         (res) => {
-          setsubscribersCount(res.data);
+          setsubscribersCount(res.data.subscribersCount);
+          setsubscribedToCount(res.data.subscribedToCount)
         },
         (err) => toast.error(err)
       );
@@ -195,6 +197,12 @@ const CurrentUserProfile = () => {
             @{user.username} • {subscribersCount}{" "}
             {subscribersCount > 1 ? "Subscribers" : "Subscriber"}
           </span>
+          <p className="px-2 dark:hover:text-gray-400 cursor-pointer transition-all duration-300 dark:text-gray-300">
+            {subscribedToCount}{" "}
+              {subscribersCount.toString().length > 1
+                ? "Subscriptions"
+                : "Subscription"}
+          </p>
         </div>
       </div>
        {/* Section Bar to show home, videos, posts and tweets of the User */}

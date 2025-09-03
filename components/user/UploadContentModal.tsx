@@ -12,7 +12,7 @@ interface UploadContentModalProps {
   children?: React.ReactNode;
 }
 
-const UploadContentModal: React.FC<UploadContentModalProps> = ({ onClose, children }) => {
+const UploadContentModal: React.FC<UploadContentModalProps> = ({ onClose }) => {
 
   const [active, setactive] = useState<"Video" | "Post" | "Tweet" | null>(null)
   

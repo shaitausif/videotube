@@ -33,7 +33,7 @@ export const requestHandler = async(
             if(isBrowser) window.location.href = '/sign-in'
         }
      
-        onError(error || "Something Went wrong")
+        onError(error?.response?.data || "Something Went wrong")
     } finally {
 
         setLoading && setLoading(false)

@@ -1,5 +1,5 @@
 'use client'
-import { userTweets } from '@/lib/apiClient'
+import { deleteTweet, toggleTweetLikes, userTweets } from '@/lib/apiClient'
 import { Tweet, TweetInterface } from '@/models/tweet.model'
 import { requestHandler } from '@/utils'
 import React, { useEffect, useState } from 'react'
@@ -29,6 +29,7 @@ import { Button } from '@/components/ui/button'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
 import TweetMentioned from './TweetMentioned'
+import { formatDistanceToNow } from 'date-fns'
 
 const UserTweets = ({userId} : { userId : string }) => {
 
@@ -59,6 +60,50 @@ const UserTweets = ({userId} : { userId : string }) => {
 
         fetchUserTweets()
     },[])
+
+
+    const toggleTweetLike = async(tweetId: string) => {
+      requestHandler(
+        async() =>  await toggleTweetLikes(tweetId.toString()),
+        null,
+        (res) => {
+          
+          setTweets((prev) =>
+          prev.map((tweet) =>
+            tweet._id === tweetId
+              ? { ...tweet, isLiked: res.data ? true : false ,
+                likesCount : res.data ? tweet.likesCount + 1 : tweet.likesCount -1
+              }
+              : tweet
+          )
+        
+      )},
+        (err) => {
+          // @ts-ignore
+          toast.error(err.message)
+        }
+      )
+    } 
+
+
+    const handleDeleteTweet = (tweetId : string) => {
+      requestHandler(
+        async() =>  await deleteTweet(tweetId.toString()),
+        null,
+        (res) => {
+          setTweets((prev) => 
+            prev.filter((p) => p._id !== tweetId)
+          )
+        },
+        (err) => {
+          // @ts-ignore
+          toast.error(err.message)
+        }
+      )
+    }
+
+
+
 
      const highlightMentions = (text: string) => {
     const parts = text.split(/(@\w+)/g);
@@ -98,15 +143,22 @@ const UserTweets = ({userId} : { userId : string }) => {
                       fill
                       className="rounded-full object-cover absolute"
                       alt="User Profile Image"
-                      src={tweet.owner.avatar}
+                      src={tweet.owner.avatar || "/AltProfile.png"}
                     />
                   </div>
+                  
                   <div className="flex justify-between items-center w-full">
                     <div className="flex flex-col ">
-                      <span>{tweet.owner.fullName}</span>
+                      <span className='flex gap-5 items-center'>{tweet.owner.fullName}
+
+                        <span className='text-sm dark:text-gray-500 '>{formatDistanceToNow(tweet.createdAt)}</span>
+                      </span>
+                      
                       <span className="text-gray-500 text-sm">
                         @{tweet.owner.username}
+                        
                       </span>
+                     
                     </div>
 
                     <span className="">
@@ -157,7 +209,7 @@ const UserTweets = ({userId} : { userId : string }) => {
                                       </AlertDialogCancel>
                                       <AlertDialogAction
                                         onClick={() => {
-                                          // handleDeletePost(post._id);
+                                          handleDeleteTweet(tweet._id);
                                         }}
                                       >
                                         Continue
@@ -184,7 +236,7 @@ const UserTweets = ({userId} : { userId : string }) => {
                 <ThumbsUp
                   fill={`${tweet.isLiked ? "white" : ""}`}
                   onClick={() => {
-                    // dotogglePostLike(post._id);
+                    toggleTweetLike(tweet._id);
                   }}
                 />
                 <ThumbsDown />
@@ -194,7 +246,7 @@ const UserTweets = ({userId} : { userId : string }) => {
           ))}
         </div>
       ) : (
-        <div className="py-12 ">No posts yet.</div>
+        <div className="py-12 ">No Tweets yet.</div>
       )}
     </div>
   );

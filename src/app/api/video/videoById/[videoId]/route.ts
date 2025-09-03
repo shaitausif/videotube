@@ -250,18 +250,16 @@ export async function DELETE(
         message: "Video doesn't exist",
       });
 
-    
+
     const isThumbnailDeleted = await deleteFromCloudinary(isVideoExist.thumbnail)
     const isVideoDeleted = await deleteFromCloudinary(isVideoExist.videoFile)
 
-    console.log(isVideoDeleted)
-    console.log(isThumbnailDeleted)
 
     if(isThumbnailDeleted.result !== 'ok' || isVideoDeleted.result !== 'ok'){
       return NextResponse.json({
         success : false,
         message : "Unable to delete the video from cloudinary"
-      })
+      }, {status : 500})
     }
 
 

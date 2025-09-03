@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useRouter } from "next/navigation";
+import { formatDistanceToNow } from "date-fns";
 
 const UserPosts = ({ userId }: { userId: string }) => {
   const [isFetchingPosts, setisFetchingPosts] = useState(false);
@@ -130,7 +131,10 @@ const UserPosts = ({ userId }: { userId: string }) => {
                   </div>
                   <div className="flex justify-between items-center w-full">
                     <div className="flex flex-col ">
-                      <span>{post.owner.fullName}</span>
+                      <span className='flex gap-5 items-center'>{post.owner.fullName}
+                      
+                                              <span className='text-sm dark:text-gray-500 '>{formatDistanceToNow(post.createdAt)}</span>
+                                            </span>
                       <span className="text-gray-500 text-sm">
                         @{post.owner.username}
                       </span>

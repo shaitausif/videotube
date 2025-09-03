@@ -15,8 +15,14 @@ export async function GET(req: NextRequest){
         const subscriber = await Subscription.countDocuments({
             channel : new mongoose.Types.ObjectId(payload._id as string)
         })
+        const subscribedTo = await Subscription.countDocuments({
+            subscriber : new mongoose.Types.ObjectId(payload._id as string)
+        })
 
-        return NextResponse.json({success : true, data : subscriber, message : "Subscriber's fetched successfully."})
+        return NextResponse.json({success : true, data : {
+            subscribersCount : subscriber,
+            subscribedToCount : subscribedTo
+        }, message : "Subscriber's fetched successfully."})
 
     } catch (error) {
         return NextResponse.json({success : false, message : error},{status : 500})

@@ -15,10 +15,14 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import dynamic from "next/dynamic";
+
+const DynamicModal = dynamic(() => import("./user/UploadContentModal"))
 
 const AllVideos = () => {
   const [videos, setvideos] = useState<VideoInterface[]>([]);
   const [loadingVideos, setloadingVideos] = useState(false);  
+  const [isModalOpen, setisModalOpen] = useState(false)
   const router = useRouter();
   const skeleton = [1, 2, 3, 4, 5, 6];
   const user = useSelector((state: RootState) => state.user)
@@ -59,14 +63,28 @@ const AllVideos = () => {
 
 
   return (
-    <div className="md:grid gap-5 grid-cols-3 w-full flex flex-col">
+   <>
+      {
+        isModalOpen && (
+          <DynamicModal onClose={() => setisModalOpen(false)} />
+        )
+      }
+         <div className="md:grid gap-5 grid-cols-3 w-full flex flex-col">
       {loadingVideos
         ? skeleton.map((skel) => (
           <div key={skel}>
             <AllVideosSkel />
             </div>
           ))
-        : videos.map((video) => (
+        : videos.length === 0 ? (
+          <div className="col-span-3 gap-2 w-full flex justify-center items-center h-[80vh] flex-col">
+            <div className="text-2xl">No Videos yet.</div>
+            <div
+            onClick={() => setisModalOpen(true)}
+            className="text-lg cursor-pointer text-gray-400 hover:text-gray-500 transition-all duration-300">Start by yourself then!</div>
+          </div>
+        ) : (
+          videos.map((video) => (
             <div
               key={video._id as string}
               className="col-span-1 rounded-lg h-[50vh] group hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-900 transition-all duration-300 group"
@@ -188,8 +206,13 @@ const AllVideos = () => {
                 </div>
               </div>
             </div>
-          ))}
+          )
+        )
+          
+          )}
     </div>
+    
+   </>
   );
 };
 

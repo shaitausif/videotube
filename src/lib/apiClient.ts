@@ -245,6 +245,16 @@ const userTweets = (userId: string) => {
 }
 
 
+const toggleTweetLikes = (tweetId: string) => {
+  return nativeApiClient.post(`/api/like/tweet/${tweetId}`)
+}
+
+
+const deleteTweet = (tweetId: string) => {
+  return nativeApiClient.delete(`/api/tweet/${tweetId}`)
+}
+
+
 
 // Export all the API functions
 export {
@@ -287,5 +297,7 @@ export {
   deletePost,
   togglePostLike,
   createTweet,
-  userTweets
+  userTweets,
+  toggleTweetLikes,
+  deleteTweet
 };

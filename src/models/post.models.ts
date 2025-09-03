@@ -6,7 +6,9 @@ export interface PostInterface{
     postImg? : string;
     caption : string;
     owner : mongoose.Schema.Types.ObjectId;
-    isEdited? : Boolean
+    isEdited? : Boolean;
+    createdAt : Date;
+    updatedAt : Date
 }
 
 
@@ -26,6 +28,8 @@ const postSchema = new Schema<PostInterface>({
         type : Boolean,
         default : false
     }
+}, {
+    timestamps : true
 })
 
 
