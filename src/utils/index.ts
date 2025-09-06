@@ -147,3 +147,5 @@ export const formatVideoDuration = (durationInSeconds: number): string => {
     }
     return format(referenceDate, 'mm:ss');
 };
+
+

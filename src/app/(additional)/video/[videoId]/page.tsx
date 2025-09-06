@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { notFound, useParams } from "next/navigation";
 import { VideoInterface } from "@/models/video.model";
 import { requestHandler } from "@/utils";
@@ -7,6 +7,7 @@ import {
   getVideoById,
   postComment,
   toggleSubscribe,
+  toggleVideoDisLike,
   toggleVideoLike,
 } from "@/lib/apiClient";
 import { toast } from "sonner";
@@ -29,7 +30,7 @@ import { RootState } from "@/store/store";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
-import { ThumbsDown, ThumbsUp } from "lucide-react";
+import { ThumbsDown, ThumbsUp, VideoOffIcon } from "lucide-react";
 import VideoSkel from "../../../../../components/skeletons/VideoSkel";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
@@ -68,7 +69,9 @@ const page = () => {
   const [isSubscribed, setisSubscribed] = useState(false);
   const [subscribersCount, setsubscribersCount] = useState(0);
   const [likesCount, setlikesCount] = useState(0);
+  const [disLikesCount, setdisLikesCount] = useState(0)
   const [isLiked, setisLiked] = useState(false);
+  const [isDisLiked, setisDisLiked] = useState(false)
   const [commentsCount, setcommentsCount] = useState(0);
   const [openDescription, setopenDescription] = useState(false);
   const [isPostingComment, setisPostingComment] = useState(false);
@@ -85,6 +88,8 @@ const page = () => {
           setsubscribersCount(res.data.owner.subscribers);
           setisLiked(res.data.isLiked);
           setlikesCount(res.data.likes);
+          setisDisLiked(res.data.isdisLiked)
+          setdisLikesCount(res.data.dislikes)
         },
         (err) => {
           // @ts-ignore
@@ -110,38 +115,112 @@ const page = () => {
     },
   });
 
+
+
+
+  const subscriberTimer = useRef<{ [key: string]: NodeJS.Timeout }>({})
+
+
   const handleToggleSubscribe = async (channelId: string) => {
-    console.log("Hi, toggle subscribe");
-    requestHandler(
+
+    // I am also using debouncing technique here for subscribing and unsubscribing a user for optimization
+
+    setsubscribersCount((prev) => isSubscribed ? prev - 1 : prev + 1)
+    setisSubscribed(!isSubscribed)
+    
+    // Clearing previous timer for this one
+    if(subscriberTimer.current[channelId]){
+      clearTimeout(subscriberTimer.current[channelId])
+    }
+
+    // Setting a new timer 
+    subscriberTimer.current[channelId] = setTimeout(() => {
+      requestHandler(
       async () => await toggleSubscribe(channelId),
       null,
       (res) => {
-        setisSubscribed(res.data);
+        // setisSubscribed(res.data);
         toast.success(
           `Channel ${res.data ? "Subscribed" : "Unsubscribed"} Successfully.`
         );
 
-        setsubscribersCount((prev) => (res.data ? prev + 1 : prev - 1));
+        // setsubscribersCount((prev) => (res.data ? prev + 1 : prev - 1));
       },
       (err) => toast.error(err)
     );
+    // Cleanup
+    delete subscriberTimer.current[channelId];
+    }, 2000);
+
+    
   };
 
+
+    const videoLikeTimer = useRef<{ [key: string]: NodeJS.Timeout }>({})
+
+
   const handleToggleVideoLike = async (videoId: string) => {
-    requestHandler(
+
+    // Using the same debounce technique here as well
+    setlikesCount((prev) => isLiked ? prev - 1 : prev + 1)
+    setisLiked(!isLiked)
+
+
+    if(videoLikeTimer.current[videoId]){
+      clearTimeout(videoLikeTimer.current[videoId])
+    }
+
+
+    // create a new timer
+    videoLikeTimer.current[videoId] = setTimeout(() => {
+      requestHandler(
       async () => await toggleVideoLike(videoId),
       null,
       (res) => {
-        setisLiked(res.data);
-        setlikesCount((prev) => (res.data ? prev + 1 : prev - 1));
-        console.log(res.message, res.data);
+        // setisLiked(res.data);
+        // setlikesCount((prev) => (res.data ? prev + 1 : prev - 1));
+        console.log(res.message, res.data); 
       },
       (err) => {
         toast.error("Sign in to like the video")
         // console.log(err)
       }
     );
+    delete videoLikeTimer.current[videoId]
+    }, 2000);
+
   };
+
+
+  const videoDisLikeTimer = useRef<{ [key: string]: NodeJS.Timeout }>({})
+
+
+  const handleToggleVideoDislike = async(videoId : string) => {
+
+    setdisLikesCount((prev) => isDisLiked ? prev - 1 : prev + 1)
+    setisDisLiked(!isDisLiked)
+
+    if(videoDisLikeTimer.current[videoId]){
+      clearTimeout(videoDisLikeTimer.current[videoId])
+    }
+
+    videoDisLikeTimer.current[videoId] = setTimeout(() => {
+      requestHandler(
+        async() => await toggleVideoDisLike(videoId.toString()),
+        null,
+        (res) => {
+          console.log(res)
+          toast.success(res.message)
+        },
+        (err) => {
+          // @ts-ignore
+          toast.error(err.message)
+        }
+      )
+      delete videoDisLikeTimer.current[videoId]
+    }, 2000);
+
+  }
 
 
 
@@ -284,8 +363,13 @@ const page = () => {
                         className={`w-15 h-15 rounded-full  transition-all duration-300 flex items-center justify-center `}
                       >
                         <span
-                          onClick={() =>
+                          onClick={() =>{
                             handleToggleVideoLike(video._id as string)
+                            if(isDisLiked){
+                              handleToggleVideoDislike(video._id as string)
+                            }
+                          }
+                            
                           }
                           className={`transition-all duration-300 p-2 rounded-full dark:hover:bg-gray-800 `}
                         >
@@ -294,12 +378,22 @@ const page = () => {
                         <span className="px-2">{likesCount}</span>
                       </button>
                       <button className="w-15 h-15 rounded-full transition-all duration-300 flex items-center justify-center">
+                        {" "}
+                        <span className="px-2">{disLikesCount}</span>
                         <span
+                        onClick={() => {
+                          handleToggleVideoDislike(video._id as string)
+                          if(isLiked){
+                            handleToggleVideoLike(video._id as string)
+                          }
+                        }} 
                           className={`transition-all duration-300 p-2 rounded-full dark:hover:bg-gray-800 `}
                         >
-                          <ThumbsDown  fill={`${isLiked ? 'white' : ""}`} className="w-6 h-6" />
+                        
+                          <ThumbsDown  fill={`${isDisLiked ? 'white' : ""}`} className="w-6 h-6" />
                         </span>{" "}
-                      </button>
+                        
+                      </button> 
                     </div>
                   </div>
                   {/* Video Description */}

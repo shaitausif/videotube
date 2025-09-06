@@ -260,6 +260,26 @@ const getSubscription = (channelId : string) => {
 }
 
 
+const toggleVideoDisLike = (videoId : string) => {
+  return nativeApiClient.post(`/api/dislike/video/${videoId}`)
+}
+
+
+const togglePostDisLike = (postId : string) => {
+  return nativeApiClient.post(`/api/dislike/post/${postId}`)
+}
+
+const toggleTweetDisLike = (tweetId : string) => {
+  return nativeApiClient.post(`/api/dislike/tweet/${tweetId}`)
+}
+
+
+const toggleCommentDisLike = (commentId : string) => {
+  return nativeApiClient.post(`/api/dislike/comment/${commentId}`)
+}
+
+
+
 // Export all the API functions
 export {
   addParticipantToGroup,
@@ -304,5 +324,9 @@ export {
   userTweets,
   toggleTweetLikes,
   deleteTweet,
-  getSubscription
+  getSubscription,
+  toggleCommentDisLike,
+  toggleVideoDisLike,
+  togglePostDisLike,
+  toggleTweetDisLike
 };

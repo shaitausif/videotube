@@ -1,8 +1,8 @@
 'use client'
-import { deleteTweet, toggleTweetLikes, userTweets } from '@/lib/apiClient'
+import { deleteTweet, toggleTweetDisLike, toggleTweetLikes, userTweets } from '@/lib/apiClient'
 import { Tweet, TweetInterface } from '@/models/tweet.model'
 import { requestHandler } from '@/utils'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import PostSkel from '../skeletons/PostSkel'
 import Image from 'next/image'
@@ -30,6 +30,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
 import TweetMentioned from './TweetMentioned'
 import { formatDistanceToNow } from 'date-fns'
+import TweetSkel from '../skeletons/TweetsSkel'
 
 const UserTweets = ({userId} : { userId : string }) => {
 
@@ -62,29 +63,90 @@ const UserTweets = ({userId} : { userId : string }) => {
     },[])
 
 
+    // Using Debouncing for optimization
+    const tweetLikeTimer = useRef<{ [key: string]: NodeJS.Timeout }>({})
+
     const toggleTweetLike = async(tweetId: string) => {
-      requestHandler(
+
+      // Rendering the updates before they happened
+      setTweets((prev) => 
+          prev.map((tweet) => 
+            tweet._id === tweetId 
+          ? {
+            ...tweet,
+            likesCount : tweet.isLiked ? tweet.likesCount -1 : tweet.likesCount + 1,
+            isLiked : !tweet.isLiked
+          } : tweet
+      
+          )
+        )
+
+
+        if(tweetLikeTimer.current[tweetId]){
+          clearTimeout(tweetLikeTimer.current[tweetId])
+        }
+
+        
+        // Create a new timer
+        tweetLikeTimer.current[tweetId] = setTimeout(() => {
+           requestHandler(
         async() =>  await toggleTweetLikes(tweetId.toString()),
-        null,
+        null, 
         (res) => {
           
-          setTweets((prev) =>
-          prev.map((tweet) =>
-            tweet._id === tweetId
-              ? { ...tweet, isLiked: res.data ? true : false ,
-                likesCount : res.data ? tweet.likesCount + 1 : tweet.likesCount -1
-              }
-              : tweet
-          )
-        
-      )},
+       
+          toast.success(res.message)
+    },
         (err) => {
           // @ts-ignore
           toast.error(err.message)
         }
       )
+      // Cleanup
+          delete tweetLikeTimer.current[tweetId]
+        }, 2000);
     } 
 
+
+    const tweetDislikeTimer = useRef<{ [key: string]: NodeJS.Timeout }>({})
+
+    const handleToggleTweetDislike = async(tweetId : string) => {
+      setTweets((prev) => 
+        prev.map((tweet) => 
+          tweet._id === tweetId
+        ? {
+          ...tweet,
+          disLikesCount : tweet.isDisLiked ? tweet.disLikesCount -1 : tweet.disLikesCount + 1,
+          isDisLiked : !tweet.isDisLiked
+        } : tweet
+        )
+        )
+
+        if(tweetDislikeTimer.current[tweetId]){
+          clearTimeout(tweetDislikeTimer.current[tweetId])
+        }
+
+        // Create a new timer
+        tweetDislikeTimer.current[tweetId] = setTimeout(() => {
+          requestHandler(
+            async() => await toggleTweetDisLike(tweetId.toString()),
+            null,
+            (res) => {
+              toast.success(res.message)
+              
+            },
+            (err) => {
+              // @ts-ignore
+              toast.error(err.message)
+            }
+          )
+          // Cleanup
+          delete tweetDislikeTimer.current[tweetId]
+        }, 2000);
+        
+    }
+
+    
 
     const handleDeleteTweet = (tweetId : string) => {
       requestHandler(
@@ -125,7 +187,7 @@ const UserTweets = ({userId} : { userId : string }) => {
         <div className="w-full gap-4 flex flex-col justify-center">
           {skeleton.map((skel) => (
             <div className="justify-center flex" key={skel}>
-              <PostSkel height="h-[60vh]" width="w-[50vw]" />
+              <TweetSkel height="h-[60vh]" width="w-[50vw]" />
             </div>
           ))}
         </div>
@@ -231,16 +293,36 @@ const UserTweets = ({userId} : { userId : string }) => {
               </div>
              
               
-              <div className="flex justify-end gap-6 px-4 items-center">
+              <div className="flex justify-end gap-2 px-4 items-center">
                 <span>{tweet.likesCount}</span>
-                <ThumbsUp
-                  fill={`${tweet.isLiked ? "white" : ""}`}
-                  onClick={() => {
+                <span
+                onClick={() => {
                     toggleTweetLike(tweet._id);
+                    if(tweet.isDisLiked){
+                      handleToggleTweetDislike(tweet._id)
+                    }
                   }}
+                className={`transition-all duration-300 p-2 rounded-full dark:hover:bg-gray-800 mr-2`}>
+                  <ThumbsUp className='w-6 h-6'
+                  fill={`${tweet.isLiked ? "white" : ""}`}
+                  
                 />
-                <ThumbsDown />
-              </div>
+                </span>
+                <span>{tweet.disLikesCount}</span>
+                <span
+                onClick={() => {
+                    handleToggleTweetDislike(tweet._id)
+                    if(tweet.isLiked){
+                      toggleTweetLike(tweet._id)
+                    }
+                  }}
+                className={`transition-all duration-300 p-2 rounded-full dark:hover:bg-gray-800 `}>
+                  <ThumbsDown
+                  fill={`${tweet.isDisLiked ? 'white' : ''}`}
+                  
+                  className='w-6 h-6' />
+                </span>
+                  </div>
               <hr />
             </div>
           ))}

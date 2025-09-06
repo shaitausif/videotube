@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -81,19 +81,41 @@ const UserProfile = ({ username }: { username: any }) => {
     fetchUserInfo();
   }, []);
 
-  const handleToggleSubscribe = () => {
-    requestHandler(
-      async () => await toggleSubscribe(channelInfo?._id!),
+  const subscriberTimer = useRef<{ [key: string]: NodeJS.Timeout }>({})
+
+
+  const handleToggleSubscribe = async (channelId: string) => {
+
+    // I am also using debouncing technique here for subscribing and unsubscribing a user for optimization
+
+    setsubscribersCount((prev) => isSubscribed ? prev - 1 : prev + 1)
+    setisSubscribed(!isSubscribed)
+    
+    // Clearing previous timer for this one
+    if(subscriberTimer.current[channelId]){
+      clearTimeout(subscriberTimer.current[channelId])
+    }
+
+    // Setting a new timer 
+    subscriberTimer.current[channelId] = setTimeout(() => {
+      requestHandler(
+      async () => await toggleSubscribe(channelId.toString()!),
       null,
       (res) => {
-        setisSubscribed(res.data);
+        // setisSubscribed(res.data);
         toast.success(
           `Channel ${res.data ? "Subscribed" : "Unsubscribed"} Successfully.`
         );
-        setsubscribersCount((prev) => (res.data ? prev + 1 : prev - 1));
+
+        // setsubscribersCount((prev) => (res.data ? prev + 1 : prev - 1));
       },
       (err) => toast.error(err)
     );
+    // Cleanup
+    delete subscriberTimer.current[channelId];
+    }, 2000);
+
+    
   };
 
   const handleMessageUser = () => {
@@ -180,7 +202,7 @@ const UserProfile = ({ username }: { username: any }) => {
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => {
-                        handleToggleSubscribe();
+                        handleToggleSubscribe(channelInfo._id!);
                       }}
                     >
                       Continue
@@ -190,7 +212,7 @@ const UserProfile = ({ username }: { username: any }) => {
               </AlertDialog>
             ) : (
               <Button
-                onClick={() => handleToggleSubscribe()}
+                onClick={() => handleToggleSubscribe(channelInfo._id!)}
                 className={`
                               rounded-3xl font-semibold text-md
                               `}

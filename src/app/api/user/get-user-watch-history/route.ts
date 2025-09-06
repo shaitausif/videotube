@@ -72,6 +72,7 @@ export async function GET(req : NextRequest){
 
     ])
 
+   
 
     return NextResponse.json({success : true, data : user[0].watchHistory , message : "Watch History fetched successfully"},{status : 200    })
     } catch (error) {

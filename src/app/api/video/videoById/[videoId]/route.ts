@@ -22,102 +22,134 @@ export async function GET(
     // append the videoId in the user's watchHistory
     const user = await User.findById(payload?._id);
     if (user) {
-
       if (!user.watchHistory.includes(videoId)) {
-        // If User has not watched this video then add it into user's watchHistory 
-        user.watchHistory.push(videoId);
+        // If User has not watched this video then add it into user's watchHistory
+        user.watchHistory.unshift(videoId);
         user.save({ validateBeforeSave: false });
 
         // And also as the user is viewing this video for the first time update the video's views
-        const video = await Video.findByIdAndUpdate(
-        videoId,
-        { $inc : { views : 1 }} // Increment by 1 
-      )
-
+        await Video.findByIdAndUpdate(
+          videoId,
+          { $inc: { views: 1 } } // Increment by 1
+        );
+      } else {
+        user.watchHistory = user.watchHistory.filter(
+          (id: mongoose.Types.ObjectId) => id.toString() !== videoId
+        );
+        user.watchHistory.unshift(videoId);
+        await user.save({ validateBeforeSave: false });
       }
-      
     }
 
     // const video = await Video.findById(videoId).populate({
     //     path : "owner",
     //     select : "username fullName avatar"
     // })
-   const video = await Video.aggregate([
-  {
-    $match: {
-      _id: new mongoose.Types.ObjectId(videoId),
-    },
-  },
-  {
-    $lookup: {
-      from: "users",
-      localField: "owner",
-      foreignField: "_id",
-      as: "owner",
-      pipeline: [
-        {
-          $lookup: {
-            from: "subscriptions",
-            localField: "_id",
-            foreignField: "channel",
-            as: "subscribers",
-          },
+    const video = await Video.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(videoId),
         },
-        {
-            $addFields : {
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "owner",
+          foreignField: "_id",
+          as: "owner",
+          pipeline: [
+            {
+              $lookup: {
+                from: "subscriptions",
+                localField: "_id",
+                foreignField: "channel",
+                as: "subscribers",
+              },
+            },
+            {
+              $addFields: {
                 isSubscribed: {
-          $cond: {
-            // Here we're checking that the current logged in user is present or not in any of the channel's subscribers field
-            // Converting the payload._id to mongoose object ID for accurate comparison
-            if: { $in: [new mongoose.Types.ObjectId(payload?._id as string), "$subscribers.subscriber"] },
-            then: true,
-            else: false,
-          },
+                  $cond: {
+                    // Here we're checking that the current logged in user is present or not in any of the channel's subscribers field
+                    // Converting the payload._id to mongoose object ID for accurate comparison
+                    if: {
+                      $in: [
+                        new mongoose.Types.ObjectId(payload?._id as string),
+                        "$subscribers.subscriber",
+                      ],
+                    },
+                    then: true,
+                    else: false,
+                  },
+                },
+              },
+            },
+            {
+              $addFields: {
+                subscribers: { $size: { $ifNull: ["$subscribers", []] } },
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                fullName: 1,
+                username: 1,
+                avatar: 1,
+                subscribers: 1,
+                isSubscribed: 1,
+              },
+            },
+          ],
         },
+      },
+      {
+        $lookup: {
+          from: "likes",
+          localField: "_id",
+          foreignField: "video",
+          as: "likes",
+        },
+      },
+      {
+        $lookup : {
+         from : "dislikes",
+         localField : "_id",
+         foreignField : "video",
+         as : "dislikes"
+        }
+      },
+      {
+        $addFields: {
+          likes: { $size: "$likes" },
+          dislikes : { $size : "$dislikes"},
+          isLiked: {
+            $cond: {
+              if: {
+                $in: [
+                  new mongoose.Types.ObjectId(payload?._id as string),
+                  "$likes.likedBy",
+                ],
+              },
+              then: true,
+              else: false,
+            },
+          },
+          isdisLiked : {
+            $cond : {
+              if : {
+              $in : [
+                new mongoose.Types.ObjectId(payload?._id as string),
+                "$dislikes.disLikedBy"
+              ]
+            },
+            then : true,
+            else : false
             }
+          }
         },
-        {
-          $addFields: {
-            subscribers: { $size: { $ifNull: ["$subscribers", []] } }
-          },
-        },
-        {
-          $project: {
-            _id: 1,
-            fullName: 1,
-            username: 1,
-            avatar: 1,
-            subscribers: 1,
-            isSubscribed : 1
-          },
-        },
-      ],
-    },
-  },
-  {
-    $lookup : {
-      from : "likes",
-      localField : "_id",
-      foreignField : "video",
-      as : "likes"
-    },
-    
-  },
-  {
-    $addFields : { likes : { $size : "$likes" },
-    isLiked : { 
-      $cond : {
-        if : { $in : [new mongoose.Types.ObjectId(payload?._id as string), "$likes.likedBy"]},
-        then : true,
-        else : false
-      }
-    }
-  }
-  },
-  { $unwind: "$owner" },
-]);
-  
-
+      },
+      { $unwind: "$owner" },
+    ]);
 
     if (!video)
       return NextResponse.json(
@@ -250,18 +282,20 @@ export async function DELETE(
         message: "Video doesn't exist",
       });
 
+    const isThumbnailDeleted = await deleteFromCloudinary(
+      isVideoExist.thumbnail
+    );
+    const isVideoDeleted = await deleteFromCloudinary(isVideoExist.videoFile);
 
-    const isThumbnailDeleted = await deleteFromCloudinary(isVideoExist.thumbnail)
-    const isVideoDeleted = await deleteFromCloudinary(isVideoExist.videoFile)
-
-
-    if(isThumbnailDeleted.result !== 'ok' || isVideoDeleted.result !== 'ok'){
-      return NextResponse.json({
-        success : false,
-        message : "Unable to delete the video from cloudinary"
-      }, {status : 500})
+    if (isThumbnailDeleted.result !== "ok" || isVideoDeleted.result !== "ok") {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unable to delete the video from cloudinary",
+        },
+        { status: 500 }
+      );
     }
-
 
     return NextResponse.json(
       { success: true, message: "Video Deleted successfully" },

@@ -25,13 +25,13 @@ export async function POST(req : NextRequest,
             })
             if(!likeTweet) return NextResponse.json({success : false, message : "Unable to like the tweet"},{status : 400})
             
-            return NextResponse.json({success : true, data : true, messsage : "Tweet Liked successfully."})
+            return NextResponse.json({success : true, data : true, message : "Tweet Liked successfully."})
         }
     
         const { deletedCount } = await isTweetLiked.deleteOne()
         if(deletedCount !== 1 ) return NextResponse.json({success : false, message : "Unable to dislike the Tweet"})
     
-        return NextResponse.json({success : true, data : false, message : "Tweet disliked successfully."},{status : 200})
+        return NextResponse.json({success : true, data : false, message : "Tweet like removed successfully."},{status : 200})
     } catch (error) {
         return NextResponse.json({success : false, message : error},{status : 500})
     }

@@ -53,14 +53,21 @@ export async function POST(req : NextRequest,
                 
             },
             { $unwind: "$owner" },
+            { $addFields : {
+              isLiked : false,
+              likesCount : 0
+            }
+          },
             { $project : {
                 content : 1,
                 owner : 1,
                 createdAt : 1,
-                updatedAt : 1
+                updatedAt : 1,
+                isLiked : 1,
+                likesCount : 1
             }}
         ])
-    
+
         return NextResponse.json({success : true , data : comment[0], message : "Comment added successfully"},{status : 200})
     } catch (error) {
         return NextResponse.json({success : false, message : error},{status : 500})
@@ -129,6 +136,14 @@ const result = await Comment.aggregate([
     }
   },
   {
+    $lookup : {
+      from : "dislikes",
+      localField : "_id",
+      foreignField : "comment",
+      as : "disLikesCount"
+    }
+  },
+  {
     $addFields : {
       isLiked : {
         $cond : {
@@ -136,6 +151,16 @@ const result = await Comment.aggregate([
                       then: true,
                       else: false,
         }
+      },
+      isDisLiked : {
+        $cond : {
+          if : { $in : [ new mongoose.Types.ObjectId(payload?._id as string), "$disLikesCount.disLikedBy"]},
+          then : true,
+          else : false
+        }
+      },
+      disLikesCount : {
+        $size : "$disLikesCount"
       },
       likesCount : {
         $size : "$likesCount"

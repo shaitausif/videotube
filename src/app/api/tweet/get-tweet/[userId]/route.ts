@@ -1,3 +1,4 @@
+import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import ConnectDB from "@/lib/dbConnect";
 import { Tweet } from "@/models/tweet.model";
 import mongoose from "mongoose";
@@ -12,6 +13,7 @@ export async function GET(
 ) {
   try {
     const { userId } = params;
+    const payload = await getCurrentUser(req)
     await ConnectDB();
     // const isTweetExist = await Tweet.find({
     //     owner : userId
@@ -54,9 +56,33 @@ export async function GET(
           as : "likesCount"
         }
       },
+      {
+        $lookup : {
+          from : "dislikes",
+          localField : "_id",
+          foreignField : "tweet",
+          as : "disLikesCount"
+        }
+      },
       { $unwind : "$owner" },
       {
         $addFields : {
+          isLiked : {
+            $cond : {
+              if : { $in : [new mongoose.Types.ObjectId(payload?._id as string), "$likesCount.likedBy"]},
+              then : true,
+              else : false
+            }
+          },
+          isDisLiked : {
+            $cond : {
+              if : { $in : [new mongoose.Types.ObjectId(payload?._id as string),"$disLikesCount.disLikedBy"]},
+              then : true,
+              else : false
+            }
+          },
+
+          disLikesCount : { $size : "$disLikesCount" },
           likesCount : { $size : "$likesCount" }
         }
       }

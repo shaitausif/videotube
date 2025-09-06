@@ -1,8 +1,8 @@
 "use client";
-import { deletePost, togglePostLike, userPosts } from "@/lib/apiClient";
+import { deletePost, togglePostDisLike, togglePostLike, userPosts } from "@/lib/apiClient";
 import { PostInterface } from "@/models/post.models";
 import { requestHandler } from "@/utils";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import AllVideosSkel from "../skeletons/AllVideosSkel";
 import PostSkel from "../skeletons/PostSkel";
@@ -45,7 +45,7 @@ const UserPosts = ({ userId }: { userId: string }) => {
       async () => await userPosts(userId),
       setisFetchingPosts,
       (res) => {
-        console.log(res.data);
+    
 
         setposts(res.data);
         toast.success(res.message);
@@ -73,21 +73,34 @@ const UserPosts = ({ userId }: { userId: string }) => {
     );
   };
 
+
+  const togglePostLikeTimer = useRef<{ [key: string]: NodeJS.Timeout }>({})
   const dotogglePostLike = (postId: string) => {
-    requestHandler(
+
+    setposts((prev) => 
+        prev.map((post) => 
+          post._id === postId
+          ? {
+            ...post,
+            likesCount : post.isLiked ? post.likesCount - 1 : post.likesCount + 1,
+            isLiked : !post.isLiked
+          } : post
+        )
+      )
+
+
+      if(togglePostLikeTimer.current[postId]){
+        clearTimeout(togglePostLikeTimer.current[postId])
+      }
+
+      // Create a new timer 
+      togglePostLikeTimer.current[postId] = setTimeout(() => {
+        requestHandler(
       // @ts-ignore
       async () => await togglePostLike(postId.toString()),
       null,
       (res) => {
-        setposts((prev) =>
-          prev.map((post) =>
-            post._id === postId
-              ? { ...post, isLiked: res.data ? true : false ,
-                likesCount : res.data ? post.likesCount + 1 : post.likesCount -1
-              }
-              : post
-          )
-        );
+        
         toast.success(res.message)
       },
       (err) => {
@@ -96,7 +109,51 @@ const UserPosts = ({ userId }: { userId: string }) => {
         toast.error(err.message);
       }
     );
+    // Cleanup
+      delete togglePostLikeTimer.current[postId]
+      }, 2000);
   };
+
+
+  const togglePostDeleteTimer = useRef<{ [key: string]: NodeJS.Timeout }>({})
+  const handleTogglePostDisLike = async(postId : string) => {
+    setposts((prev) => 
+        prev.map((post) => 
+          post._id === postId
+        ? {
+          ...post,
+          disLikesCount : post.isDisLiked ? post.disLikesCount - 1 : post.disLikesCount + 1,
+          isDisLiked : !post.isDisLiked
+        } : post
+        )
+    )
+
+
+    if(togglePostDeleteTimer.current[postId]){
+      clearTimeout(togglePostDeleteTimer.current[postId])
+    }
+
+    // Create a new timer
+    togglePostDeleteTimer.current[postId] = setTimeout(() => {
+      requestHandler(
+        async() =>  await togglePostDisLike(postId),
+        null,
+        (res) => {
+          toast.success(res.message)
+
+        },
+        (err) => {
+          // @ts-ignore
+          toast.error(err.message)
+        }
+      )
+      // Cleanup
+      delete togglePostDeleteTimer.current[postId]
+    }, 2000);
+
+  }
+
+
 
   useEffect(() => {
     fetchPosts();
@@ -215,15 +272,38 @@ const UserPosts = ({ userId }: { userId: string }) => {
                 />
               </div>
               
-              <div className="flex justify-end gap-6 px-4 items-center">
+              <div className="flex justify-end gap-2 px-4 items-center">
                 <span>{post.likesCount}</span>
-                <ThumbsUp
-                  fill={`${post.isLiked ? "white" : ""}`}
-                  onClick={() => {
+                <span
+                onClick={() => {
                     dotogglePostLike(post._id);
+                    if(post.isDisLiked){
+                      handleTogglePostDisLike(post._id)
+                    }
                   }}
+                className={`transition-all duration-300 p-2 rounded-full dark:hover:bg-gray-800 mr-2`}>
+                  <ThumbsUp
+                  className="w-6 h-6"
+                  fill={`${post.isLiked ? "white" : ""}`}
+                  
                 />
-                <ThumbsDown />
+                </span>
+                <span>{post.disLikesCount}</span>
+                <span
+                onClick={() => {
+                    handleTogglePostDisLike(post._id)
+                    if(post.isLiked){
+                      dotogglePostLike(post._id)
+                    }
+
+                  }}
+                className={`transition-all duration-300 p-2 rounded-full dark:hover:bg-gray-800 `}>
+                  <ThumbsDown
+                  className="w-6 h-6"
+                  fill={`${post.isDisLiked ? "white" : ""}`}
+                  
+                  />
+                </span>
               </div>
             </div>
           ))}

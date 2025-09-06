@@ -69,7 +69,24 @@ export async function GET(
         },
       },
       {
+        $lookup : {
+          from : "dislikes",
+          localField : "_id",
+          foreignField : "post",
+          as : "disLikesCount"
+        }
+      },
+      {
         $addFields: {
+
+          isDisLiked : {
+            $cond : {
+              if : { $in : [new mongoose.Types.ObjectId(payload._id as string),"$disLikesCount.disLikedBy"]},
+              then : true,
+              else : false
+            }
+          },
+          disLikesCount : { $size : "$disLikesCount"},
           isLiked: {
             $cond: {
               if: {
