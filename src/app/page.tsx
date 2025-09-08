@@ -11,16 +11,51 @@ import { useSession } from "next-auth/react";
 import AllVideos from "../../components/AllVideos";
 import { LocalStorage, requestHandler } from "@/utils";
 import { getUserInfo, setOauthCustomToken } from "@/lib/apiClient";
-import { toast } from "sonner";
+import useFcmToken from "./hooks/useFcmToken";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.user);
+  const user = useSelector((state: RootState) => state.user!);
   const { data: session } = useSession();
   
+  // This useEffect is responsible for setting up the user FCM registration token in the user's database
 
-  // Setting the custom cookies if the user has signed in using oauth providers like google and github
+  // As hooks can't be called inside hooks
+  const { token , notificationPermissionStatus } = useFcmToken()
+    useEffect(() => {
+      if(user._id && token){
+        
+        const isFcmToken = LocalStorage.get("FcmToken")
+      // If the generated token is different from the token in the LocalStorage then update the token in the database as well
+      if(isFcmToken !== token || !isFcmToken){
+         const setFCMTokens = async() => {
+        const response = await fetch(`/api/user/set-fcm-token`,{
+          method : "POST",
+          headers : {
+            "Content-Type" : "application/json"
+          },
+          body : JSON.stringify({token}),
+          credentials : 'include'
+        })
+        if(response.ok){
+          LocalStorage.set("FcmToken",token)
+          const result = await response.json()
+          console.log(result)
+        }
+      }
+      setFCMTokens()
+      }
+      }
+      
   
+    
+    },[token])
+
+
+    // Setting the custom cookies if the user has signed in using oauth providers like google and github
+
+
     useEffect(() => {
       const timer = setTimeout(() => {
         const isCookieSet = LocalStorage.get("isCookieSet")
@@ -67,6 +102,34 @@ export default function Home() {
     
   }, [session, user]);
 
+  const handleSubmit = async() => {
+    const response = await fetch(`/api/user/send-notification`,{
+      method : "POST",
+      headers : {
+        "Content-Type" : 'application/json'
+      },
+      credentials : 'include',
+      body : JSON.stringify({
+        token,
+        title : "Hey, See the notification",
+        message : "Please see this notification",
+        link : "http://localhost:3000/chat"
+      })
+     
+    })
+     if(response.ok){
+      const result = await response.json()
+      console.log(result)         
+      }
+
+
+  }
+
+
+
+
+
+
   return (
     <>
       <SidebarProvider defaultOpen={false}>
@@ -78,6 +141,7 @@ export default function Home() {
         </header>
         <main className="pt-20 md:px-8 px-4 w-full">
           <AllVideos /> 
+          <Button onClick={handleSubmit}>Hey</Button>
         </main>
       </SidebarProvider>
     </>

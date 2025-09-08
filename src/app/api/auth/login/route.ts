@@ -48,7 +48,7 @@ export async function POST(req: NextRequest){
     const response = NextResponse.json({success : true, message : "User logged in Successfully" },{status : 200})
 
     response.cookies.set("accessToken",tokens.accessToken, options)
-    response.cookies.set("refreshToken", tokens.refreshToken, options)
+
 
     return response
 }
