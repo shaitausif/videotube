@@ -111,7 +111,7 @@ const UserPosts = ({ userId }: { userId: string }) => {
     );
     // Cleanup
       delete togglePostLikeTimer.current[postId]
-      }, 2000);
+      }, 1000);
   };
 
 
@@ -149,7 +149,7 @@ const UserPosts = ({ userId }: { userId: string }) => {
       )
       // Cleanup
       delete togglePostDeleteTimer.current[postId]
-    }, 2000);
+    }, 1000);
 
   }
 

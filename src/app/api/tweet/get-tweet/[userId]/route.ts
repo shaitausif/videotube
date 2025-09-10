@@ -88,7 +88,6 @@ export async function GET(
       }
     ])
 
-    console.log(isTweetExist)
 
     if(isTweetExist.length === 0) return NextResponse.json({success : true,data : isTweetExist,message : "No Tweet exist"}, {
         status : 200

@@ -150,7 +150,7 @@ const page = () => {
     );
     // Cleanup
     delete subscriberTimer.current[channelId];
-    }, 2000);
+    }, 1000);
 
     
   };
@@ -187,7 +187,7 @@ const page = () => {
       }
     );
     delete videoLikeTimer.current[videoId]
-    }, 2000);
+    }, 1000);
 
   };
 
@@ -218,7 +218,7 @@ const page = () => {
         }
       )
       delete videoDisLikeTimer.current[videoId]
-    }, 2000);
+    }, 1000);
 
   }
 

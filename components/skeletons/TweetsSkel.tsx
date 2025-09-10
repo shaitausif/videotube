@@ -5,7 +5,7 @@ const TweetSkel = ({height, width}: {height?: string, width?: string}) => {
   return (
     <>
     
-      <div  className={`flex flex-col  ${width ? width : 'w-full'} ${height ? height : 'h-[40vh]'}  space-y-3 col-span-1`}>
+      <div  className={`flex flex-col  ${width ? width : 'w-full'}  space-y-3 col-span-1`}>
         <div className="space-y-2">
             <div className="flex gap-3 items-center">
                 <Skeleton className={`w-[45px] rounded-full h-[45px]`} />

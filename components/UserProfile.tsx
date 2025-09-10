@@ -113,7 +113,7 @@ const UserProfile = ({ username }: { username: any }) => {
     );
     // Cleanup
     delete subscriberTimer.current[channelId];
-    }, 2000);
+    }, 1000);
 
     
   };

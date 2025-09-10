@@ -104,7 +104,7 @@ const UserTweets = ({userId} : { userId : string }) => {
       )
       // Cleanup
           delete tweetLikeTimer.current[tweetId]
-        }, 2000);
+        }, 1000);
     } 
 
 
@@ -142,7 +142,7 @@ const UserTweets = ({userId} : { userId : string }) => {
           )
           // Cleanup
           delete tweetDislikeTimer.current[tweetId]
-        }, 2000);
+        }, 1000);
         
     }
 

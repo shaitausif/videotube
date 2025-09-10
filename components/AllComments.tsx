@@ -120,7 +120,7 @@ const AllComments = ({ videoId }: { videoId: string }) => {
         (err) => toast.error(err)
       );
       delete commentTimers.current[commentId]; // cleanup
-    }, 2000);
+    }, 1000);
   };
 
 
@@ -156,7 +156,7 @@ const AllComments = ({ videoId }: { videoId: string }) => {
         }
       )
       delete commentDislikeTimer.current[commentId]
-    }, 2000);
+    }, 1000);
 
   }
 

@@ -1,13 +1,14 @@
 import admin from "firebase-admin";
 import { Message } from "firebase-admin/messaging";
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
 
 // Initialize Firebase Admin SDK
+
 if (!admin.apps.length) {
   // I had generated the private key from here: https://console.firebase.google.com/u/0/project/videotube-d7b32/settings/serviceaccounts/adminsdk
 
-  const serviceAccount = require("@/service_key.json");
+  // The service key is just credentials that allow a backend to talk to Firebase Admin SDK.
+  const serviceAccount = require(`@/service_key.json`)
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });

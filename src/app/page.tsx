@@ -141,7 +141,6 @@ export default function Home() {
         </header>
         <main className="pt-20 md:px-8 px-4 w-full">
           <AllVideos /> 
-          <Button onClick={handleSubmit}>Hey</Button>
         </main>
       </SidebarProvider>
     </>

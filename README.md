@@ -7,3 +7,15 @@
 
 
 - My getCurrentUser function is going to do the work of verifying JWT in each component even though i know it's very repititive thing but still I don't have any other option as Next.js runs on edge serverless function so that means each function or endpoint is running independently.
+
+
+
+
+Technologies used:
+NextJS
+Node with Express.js
+MongoDB
+Mongoose
+Typescript
+Gemini API,
+Firebase Cloud Messaging(FCM) and service workers 
