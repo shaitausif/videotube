@@ -331,10 +331,10 @@ const GroupChatDetailsModal: React.FC<{
                                         src={part.avatar}
                                       />
                                       <div>
-                                        <p className="text-white font-semibold text-sm inline-flex items-center w-full">
+                                        <p className=" font-semibold text-sm inline-flex items-center w-full">
                                           {part.username}{" "}
                                           {part._id === groupDetails.admin ? (
-                                            <span className="ml-2 text-[10px] px-4 bg-success/10 border-[0.1px] border-success rounded-full text-success">
+                                            <span className="ml-2 text-[10px] px-4 bg-gray-300 dark:text-black dark:bg-success/10 border-[0.1px] border-success rounded-full text-success">
                                               admin
                                             </span>
                                           ) : null}
@@ -345,10 +345,10 @@ const GroupChatDetailsModal: React.FC<{
                                       </div>
                                     </div>
                                     {groupDetails.admin === user?._id ? (
-                                      <div>
-                                        <Button size="small" severity="danger">
+                                      <div className="hover:bg-purple-700 px-2 py-0.5 text-white rounded-xl bg-purple-600">
+                                        
                                           <AlertDialog>
-                                            <AlertDialogTrigger asChild>
+                                            <AlertDialogTrigger>
                                               Remove
                                             </AlertDialogTrigger>
                                             <AlertDialogContent>
@@ -378,7 +378,7 @@ const GroupChatDetailsModal: React.FC<{
                                               </AlertDialogFooter>
                                             </AlertDialogContent>
                                           </AlertDialog>
-                                        </Button>
+                                        
                                       </div>
                                     ) : null}
                                   </div>
@@ -414,7 +414,8 @@ const GroupChatDetailsModal: React.FC<{
                                       + Add
                                     </Button>
                                     <Button
-                                      severity="secondary"
+                                      // severity="secondary"
+                                      
                                       onClick={() => {
                                         setAddingParticipant(false);
                                         setParticipantToBeAdded("");

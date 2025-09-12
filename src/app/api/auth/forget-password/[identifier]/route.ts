@@ -2,6 +2,7 @@ import { User } from "@/models/user.model";
 import ConnectDB from "@/lib/dbConnect";
 import { NextRequest, NextResponse } from "next/server";
 import { sendVerificationEmail } from "../../../../../../helpers/SendVerificationEmail";
+import { inngest } from "@/inngest/client";
 
 export async function GET(req: NextRequest,{params}: {params: {identifier: string}}){
     try {
@@ -28,12 +29,21 @@ export async function GET(req: NextRequest,{params}: {params: {identifier: strin
         user.VerifyCodeExpiry = new Date(Date.now() + 60 * 60 * 1000)
         await user.save({validateBeforeSave: false})
 
-        const emailResponse = await sendVerificationEmail(user.email,user.username,verificationCode)
+        // const emailResponse = await sendVerificationEmail(user.email,user.username,verificationCode)
 
-        if(!emailResponse.success){
-            return NextResponse.json({success : false, message : emailResponse.message},{status : 400})
-        }
-        console.log("Email Response", emailResponse)
+        // if(!emailResponse.success){
+        //     return NextResponse.json({success : false, message : emailResponse.message},{status : 400})
+        // }
+        // console.log("Email Response", emailResponse)
+
+        await inngest.send({
+            name : "user/verification",
+            data : {
+                email : user.email,
+                username : user.username,
+                verificationCode : verificationCode
+            }
+        })
 
         return NextResponse.json({
             success : true ,

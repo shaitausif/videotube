@@ -527,8 +527,8 @@ const page = () => {
       />
 
       <div className="w-full justify-between items-stretch h-screen flex flex-shrink-0">
-        <div className={`${isInChat ? "hidden" : "block"} md:block w-full md:w-1/3 relative ring-white overflow-y-auto px-4`}>
-          <div className="z-10 w-full sticky top-0 bg-dark py-4 flex justify-between items-center gap-4">
+        <div className={`${isInChat ? "hidden" : "block"} md:block w-full md:w-1/3 relative dark:ring-white overflow-y-auto px-4`}>
+          <div className="z-10 w-full sticky top-0  py-4 flex justify-between items-center gap-4">
             <Input
               placeholder="Search user or group..."
               value={localSearchQuery}
@@ -538,7 +538,7 @@ const page = () => {
             />
             <button
               onClick={() => setOpenAddChat(true)}
-              className="rounded-md md:rounded-xl border-none bg-blue-700 hover:bg-blue-700/80 transition-all text-white py-1 px-2 md:py-3 md:px-4 flex flex-shrink-0"
+              className="rounded-md md:rounded-xl border-none bg-purple-700 hover:bg-purple-700/80 transition-all text-white py-1 px-2 md:py-3 md:px-4 flex flex-shrink-0"
             >
               + Add chat
             </button>

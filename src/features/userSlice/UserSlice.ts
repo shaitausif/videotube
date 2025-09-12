@@ -11,6 +11,7 @@ export interface UserState {
       watchHistory?: Array<mongoose.Types.ObjectId>;
       password?: string;
       refreshToken?: string;
+      isAcceptingMessages? : boolean;
       VerifyCode?: string;
       VerifyCodeExpiry?: Date;
       isVerified?: boolean;

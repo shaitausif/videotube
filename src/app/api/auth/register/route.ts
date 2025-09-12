@@ -5,6 +5,7 @@ import { User } from "@/models/user.model";
 import { uploadOnCloudinary } from "@/lib/cloudinary";
 import ConnectDB from "@/lib/dbConnect";
 import { sendVerificationEmail } from "../../../../../helpers/SendVerificationEmail";
+import { inngest } from "@/inngest/client";
 
 export async function POST(req: NextRequest) {
   try {
@@ -81,6 +82,7 @@ export async function POST(req: NextRequest) {
 
 
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString()
+    
 
     const user = await User.create({
       fullName,
@@ -92,13 +94,22 @@ export async function POST(req: NextRequest) {
       verifyCode : verificationCode,
     });
 
-    const emailResponse = await sendVerificationEmail(email, username, verificationCode)
+    // const emailResponse = await sendVerificationEmail(email, username, verificationCode
+    await inngest.send({
+      name : "user/verification",
+      data : {
+        email,
+        username,
+        verificationCode : verificationCode
+      }
+    })
 
-    if(!emailResponse.success){
-      return NextResponse.json({
-        success : false, message : emailResponse.message
-      })
-    }
+
+    // if(!emailResponse.success){
+    //   return NextResponse.json({
+    //     success : false, message : emailResponse.message
+    //   })
+    // }
 
     return NextResponse.json({
       success : true,

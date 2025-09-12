@@ -220,7 +220,7 @@ const UserProfile = ({ username }: { username: any }) => {
                 Subscribe
               </Button>
             )}
-            {channelInfo.isAcceptingMessages && (
+            { channelInfo.isAcceptingMessages && (
               <Button
                 onClick={() => handleMessageUser()}
                 className="rounded-3xl font-semibold text-md"

@@ -35,7 +35,7 @@ const ChatItem: React.FC<{
   unreadCount?: number;
   onChatDelete: (chatId: string) => void;
 }> = ({ chat, onClick, isActive, unreadCount = 0, onChatDelete }) => {
-  const user = useSelector((state: RootState) => state.user)
+  const user = useSelector((state: RootState) => state.user!)
   const [openOptions, setOpenOptions] = useState(false);
   const [openGroupInfo, setOpenGroupInfo] = useState(false);
 
@@ -85,7 +85,7 @@ const ChatItem: React.FC<{
           }}
           className="self-center p-1 relative"
         >
-          <EllipsisVerticalIcon className="h-6 group-hover:w-6 w-5 opacity-100 group-hover:opacity-100 md:w-0 md:opacity-0 transition-all ease-in-out duration-200 text-zinc-300" />
+          <EllipsisVerticalIcon className="h-6 group-hover:w-6 w-5 opacity-100 group-hover:opacity-100 md:w-0 md:opacity-0 transition-all ease-in-out duration-200 dark:text-zinc-300" />
           <div
             className={classNames(
               "z-20 text-left absolute bottom-0 translate-y-full text-sm w-52 bg-dark rounded-2xl p-2 shadow-md border-[1px] border-secondary",
@@ -190,7 +190,7 @@ const ChatItem: React.FC<{
               // If last message is an attachment show paperclip
               <PaperClipIcon className="text-white/50 h-3 w-3 mr-2 flex flex-shrink-0" />
             ) : null}
-            <small className="text-white/50 truncate-1 text-sm text-ellipsis inline-flex items-center">
+            <small className="dark:text-white/50 text-black/60  truncate-1 text-sm text-ellipsis inline-flex items-center">
               {getChatObjectMetaData(chat, user!).lastMessage.length < 30 ? getChatObjectMetaData(chat, user!).lastMessage : getChatObjectMetaData(chat, user!).lastMessage.slice(0,35) + "..."}
             </small>
           </div>

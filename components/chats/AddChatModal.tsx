@@ -181,17 +181,18 @@ const AddChatModal: React.FC<{
                     <Switch
                       checked={isGroupChat}
                       onChange={setIsGroupChat}
+                      
                       className={classNames(
-                        isGroupChat ? "bg-secondary" : "bg-zinc-200",
-                        "relative outline-[1px] outline-white inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:ring-0"
+                        isGroupChat ? "bg-purple-500" : "bg-purple-200 dark:bg-zinc-200",
+                        "relative outline-[1px] dark:outline-white inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out focus:ring-0"
                       )}
                     >
                       <span
                         aria-hidden="true"
                         className={classNames(
                           isGroupChat
-                            ? "translate-x-5 bg-success"
-                            : "translate-x-0 bg-white",
+                            ? "translate-x-5 bg-purple-200 bg-success"
+                            : "translate-x-0 bg-gray-400 dark:bg-white",
                           "pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out"
                         )}
                       />  
@@ -199,7 +200,7 @@ const AddChatModal: React.FC<{
                     <Switch.Label as="span" className="ml-3 text-sm">
                       <span
                         className={classNames(
-                          "font-medium text-white",
+                          "font-medium   dark:text-white",
                           isGroupChat ? "" : "opacity-40"
                         )}
                       >
@@ -247,7 +248,7 @@ const AddChatModal: React.FC<{
                     <div className="my-5">
                       <span
                         className={classNames(
-                          "font-medium text-white inline-flex items-center"
+                          "font-medium dark:text-white inline-flex items-center"
                         )}
                       >
                         <UserGroupIcon className="h-5 w-5 mr-2" /> Selected
@@ -272,7 +273,7 @@ const AddChatModal: React.FC<{
                                   fill
                                 />
                                 </span>
-                                <p className="text-white">
+                                <p className="dark:text-white">
                                   {participant.username}
                                 </p>
                                 <XCircleIcon
@@ -296,9 +297,9 @@ const AddChatModal: React.FC<{
                 <div className="mt-5 flex justify-between items-center gap-4">
                   <Button
                     disabled={creatingChat}
-                    severity={"secondary"}
+                    // severity={"secondary"}
                     onClick={handleClose}
-                    className="w-1/2"
+                    className="w-1/2 bg-blue-700"
                   >
                     Close
                   </Button>

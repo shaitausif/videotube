@@ -81,8 +81,8 @@ const MessageItem: React.FC<{
           className={classNames(
             " p-4 rounded-3xl flex flex-col cursor-pointer group hover:bg-secondary",
             isOwnMessage
-              ? "order-1 rounded-br-none bg-blue-700"
-              : "order-2 rounded-bl-none bg-secondary"
+              ? "order-1 rounded-br-none dark:hover:text-white hover:text-black text-white  bg-purple-700"
+              : "order-2 rounded-bl-none  bg-secondary"
           )}
         >
           {isGroupChatMessage && !isOwnMessage ? (
@@ -105,7 +105,7 @@ const MessageItem: React.FC<{
                   className="self-center p-1 relative options-button"
                   onClick={() => setopenOptions(!openOptions)}
                 >
-                  <EllipsisVerticalIcon className="group-hover:w-6 group-hover:opacity-100 w-0 opacity-0 transition-all ease-in-out duration-100 text-zinc-300" />
+                  <EllipsisVerticalIcon className="group-hover:w-6 group-hover:opacity-100 w-0 opacity-0 transition-all ease-in-out duration-100 dark:text-zinc-300" />
                   <div
                     className={classNames(
                       "z-30 text-left absolute botom-0 translate-y-1 text-[10px] w-auto bg-dark rounded-2xl p-2 shadow-md border-[1px] border-secondary",
@@ -204,7 +204,7 @@ const MessageItem: React.FC<{
                   className={`${isAIMessage ? "self-baseline" : "self-center"} relative options-button`}
                   onClick={() => setopenOptions(!openOptions)}
                 >
-                  <EllipsisVerticalIcon className="group-hover:w-4 group-hover:opacity-100 w-0 opacity-0 transition-all ease-in-out duration-100 text-zinc-300" />
+                  <EllipsisVerticalIcon className="group-hover:w-4 group-hover:opacity-100 w-0 opacity-0 transition-all ease-in-out duration-100 dark:text-zinc-300" />
                   <div
                     className={classNames(
                       "delete-menu z-20 text-left  absolute botom-0  text-[10px] w-auto bg-dark rounded-2xl  shadow-md border-[1px] border-secondary",
@@ -264,7 +264,7 @@ const MessageItem: React.FC<{
           <p
             className={classNames(
               "mt-1.5 self-end text-[10px] inline-flex items-center",
-              isOwnMessage ? "text-zinc-50" : "text-zinc-400"
+              isOwnMessage ? "dark:text-zinc-50" : "dark:text-zinc-400"
             )}
           >
             {message.attachments?.length > 0 ? (

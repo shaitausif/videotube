@@ -34,6 +34,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 // Using dynamic imports for lazy loading that means the component will only load when it's needed not on initial render of the page
 import dynamic from "next/dynamic";
 import { AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { LocalStorage } from "@/utils";
 
 const DynamicModal = dynamic(() => import("./user/UploadContentModal"), {
@@ -76,13 +77,20 @@ const Navbar = () => {
       <AnimatePresence>
         {isModalOpen && <DynamicModal onClose={() => setisModalOpen(false)} />}
       </AnimatePresence>
-      <div className="md:w-full py-4 fixed dark:bg-[#161616]/50 flex pr-12 pl-6 justify-between items-center backdrop-blur-3xl z-10">
+      <div className="w-full px-4 mx-auto py-4 fixed dark:bg-[#161616]/50 flex md:pr-12 md:pl-6 justify-between items-center backdrop-blur-3xl z-10">
         {/* Logo */}
 
-        <div className="flex justify-center items-center gap-6">
+        <motion.div
+        animate={{
+          x : 0
+        }}
+        initial={{
+          x : -100
+        }}
+        className="flex justify-center items-center gap-6">
           <SidebarTrigger />
           <Image src={"/Logo.png"} alt="Logo" width={40} priority height={40} />
-        </div>
+        </motion.div>
 
         {/* Search Bar */}
         <div className="ml-8 md:block hidden w-100 relative">
@@ -91,24 +99,36 @@ const Navbar = () => {
         </div>
 
         {/* Profile Icon and create button */}
-        <div className="flex gap-9 justify-center items-center">
+        <motion.div
+        animate={{
+          x : 0,
+          opacity : 1
+        }}
+        initial={{
+          x : 100,
+          opacity : 0
+        }}
+        className="flex gap-4 md:gap-9 justify-center items-center">
           {user && user._id ? (
             <Button
               onClick={() => setisModalOpen(true)}
-              className="rounded-2xl"
+              className="rounded-full  md:rounded-2xl"
             >
-              <Plus /> Create
+              <Plus />
+              <span className="md:block hidden">Create</span>
             </Button>
           ) : (
             <Button
               onClick={() => router.push("/sign-in")}
-              className="rounded-2xl"
+              className="md:rounded-2xl rounded-full"
             >
-              <Plus /> Sign in
+              <Plus />
+              <span className="md:block hidden">Sign in</span>
             </Button>
           )}
+          <Search className="md:hidden block dark:bg-[#161616]/50 cursor-pointer" />
           {user && user._id && (
-            <div className="p-2 rounded-full hover:dark:bg-gray-700 hover:shadow-2xl duration-300">
+            <div className="p-2 md:block hidden rounded-full hover:dark:bg-gray-700 hover:shadow-2xl duration-300">
               <MessageSquareMore onClick={() => router.push("/chat")} />
             </div>
           )}
@@ -148,6 +168,15 @@ const Navbar = () => {
                     }}
                   >
                     Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="md:hidden block"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push("/chat");
+                    }}
+                  >
+                    Messages
                   </DropdownMenuItem>
                   <DropdownMenuItem>Billing</DropdownMenuItem>
                   <DropdownMenuItem>Settings</DropdownMenuItem>
@@ -221,7 +250,7 @@ const Navbar = () => {
               )}
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
+        </motion.div>
       </div>
     </>
   );

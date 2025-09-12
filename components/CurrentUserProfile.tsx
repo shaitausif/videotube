@@ -12,11 +12,18 @@ import {
   editAvatar,
   editCoverImage,
   getUserSubscriberCount,
+  toggleAcceptMessages,
 } from "@/lib/apiClient";
+import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import UserVideos from "./user/UserVideos";
 import UserPosts from "./user/UserPosts";
 import UserTweets from "./user/UserTweets";
-import { useRouter } from "next/navigation";
+
+
+
 
 const CurrentUserProfile = () => {
   const user = useSelector((state: RootState) => state?.user);
@@ -96,6 +103,28 @@ const CurrentUserProfile = () => {
       (err) => toast.error(err)
     );
   };
+
+
+
+  const handleToggleAcceptMessages = async() => {
+    requestHandler(
+     async() => await toggleAcceptMessages(),
+     null,
+     (res) => {
+      dispatch(setUser({
+        isAcceptingMessages : res.data
+      }))
+      console.log(res)
+     },
+     (err) => {
+      //@ts-ignore
+      toast.error(err.message)
+     } 
+    )
+  }
+
+
+
 
   // This function triggers the hidden file input click
   const triggerAvatarFileInput = () => {
@@ -199,13 +228,22 @@ const CurrentUserProfile = () => {
             @{user.username} • {subscribersCount}{" "}
             {subscribersCount > 1 ? "Subscribers" : "Subscriber"}
           </span>
-          <p onClick={() => router.push(`/subscription/${user._id}`)} className="px-2 dark:hover:text-gray-400 cursor-pointer transition-all duration-300 dark:text-gray-300">
+          <p onClick={() => router.push(`/subscription/${user._id}`)} className="ml-2 dark:hover:text-gray-400 cursor-pointer transition-all duration-300 dark:text-gray-300">
             {subscribedToCount}{" "}
               {subscribersCount.toString().length > 1
                 ? "Subscriptions"
                 : "Subscription"}
+                
           </p>
+                <div className=" flex items-center gap-3 mt-1 ml-4">
+                  <Switch 
+                  onCheckedChange={handleToggleAcceptMessages}
+                  checked={user.isAcceptingMessages!}
+                  id="accept-messages" />
+                  <Label htmlFor="accept-messages" className="hover:text-gray-600 text-gray-300">Accept Messages</Label>
+                </div>
         </div>
+        
       </div>
        {/* Section Bar to show home, videos, posts and tweets of the User */}
       <div className="px-4 rounded-lg md:px-12 flex items-center gap-12 md:text-lg">

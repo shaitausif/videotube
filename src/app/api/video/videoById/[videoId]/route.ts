@@ -1,12 +1,15 @@
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { Video } from "@/models/video.model";
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import path from "path";
 import fs from "fs/promises";
 import { deleteFromCloudinary, uploadOnCloudinary } from "@/lib/cloudinary";
 import ConnectDB from "@/lib/dbConnect";
 import { User } from "@/models/user.model";
 import mongoose from "mongoose";
+import { Comment } from "@/models/comment.model";
+import { Like } from "@/models/like.model";
+import { Dislike } from "@/models/dislike.models";
 
 // This function is responsible for getting the video by the video ID and appending the video ID in the user's watchHistory document field
 export async function GET(
@@ -111,17 +114,17 @@ export async function GET(
         },
       },
       {
-        $lookup : {
-         from : "dislikes",
-         localField : "_id",
-         foreignField : "video",
-         as : "dislikes"
-        }
+        $lookup: {
+          from: "dislikes",
+          localField: "_id",
+          foreignField: "video",
+          as: "dislikes",
+        },
       },
       {
         $addFields: {
           likes: { $size: "$likes" },
-          dislikes : { $size : "$dislikes"},
+          dislikes: { $size: "$dislikes" },
           isLiked: {
             $cond: {
               if: {
@@ -134,18 +137,18 @@ export async function GET(
               else: false,
             },
           },
-          isdisLiked : {
-            $cond : {
-              if : {
-              $in : [
-                new mongoose.Types.ObjectId(payload?._id as string),
-                "$dislikes.disLikedBy"
-              ]
+          isdisLiked: {
+            $cond: {
+              if: {
+                $in: [
+                  new mongoose.Types.ObjectId(payload?._id as string),
+                  "$dislikes.disLikedBy",
+                ],
+              },
+              then: true,
+              else: false,
             },
-            then : true,
-            else : false
-            }
-          }
+          },
         },
       },
       { $unwind: "$owner" },
@@ -296,6 +299,23 @@ export async function DELETE(
         { status: 500 }
       );
     }
+
+    // Now, I want to delete the comments, likes and dislikes associated with this video and for that I can use after function from next/server which will invoke the callback in it after the response
+    after(async () => {
+      // This is a cascading delete use case
+      const comments = await Comment.find({ video: videoId }).select("_id");
+
+      const commentIds = comments.map((c) => c._id);
+
+      await Like.deleteMany({ comment: { $in: commentIds } });
+
+      await Dislike.deleteMany({ comment: { $in: commentIds } });
+
+      await Like.deleteMany({ video: videoId });
+      await Dislike.deleteMany({ video: videoId });
+
+      await Comment.deleteMany({ video: videoId });
+    });
 
     return NextResponse.json(
       { success: true, message: "Video Deleted successfully" },

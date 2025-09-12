@@ -19,3 +19,4 @@ Mongoose
 Typescript
 Gemini API,
 Firebase Cloud Messaging(FCM) and service workers 
+Inngest for background and scheuled jobs

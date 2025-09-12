@@ -57,6 +57,7 @@ export async function GET(req: NextRequest){
         Video.countDocuments(filter),
     ]); 
 
+
     // Return the response using Next.js's NextResponse
     return NextResponse.json({
         success : true,

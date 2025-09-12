@@ -278,6 +278,9 @@ const toggleCommentDisLike = (commentId : string) => {
   return nativeApiClient.post(`/api/dislike/comment/${commentId}`)
 }
 
+const toggleAcceptMessages = () => {
+  return nativeApiClient.post(`/api/user/toggle-accept-messages`)
+}
 
 
 // Export all the API functions
@@ -328,5 +331,6 @@ export {
   toggleCommentDisLike,
   toggleVideoDisLike,
   togglePostDisLike,
-  toggleTweetDisLike
+  toggleTweetDisLike,
+  toggleAcceptMessages
 };
