@@ -36,7 +36,6 @@ export const verificationEmail = inngest.createFunction(
     async({event, step}) => {
         try {
             const { email, username, verificationCode } = event.data
-            console.log(verificationCode, username, email)
 
             const emailResponse = await step.run('get-email-res',async() => {
                 

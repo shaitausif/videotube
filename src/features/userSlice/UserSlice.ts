@@ -15,6 +15,7 @@ export interface UserState {
       VerifyCode?: string;
       VerifyCodeExpiry?: Date;
       isVerified?: boolean;
+      isPaid? : boolean
 }
 
 

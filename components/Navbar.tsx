@@ -17,7 +17,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -28,7 +27,6 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { persistor, RootState } from "@/store/store";
-import { clearUser } from "@/features/userSlice/UserSlice";
 import ThemeSwitcher from "./ThemeSwitcher";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 // Using dynamic imports for lazy loading that means the component will only load when it's needed not on initial render of the page
@@ -77,7 +75,7 @@ const Navbar = () => {
       <AnimatePresence>
         {isModalOpen && <DynamicModal onClose={() => setisModalOpen(false)} />}
       </AnimatePresence>
-      <div className="w-full px-4 mx-auto py-4 fixed dark:bg-[#161616]/50 flex md:pr-12 md:pl-6 justify-between items-center backdrop-blur-3xl z-10">
+      <div className="w-full px-4 mx-auto py-4 fixed dark:bg-[#161616]/50 flex md:pr-12 md:pl-6 justify-between items-center backdrop-blur-3xl z-20">
         {/* Logo */}
 
         <motion.div
@@ -178,7 +176,13 @@ const Navbar = () => {
                   >
                     Messages
                   </DropdownMenuItem>
-                  <DropdownMenuItem>Billing</DropdownMenuItem>
+                  {
+                    user?.isPaid ? (
+                      <DropdownMenuItem>Billing</DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem>Upgrade</DropdownMenuItem>
+                    )
+                  }
                   <DropdownMenuItem>Settings</DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <div>
