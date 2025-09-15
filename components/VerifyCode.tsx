@@ -72,16 +72,11 @@ const VerifyCode = ({email, redirect, setverify, verify}: {email: string, redire
 
 
   return (
-    <motion.div
-    initial={{ opacity: 0, y: -100 }}
-          animate={{
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            transition: { duration: 0.5, type: "spring", stiffness: 100 },
-          }}
-          exit={{ opacity: 0 }}
-    className="flex z-10 flex-col justify-between items-center p-6 rounded-lg dark:bg-[#161616] gap-4">
+    <div
+    
+    
+    
+    className="flex flex-col z-10 justify-between items-center p-6 m-0.5 dark:text-white dark:bg-main bg-white gap-4">
         <h1 className='md:text-xl text-lg'>Verification Code has been sent to {email}</h1>
         <form 
         className="flex flex-col gap-4"
@@ -103,13 +98,13 @@ const VerifyCode = ({email, redirect, setverify, verify}: {email: string, redire
             <InputOTPSlot index={5} />
           </InputOTPGroup>
         </InputOTP>
-        <Button disabled={isSubmitting} type='submit'>
+        <Button disabled={isSubmitting || verify}  type='submit'>
             {isSubmitting ? (
                 <Loader2 className='animate-spin' />
             ): "Verify OTP" }
         </Button>
         </form>
-      </motion.div>
+      </div>
   )
 }
 

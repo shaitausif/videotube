@@ -61,14 +61,14 @@ const ChangePassword = ({email}: {email: string}) => {
 
 
   return (
-    <div className="flex flex-col justify-between items-center p-6 rounded-lg dark:bg-[#161616] gap-4">
+    <div className="flex flex-col z-10 m-0.5 rounded-md  justify-between items-center p-6 dark:text-white dark:bg-main bg-white gap-4">
         <h1 className='md:text-xl text-lg'>Create New Password</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onsubmit)} className='w-full flex flex-col items-center gap-3 text-center'>
           <FormField
                       control={form.control}
                       name="password"
-                      render={({ field }) => (
+                      render={({ field }) => (  
                         <FormItem>
                           <FormControl>
                             <div className=" relative">

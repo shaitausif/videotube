@@ -3,7 +3,24 @@
 
 @custom-variant dark (&:is(.dark *));
 
+
+
+
+
 @theme inline {
+  --animate-aurora: aurora 60s linear infinite;
+  @keyframes aurora {
+    from {
+      background-position:
+        50% 50%,
+        50% 50%;
+    }
+    to {
+      background-position:
+        350% 50%,
+        350% 50%;
+    }
+  }
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -125,6 +142,65 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+
+/* With the theme directive we define special CSS variables called as theme variables */
+/* It's for defining a new pallet */
+/* @theme {
+  --breakpoint-* initial;
+  --breakpoint-sm : 560px;
+  --breakpoint-md : 580px;
+  --breakpoint-lg : 600px
+} */
+
+
+/* It's for extending the pallet */
+@theme {
+  --color-twitter-blue: #000;
+  --color-main : #161616;
+  --color-button : rgba(252, 132, 184, 0.937);
+  
+
+  @keyframes border-spin {
+    100% {
+      transform: rotate(-360deg);
+    }
+  }
+
+  --animate-border-spin: border-spin 5s linear infinite;
+}
+
+
+
+@layer utilities{
+  /* Act as a border */
+.card-wrapper{
+  @apply relative bg-gradient-to-b bg-gray-100 dark:from-slate-700 dark:to-slate-800 rounded-md overflow-hidden md:h-[100%] w-[calc(fit+2px)]
+}
+
+
+/* Act as a gradient */
+.card-wrapper::before{
+  background : conic-gradient(
+    rgba(244, 144, 182, 0.4) 0deg,
+    rgba(192, 132, 252, 0.4) 0deg,
+    transparent 80deg
+  );
+  @apply h-[200%]  w-[150%] left-[-25%] top-[-50%] content-[''] absolute animate-border-spin
+}
+
+
+/* Body */
+.card-content{
+  @apply  bg-gradient-to-b  rounded-2xl absolute w-[calc(100%-2px)] h-[calc(100%-2px)]
+}
+}
+
+
+
+
+
 
 .darkText{
   @apply text-[#A1A1A1]

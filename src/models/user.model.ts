@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 import jwt, { Secret } from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { boolean } from "zod";
 
 
 export default interface User {
@@ -16,9 +17,14 @@ export default interface User {
   VerifyCode?: string;
   VerifyCodeExpiry?: Date;
   isVerified?: boolean;
-  isPaid? : boolean;
   isAI? : boolean;
-  isAcceptingMessages? : boolean
+  isAcceptingMessages? : boolean;
+  subscription? : {
+    plan : String;
+    startDate : Date;
+    endDate : Date;
+    active : Boolean
+  }
 }
 
 const userSchema = new Schema(
@@ -76,10 +82,6 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    isPaid : {
-      type : Boolean,
-      default : false
-    },
       isAI : {
       type : Boolean,
       default : false
@@ -87,6 +89,12 @@ const userSchema = new Schema(
     isAcceptingMessages : {
       type : Boolean,
       default : true
+    },
+    subscription : {
+      plan : { type : String, enum : ["free","monthly","annual"], default : "free"},
+      startDate : { type : Date },
+      endDate : { type : Date },
+      active : { type : Boolean , default : false}
     }
   },
   { timestamps: true }

@@ -110,7 +110,7 @@ const Navbar = () => {
           {user && user._id ? (
             <Button
               onClick={() => setisModalOpen(true)}
-              className="rounded-full  md:rounded-2xl"
+              className="rounded-full md:rounded-2xl"
             >
               <Plus />
               <span className="md:block hidden">Create</span>
@@ -149,7 +149,7 @@ const Navbar = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="w-56 dark:bg-[#161616]/50"
+              className="w-56 dark:bg-[#161616]/70"
               align="start"
             >
               {user && user._id && (
@@ -177,10 +177,10 @@ const Navbar = () => {
                     Messages
                   </DropdownMenuItem>
                   {
-                    user?.isPaid ? (
+                    user?.subscription?.active ? (
                       <DropdownMenuItem>Billing</DropdownMenuItem>
                     ) : (
-                      <DropdownMenuItem>Upgrade</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push("/upgrade")}>Upgrade</DropdownMenuItem>
                     )
                   }
                   <DropdownMenuItem>Settings</DropdownMenuItem>

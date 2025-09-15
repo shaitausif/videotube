@@ -90,7 +90,7 @@ import { LocalStorage } from "@/utils";
           router.push(`reset-password/${data?.email}`)
           return;
         }
-        console.log(data)
+
         toast.warning(data.message)
       } catch (error) {
         console.log("Error:",error)
@@ -103,8 +103,9 @@ import { LocalStorage } from "@/utils";
 
     return (
       <>
-        <div className="h-screen w-screen justify-center flex items-center">
-          <motion.div
+        <div className="h-screen w-screen justify-center flex items-center pointer-events-auto">
+          <div className="w-fit h-fit">
+            <motion.div
           initial={{ opacity: 0, x: 100 }}
           animate={{
             opacity: 1,
@@ -113,7 +114,11 @@ import { LocalStorage } from "@/utils";
             transition: { duration: 0.3, type: "spring", stiffness: 100 },
           }}
           exit={{ opacity: 0 , x: -100}}
-          className="md:w-fit md:mx-auto mx-4 h-fit flex flex-col gap-6 dark:bg-[#161616] rounded-md px-6 justify-center py-6">
+          className="card-wrapper flex justify-center items-center"
+          >
+               <div
+          
+          className="md:w-fit m-0.5 z-10 h-fit flex flex-col gap-6 dark:bg-main dark:text-white bg-white rounded-md px-6 justify-center py-6">
             <div className="flex flex-col justify-center space-y-0.5 items-center">
               <h2 className="text-2xl">Login to your Account</h2>
               <p className="text-sm">
@@ -174,7 +179,7 @@ import { LocalStorage } from "@/utils";
                             
                             <FormMessage />
                             {
-                              !forgetSubmitting ? <div onClick={forgotPassword} className="text-sm text-gray-400 hover:text-gray-200 duration-400 cursor-pointer">Forgot Password?</div> : <Loader2  className="animate-spin size-5"/>
+                              !forgetSubmitting ? <div onClick={forgotPassword} className="text-sm text-gray-400 hover:text-gray-200 duration-400 w-fit cursor-pointer">Forgot Password?</div> : <Loader2  className="animate-spin size-5 "/>
                             }
                           </FormItem>
                         )}
@@ -203,7 +208,10 @@ import { LocalStorage } from "@/utils";
             <div className="flex flex-col gap-3  justify-center items-center">
               <OAuthProviders />
             </div>
+          </div>
           </motion.div>
+          </div>
+         
         </div>
       </>
     );

@@ -36,7 +36,7 @@ const UploadContentModal: React.FC<UploadContentModalProps> = ({ onClose }) => {
     }}
     exit={{ opacity: 0 }}
     onClick={() => onClose()}
-    className="fixed inset-0 z-20 flex bg-opacity-70 backdrop-blur-lg items-center justify-center transition-all duration-300 bg-black/50">
+    className="fixed inset-0 z-50 flex bg-opacity-70 backdrop-blur-lg items-center justify-center transition-all duration-300 bg-black/50">
       {/* Modal Box */}
       <motion.div
       initial={{

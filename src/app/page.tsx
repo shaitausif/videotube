@@ -12,19 +12,36 @@ import AllVideos from "../../components/AllVideos";
 import { LocalStorage, requestHandler } from "@/utils";
 import { getUserInfo, setOauthCustomToken } from "@/lib/apiClient";
 import useFcmToken from "./hooks/useFcmToken";
-import { Button } from "@/components/ui/button";
+import { BackgroundBeams } from "@/components/ui/background-beams";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 
 export default function Home() {
   const dispatch = useDispatch();
+  
   const user = useSelector((state: RootState) => state.user!);
   const { data: session } = useSession();
+   const searchParams = useSearchParams();
+   const router = useRouter();
+
+
+
+   useEffect(() => {
+    if (searchParams.get("paymentdone") == "true") {
+      setTimeout(() => {
+        toast.success("You are now a Premium User, Enjoy the amazing features!")
+        dispatch(setUser(user.subscription?.active === true))
+        router.push('/')
+      }, 3000); 
+    }
+  }, []);
   
   // This useEffect is responsible for setting up the user FCM registration token in the user's database
 
   // As hooks can't be called inside hooks
   const { token , notificationPermissionStatus } = useFcmToken()
     useEffect(() => {
-      if(user._id && token){
+      if(user._id && token && notificationPermissionStatus == 'granted'){
         
         const isFcmToken = LocalStorage.get("FcmToken")
       // If the generated token is different from the token in the LocalStorage then update the token in the database as well
@@ -142,6 +159,7 @@ export default function Home() {
         <main className="pt-20 md:px-8 px-4 w-full">
           <AllVideos /> 
         </main>
+        <BackgroundBeams />
       </SidebarProvider>
     </>
   );

@@ -133,7 +133,7 @@ const AllVideos = () => {
                     {formatDistanceToNow(new Date(video.createdAt!), {
                       addSuffix: true,
                     })}</span>
-                    <span className="hidden absolute bottom-0 right-0 group-hover:block transition-all duration-300 hover:bg-gray-700 p-1 rounded-full">
+                    <span className="md:hidden absolute bottom-0 right-0 group-hover:block transition-all duration-300 hover:bg-gray-700 p-1 rounded-full">
                         <DropdownMenu modal={false}>
                   <DropdownMenuTrigger onClick={(e) => e.stopPropagation() } asChild>
                     <EllipsisVertical className="w-6 h-6 p-1 rounded-full  transition-all duration-300 " />

@@ -15,7 +15,12 @@ export interface UserState {
       VerifyCode?: string;
       VerifyCodeExpiry?: Date;
       isVerified?: boolean;
-      isPaid? : boolean
+    subscription? : {
+    plan : String;
+    startDate : Date;
+    endDate : Date;
+    active : Boolean
+  }
 }
 
 

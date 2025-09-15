@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import { Video } from "@/models/video.model";
 import ConnectDB from "@/lib/dbConnect";
 import fs from 'fs/promises'
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import path from "path";
 import { uploadOnCloudinary } from "@/lib/cloudinary";
-
+import { inngest } from "@/inngest/client";
+import { User } from "lucide-react";
 
 
 
@@ -139,6 +140,24 @@ export async function POST(req: NextRequest){
             duration : video.duration
         })
 
+
+            // So, Here I want to implement the Subscriber Publisher model in my app and for that I need to use subscription Schema
+            // Such that I will search each document wherver the channel is the user._id and then Get all the subscriber Id's and I will populate those subscriber fields of each document with fcmTokens, _id and maybe username and then I will send the push notifications using fcm service to each user's each token
+            await inngest.send({
+                name : 'user/subscriber',
+                data : {
+                    userId : payload._id,
+                    title: payload.username,
+                    description: title,
+                    videoId : newVideo._id
+                }
+            })
+            
+
+
+
+
+     
         return NextResponse.json({success : true, data : newVideo , message : "Video Published successfully"},{status : 200})
 
     } catch (error) {

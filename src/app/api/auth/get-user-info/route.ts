@@ -12,7 +12,7 @@ export async function GET(req: NextRequest){
         if(!payload)return NextResponse.json({success : false, message : "Unauthorized"},{status : 401})
         
         await ConnectDB()
-        const user = await User.findOne({_id : payload._id})
+        const user = await User.findOne({_id : payload._id}).select("-password -verifyCode -isVerified -watchHistory -fcmTokens -verifyCodeExpiry")
         if(!user){
             return NextResponse.json({success : false, message : "User not found"},{status : 404})
         }

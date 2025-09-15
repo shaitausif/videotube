@@ -3,6 +3,7 @@ import Navbar from "../../../components/Navbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "../../../components/App-Sidebar";
 import { BackgroundBeams } from "@/components/ui/background-beams";
+import { AuroraBackground } from "@/components/ui/aurora-background";
 
 export default function MainLayout({
   children,
@@ -11,7 +12,7 @@ export default function MainLayout({
 }) {
   return (
     <>
-      <SidebarProvider className="z-100"  defaultOpen={false}>
+      <SidebarProvider className="" defaultOpen={false}>
       <AppSidebar />
       
       <header>
@@ -19,12 +20,14 @@ export default function MainLayout({
           <Navbar />
         </nav>
       </header>
-      <main className="pt-20 flex w-full">
+      <AuroraBackground className="overflow-x-hidden">
+      <main className="flex pt-12 w-full">
         
         {children}
         
       </main>
-      <BackgroundBeams/>
+      </AuroraBackground>
+
     </SidebarProvider>
     
     </>

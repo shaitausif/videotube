@@ -88,8 +88,9 @@ const page = () => {
 
   return (
     <>
-      <div className="h-screen w-screen justify-center flex items-center">
-        <motion.div
+      <div className="h-screen w-screen justify-center flex items-center pointer-events-auto">
+       <div className="h-fit w-fit my-6 mx-2">
+          <motion.div 
           initial={{ opacity: 0, x: 100 }}
           animate={{
             opacity: 1,
@@ -98,7 +99,11 @@ const page = () => {
             transition: { duration: 0.3, type: "spring", stiffness: 100 },
           }}
           exit={{ opacity: 0 , x: -100 }}
-          className="md:w-[50vw] md:mx-auto mx-4 h-fit flex flex-col gap-6 dark:bg-[#161616] rounded-md px-6 justify-center py-6"
+          
+          className="card-wrapper flex justify-center items-center">
+             <div
+          
+          className="md:w-[50vw] z-10 m-0.5 h-fit flex flex-col gap-6 dark:text-white dark:bg-[#161616] bg-white rounded-md px-6 justify-center py-6"
         >
           <div className="flex flex-col justify-center space-y-0.5 items-center">
             <h2 className="text-2xl">Create an Account</h2>
@@ -275,7 +280,9 @@ const page = () => {
           <div className="flex flex-col gap-3  justify-center items-center">
            <OAuthProviders />
           </div>
-        </motion.div>
+        </div>
+          </motion.div>
+       </div>
       </div>
     </>
   );

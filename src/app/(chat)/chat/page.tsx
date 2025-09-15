@@ -32,6 +32,7 @@ import {
 import Image from "next/image";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { BackgroundBeams } from "@/components/ui/background-beams";
 
 
 const CONNECTED_EVENT = "connected";
@@ -812,6 +813,7 @@ const page = () => {
           )}
         </div>
       </div>
+      <BackgroundBeams />
     </>
   );
 };

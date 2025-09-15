@@ -11,7 +11,7 @@ const Page = () => {
 
   return (
     <>
-      <div className="flex justify-center w-full items-center py-12">
+      <div className="flex justify-center w-full items-center py-12 pointer-events-auto">
         <div className="w-fit md:mx-auto mx-4 md:w-[35vw] flex flex-col gap-5 justify-center">
         <VerifyCode email={email} redirect={true}  />
         </div>
