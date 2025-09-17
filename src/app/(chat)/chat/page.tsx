@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { socket } from "@/socket";
 import { ChatListItemInterface, ChatMessageInterface } from "@/interfaces/chat";
 import { toast } from "sonner";
@@ -10,8 +10,14 @@ import {
   requestHandler,
 } from "@/utils";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   createorGetAIChat,
   deleteMessage,
+  enhanceMessages,
   getChatMessages,
   getUserChats,
   sendAIMessage,
@@ -30,10 +36,11 @@ import {
   XCircleIcon,
 } from "@heroicons/react/20/solid";
 import Image from "next/image";
-import { X } from "lucide-react";
+import { Icon, Star, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { BackgroundBeams } from "@/components/ui/background-beams";
-
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const CONNECTED_EVENT = "connected";
 const DISCONNECT_EVENT = "disconnect";
@@ -48,8 +55,6 @@ const MESSAGE_DELETE_EVENT = "messageDeleted";
 
 const page = () => {
   const user = useSelector((state: RootState) => state.user);
-
-
 
   // Create a reference using 'useRef' to hold the currently selected chat.
   // 'useRef' is used here because it ensures that the 'currentChat' value within socket event callbacks
@@ -80,13 +85,13 @@ const page = () => {
 
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]); // To store files attached to messages
   const [isSendingMessageToAI, setisSendingMessageToAI] = useState(false);
-  const [isInChat, setisInChat] = useState(false)
+  const [isInChat, setisInChat] = useState(false);
+  const [isLoadingMessage, setisLoadingMessage] = useState(false);
   const router = useRouter();
 
   /**
    *  A  function to update the last message of a specified chat to update the chat list
    */
-
 
   const updateChatLastMessage = (
     chatToUpdateId: string,
@@ -131,7 +136,7 @@ const page = () => {
         },
         (error) => {
           // @ts-ignore
-          toast.error(error.message)
+          toast.error(error.message);
         }
       );
     }
@@ -145,19 +150,20 @@ const page = () => {
         setChats(data || []);
 
         // If user's localStorage contains a chat which doesn't exists in the user's chat then remove the currentChat from localStorage
-        const _currentChat = LocalStorage.get("currentChat")
-        if(_currentChat){
-          const isChatExist = data.find((data: any) => data._id === currentChat.current?._id || "")
-        if(!isChatExist) {
-          LocalStorage.remove("currentChat")
-          currentChat.current = null
+        const _currentChat = LocalStorage.get("currentChat");
+        if (_currentChat) {
+          const isChatExist = data.find(
+            (data: any) => data._id === currentChat.current?._id || ""
+          );
+          if (!isChatExist) {
+            LocalStorage.remove("currentChat");
+            currentChat.current = null;
+          }
         }
-        }
-        
       },
       (error) => {
         // @ts-ignore
-        toast.error(error.message)
+        toast.error(error.message);
       }
     );
   };
@@ -194,6 +200,22 @@ const page = () => {
     );
   };
 
+  const handleEnhanceMessage = async (content: string) => {
+    if (!content) return toast.warning("Content is required!");
+    requestHandler(
+      async () => await enhanceMessages(content),
+      setisLoadingMessage,
+      (res) => {
+        setMessage(res.data);
+      },
+      (err) => {
+        // @ts-ignore
+        toast.error(err.message);
+        console.log(err);
+      }
+    );
+  };
+
   // Function to send Message to the AI and then get the response on that message
   const sendAIChatMessage = async () => {
     // If no current chat ID exists or there's no socket connection, exit the function
@@ -204,12 +226,10 @@ const page = () => {
 
     if (!message) return toast.warning("Enter the message first");
 
-
     await requestHandler(
       async () => await sendAIMessage(currentChat.current?._id || "", message),
       setisSendingMessageToAI,
       (res) => {
-        
         // setMessages((prev) => [...res.data, ...prev]); // Updating message in the UI
         // updateChatLastMessage(currentChat.current?._id || "", res.data[0]);
         setMessages((prev) => [res.data, ...prev]); // Updating message in the UI
@@ -226,7 +246,8 @@ const page = () => {
     if (!currentChat.current?._id || !socket)
       return toast.warning("No chat is selected");
 
-    if(!message && attachedFiles.length <= 0) return toast.warning("Message or Attachment is required")
+    if (!message && attachedFiles.length <= 0)
+      return toast.warning("Message or Attachment is required");
 
     // Emit a STOP_TYPING_EVENT to inform other users/participants that typing has stopped
     socket.emit(STOP_TYPING_EVENT, currentChat.current?._id);
@@ -243,7 +264,7 @@ const page = () => {
       null,
       // On successful message sending, clear the message input and attached files, then update the UI
       (res) => {
-         // Clear the message input
+        // Clear the message input
         setAttachedFiles([]); // Clear the list of attached files
         setMessages((prev) => [res.data, ...prev]); // Update messages in the UI
         updateChatLastMessage(currentChat.current?._id || "", res.data); // Update the last message in the chat
@@ -252,7 +273,7 @@ const page = () => {
       // If there's an error during the message sending process, raise a toast
       (err) => {
         // @ts-ignore
-        toast.error(err.message)
+        toast.error(err.message);
       }
     );
   };
@@ -264,13 +285,14 @@ const page = () => {
       async () => await deleteMessage(message.chat, message._id),
       null,
       (res) => {
-
-        setMessages((prev) => prev.filter((msg) => msg._id !== res?.data?._id || ""));
+        setMessages((prev) =>
+          prev.filter((msg) => msg._id !== res?.data?._id || "")
+        );
         updateChatLastMessageOnDeletion(message.chat, message);
       },
       (err) => {
         // @ts-ignore
-        toast.error(err.message)
+        toast.error(err.message);
       }
     );
   };
@@ -354,7 +376,6 @@ const page = () => {
    * Handles the event when a new message is received.
    */
   const onMessageReceived = (message: ChatMessageInterface) => {
-
     // Check if the received message belongs to the currently active chat
     if (message?.chat !== currentChat.current?._id) {
       // If not, update the list of unread messages
@@ -425,48 +446,46 @@ const page = () => {
 
   useEffect(() => {
     // Fetch the chat list from the server.
-    const starterFunction = async() => {
+    const starterFunction = async () => {
       createAIChat();
- 
+
       await getChats();
-      const _currentChat = LocalStorage.get("currentChat")
+      const _currentChat = LocalStorage.get("currentChat");
       // If there's a current chat saved in local storage:
-    if (_currentChat) {
-      // Set the current chat reference to the one from local storage.
-      currentChat.current = _currentChat;
-      // If the socket connection exists, emit an event to join the specific chat using its ID.
-      socket?.emit(JOIN_CHAT_EVENT, _currentChat.current?._id);
-      // Fetch the messages for the current chat.
-      getMessages();
-    }
-    }
-    starterFunction()
+      if (_currentChat) {
+        // Set the current chat reference to the one from local storage.
+        currentChat.current = _currentChat;
+        // If the socket connection exists, emit an event to join the specific chat using its ID.
+        socket?.emit(JOIN_CHAT_EVENT, _currentChat.current?._id);
+        // Fetch the messages for the current chat.
+        getMessages();
+      }
+    };
+    starterFunction();
     // An empty dependency array ensures this useEffect runs only once, similar to componentDidMount.
   }, []);
 
+  // Second useEffect to handle logic that depends on the 'chats' state
+  // useEffect(() => {
+  //   // This code will only run after 'chats' has been updated
+  //   if (chats.length > 0) { // Check if chats has been populated
+  //     const _currentChat = LocalStorage.get("currentChat");
+  //     if(_currentChat){
+  //       const isChatExist = chats.find((chat) => chat._id === _currentChat._id);
 
-// Second useEffect to handle logic that depends on the 'chats' state
-// useEffect(() => {
-//   // This code will only run after 'chats' has been updated
-//   if (chats.length > 0) { // Check if chats has been populated
-//     const _currentChat = LocalStorage.get("currentChat");
-//     if(_currentChat){
-//       const isChatExist = chats.find((chat) => chat._id === _currentChat._id);
-      
+  //     if (!isChatExist) {
+  //       localStorage.removeItem("currentChat");
+  //       currentChat.current = null;
+  //       return;
+  //     }
+  //     currentChat.current = _currentChat;
+  //       setisInChat(true)
+  //       socket?.emit(JOIN_CHAT_EVENT, _currentChat.current?._id);
+  //       getMessages();
+  //   }
 
-//     if (!isChatExist) {
-//       localStorage.removeItem("currentChat");
-//       currentChat.current = null;
-//       return;
-//     }
-//     currentChat.current = _currentChat;
-//       setisInChat(true)
-//       socket?.emit(JOIN_CHAT_EVENT, _currentChat.current?._id);
-//       getMessages();
-//   }
-
-//   }
-// }, []); // Dependency array includes 'chats'
+  //   }
+  // }, []); // Dependency array includes 'chats'
 
   // This useEffect handles the setting up and tearing down of socket event listeners.
   useEffect(() => {
@@ -528,7 +547,9 @@ const page = () => {
       />
 
       <div className="w-full justify-between items-stretch h-screen flex flex-shrink-0">
-        <div className={`${isInChat ? "hidden" : "block"} md:block w-full md:w-1/3 relative dark:ring-white overflow-y-auto px-4`}>
+        <div
+          className={`${isInChat ? "hidden" : "block"} md:block w-full md:w-1/3 relative dark:ring-white overflow-y-auto px-4`}
+        >
           <div className="z-10 w-full sticky top-0  py-4 flex justify-between items-center gap-4">
             <Input
               placeholder="Search user or group..."
@@ -564,7 +585,6 @@ const page = () => {
               .map((chat) => {
                 return (
                   <ChatItem
-
                     chat={chat}
                     isActive={chat._id === currentChat.current?._id}
                     unreadCount={
@@ -579,9 +599,9 @@ const page = () => {
                       LocalStorage.set("currentChat", chat);
                       currentChat.current = chat;
                       setMessage("");
-                      
+
                       getMessages();
-                      setisInChat(true)
+                      setisInChat(true);
                     }}
                     key={chat._id}
                     onChatDelete={(chatId) => {
@@ -598,7 +618,9 @@ const page = () => {
               })
           )}
         </div>
-        <div className={`${isInChat ? "block" : 'hidden'} w-full md:block md:w-2/3 border-l-[0.1px] border-secondary`}>
+        <div
+          className={`${isInChat ? "block" : "hidden"} w-full md:block md:w-2/3 border-l-[0.1px] border-secondary`}
+        >
           {currentChat.current && currentChat.current?._id ? (
             <>
               <div className="p-4 sticky top-0 bg-dark z-20 flex justify-between items-center w-full border-b-[0.1px] border-secondary">
@@ -613,7 +635,6 @@ const page = () => {
                               alt="Group Icon"
                               height={30}
                               width={30}
-                              
                               key={participant._id}
                               src={participant.avatar!}
                               className={classNames(
@@ -632,16 +653,21 @@ const page = () => {
                     </div>
                   ) : (
                     <Image
-                    onClick={() =>  {
-                      if(currentChat.current?.isGroupChat) return;
-                      const otherUser = currentChat.current?.participants.find((p) => p.username !== user.username)
-                      if(otherUser?._id === process.env.NEXT_PUBLIC_AI_BOT_ID) return
-                      router.push(`/c/${otherUser?.username}`)
-                    }}
+                      onClick={() => {
+                        if (currentChat.current?.isGroupChat) return;
+                        const otherUser =
+                          currentChat.current?.participants.find(
+                            (p) => p.username !== user.username
+                          );
+                        if (
+                          otherUser?._id === process.env.NEXT_PUBLIC_AI_BOT_ID
+                        )
+                          return;
+                        router.push(`/c/${otherUser?.username}`);
+                      }}
                       alt="Profile Icon"
                       height={40}
                       width={40}
-                      
                       className="h-14 w-14 rounded-full flex flex-shrink-0 object-cover"
                       src={
                         getChatObjectMetaData(currentChat.current, user!)
@@ -649,16 +675,19 @@ const page = () => {
                       }
                     />
                   )}
-                  <div onClick={() =>  {
-                      if(currentChat.current?.isGroupChat) return;
-                      const otherUser = currentChat.current?.participants.find((p) => p.username !== user.username)
-                      if(otherUser?._id === process.env.NEXT_PUBLIC_AI_BOT_ID) return
-                      router.push(`/c/${otherUser?.username}`)
-                    }}>
+                  <div
+                    onClick={() => {
+                      if (currentChat.current?.isGroupChat) return;
+                      const otherUser = currentChat.current?.participants.find(
+                        (p) => p.username !== user.username
+                      );
+                      if (otherUser?._id === process.env.NEXT_PUBLIC_AI_BOT_ID)
+                        return;
+                      router.push(`/c/${otherUser?.username}`);
+                    }}
+                  >
                     <p className="cursor-pointer font-bold flex md:gap-5">
                       {getChatObjectMetaData(currentChat.current, user!).title}
-                     
-                      
                     </p>
 
                     <small className="text-zinc-400">
@@ -668,14 +697,15 @@ const page = () => {
                       }
                     </small>
                   </div>
-                  
-                  
                 </div>
-                <X onClick={() => {
-                  setisInChat(false)
-                  currentChat.current = null
-                  localStorage.removeItem("currentChat")
-                }} className="w-5 md:hidden" />
+                <X
+                  onClick={() => {
+                    setisInChat(false);
+                    currentChat.current = null;
+                    localStorage.removeItem("currentChat");
+                  }}
+                  className="w-5 md:hidden"
+                />
               </div>
               <div
                 className={classNames(
@@ -694,13 +724,13 @@ const page = () => {
                   <>
                     {isTyping ? <Typing /> : null}
                     {messages?.map((msg) => {
-                      
                       return (
-                        
                         <MessageItem
                           key={msg._id}
                           isOwnMessage={msg.sender?._id === user?._id}
-                          isAIMessage={msg.sender._id === process.env.NEXT_PUBLIC_AI_BOT_ID}  
+                          isAIMessage={
+                            msg.sender._id === process.env.NEXT_PUBLIC_AI_BOT_ID
+                          }
                           isGroupChatMessage={currentChat.current?.isGroupChat}
                           message={msg}
                           deleteChatMessage={() => deleteChatMessage(msg)}
@@ -761,48 +791,87 @@ const page = () => {
                   <PaperClipIcon className="md:w-6 md:h-6 w-4 h-4" />
                 </label>
 
-                <Input
-                  placeholder="Message"
-                  value={message}
-                  
-                  // disabled={isSendingMessageToAI}
-                  onChange={(e) => {
-                    setMessage(e.target.value)
-                    // handleOnMessageChange(e)
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      if (currentChat.current?.name === "AI Chat") {
-                        setMessage("");
-                        sendAIChatMessage();
-                      } else {
-                        setMessage("");
-                        sendChatMessage();
+                <div className="relative w-full">
+                  {user.subscription?.active ? (
+                    <span
+                      onClick={() => {
+                        if (!isLoadingMessage) {
+                          setMessage("")
+                          handleEnhanceMessage(message);
+                        }
+                      }}
+                      className="absolute right-3 top-3"
+                    >
+                       <Tooltip>
+                        <TooltipTrigger asChild>
+                         <Star/>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>AI Message Enhancer</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </span>
+                  ) : (
+                    <span className="absolute right-3 top-3">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                         <Star onClick={() => router.push('/upgrade')} className="opacity-50"/>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Upgrade your plan</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </span>
+                  )}
+                  {
+                    isLoadingMessage && (
+                      <span className="absolute top-2 left-2"> 
+                        <Skeleton className="h-[34px] bg-gray-500 w-[600px] rounded-lg" />
+                      </span>
+                    )
+                  }
+                  <Input
+                    className="w-[100%]"
+                    placeholder="Message"
+                    value={message}
+                    disabled={isLoadingMessage}
+                    // disabled={isSendingMessageToAI}
+                    onChange={(e) => {
+                      setMessage(e.target.value);
+                      // handleOnMessageChange(e)
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        if (currentChat.current?.name === "AI Chat") {
+                          setMessage("");
+                          sendAIChatMessage();
+                        } else {
+                          setMessage("");
+                          sendChatMessage();
+                        }
                       }
-                    }
-                  }}
-                />
+                    }}
+                  />
+                </div>
                 <button
                   onClick={
-                    
                     currentChat.current.name === "AI Chat"
-
                       ? () => {
-                        setMessage("");
-                        sendAIChatMessage()
-                        
-                      }
+                          setMessage("");
+                          sendAIChatMessage();
+                        }
                       : () => {
-                        setMessage("");
-                        sendChatMessage()
-                      }
+                          setMessage("");
+                          sendChatMessage();
+                        }
                   }
                   disabled={
-                    (!message && attachedFiles?.length <= 0) || isSendingMessageToAI
+                    (!message && attachedFiles?.length <= 0) ||
+                    isSendingMessageToAI
                   }
                   className="p-4 rounded-full bg-dark hover:bg-secondary disabled:opacity-50"
                 >
-                  <PaperAirplaneIcon className="md:w-6 md:h-6 w-4 h-4"  />
+                  <PaperAirplaneIcon className="md:w-6 md:h-6 w-4 h-4" />
                 </button>
               </div>
             </>

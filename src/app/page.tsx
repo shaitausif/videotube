@@ -15,6 +15,10 @@ import useFcmToken from "./hooks/useFcmToken";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import dynamic from "next/dynamic";
+
+const DynamicModal = dynamic(() => import("../../components/user/SubExpiryModal"))
+
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -23,6 +27,7 @@ export default function Home() {
   const { data: session } = useSession();
    const searchParams = useSearchParams();
    const router = useRouter();
+   const [isExpireModalOpen, setisExpireModalOpen] = useState(false)
 
 
 
@@ -30,7 +35,7 @@ export default function Home() {
     if (searchParams.get("paymentdone") == "true") {
       setTimeout(() => {
         toast.success("You are now a Premium User, Enjoy the amazing features!")
-        dispatch(setUser(user.subscription?.active === true))
+        fetchUserData()
         router.push('/')
       }, 3000); 
     }
@@ -94,8 +99,27 @@ export default function Home() {
       }, 2000);
       return () => clearTimeout(timer) // cleanup on unmount
     },[session])
-    
 
+
+
+    
+    const fetchUserData = async () => {
+      
+      requestHandler(
+        async () => await getUserInfo(),
+        null,
+        (res) => {
+          dispatch(setUser(res.data))
+          console.log(res)
+          if(res.isPlanExpired && res.isPlanExpired !== undefined || null){
+            setTimeout(() => {
+              setisExpireModalOpen(true)
+            }, 3000);
+          }
+        },
+        (err) => console.log(err)
+      )
+    };
 
   useEffect(() => {
     if (user && user._id) return;
@@ -103,45 +127,11 @@ export default function Home() {
     // This localStorage boolean value will help to optimize the performance of app as it will decrease the server calls and will only call if the user has loggedIn
     const isLoggedIn = LocalStorage.get("isLoggedIn")
     if(isLoggedIn){
-      const fetchUserData = async () => {
       
-      requestHandler(
-        async () => await getUserInfo(),
-        null,
-        (res) => {
-          dispatch(setUser(res.data))
-        },
-        (err) => console.log(err)
-      )
-    };
     fetchUserData();
     }
     
   }, [session, user]);
-
-  const handleSubmit = async() => {
-    const response = await fetch(`/api/user/send-notification`,{
-      method : "POST",
-      headers : {
-        "Content-Type" : 'application/json'
-      },
-      credentials : 'include',
-      body : JSON.stringify({
-        token,
-        title : "Hey, See the notification",
-        message : "Please see this notification",
-        link : "http://localhost:3000/chat"
-      })
-     
-    })
-     if(response.ok){
-      const result = await response.json()
-      console.log(result)         
-      }
-
-
-  }
-
 
 
 
@@ -149,7 +139,13 @@ export default function Home() {
 
   return (
     <>
+    {
+      isExpireModalOpen && (
+        <DynamicModal onClose={() => setisExpireModalOpen(false)} />
+      )
+    }
       <SidebarProvider defaultOpen={false}>
+        
         <AppSidebar />
         <header>  
           <nav>

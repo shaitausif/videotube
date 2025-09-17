@@ -20,3 +20,10 @@ Typescript
 Gemini API,
 Firebase Cloud Messaging(FCM) and service workers 
 Inngest for background and scheuled jobs
+
+
+
+<!-- Algorithms -->
+ - For subscription expiry of users
+
+I will use Inngest for cron jobs which will automatically expire the subscription as per the user's subscription endDate from their model after every 24 hours and also I will use the login API route or the API route which gets executed after users successfully logs in to their account for verifying that if the user's subscription has expired or not and if it does then I will show a popup to the user stating that your subscription has been expired and will also modify the user's subscription field. And I will also send an Email notification to users to let them know that their plan has been expired.

@@ -5,7 +5,7 @@ import { inngest } from "../client";
 
 
 export const registrationEmail = inngest.createFunction(
-    { id : "user-registraion" },
+    { id : "user-registraion" },    
     { event : 'user/sign-up' },
 
     async({ event, step }) => {

@@ -81,6 +81,13 @@ const sendMessage = (chatId: string, content: string, attachments: File[]) => {
 };
 
 
+
+const enhanceMessages = async(content : string) => {
+ 
+  return apiClient.patch(`/chat-app/messages/enhance`,{content: content})
+}
+
+
 const sendAIMessage = (chatId: string, content : string) => {
   return apiClient.post(`/chat-app/messages/ai/${chatId}`,{content: content})
 }
@@ -332,5 +339,6 @@ export {
   toggleVideoDisLike,
   togglePostDisLike,
   toggleTweetDisLike,
-  toggleAcceptMessages
+  toggleAcceptMessages,
+  enhanceMessages
 };

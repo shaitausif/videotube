@@ -3,4 +3,5 @@ export interface FreeAPISuccessResponseInterface {
   message: string;
   statusCode: number;
   success: boolean;
+  isPlanExpired? : boolean
 }

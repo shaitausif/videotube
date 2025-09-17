@@ -8,6 +8,7 @@ import Script from "next/script";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
+import {motion} from 'motion/react'
 
 const Step = ({ title }: { title: string }) => {
   return (
@@ -85,15 +86,53 @@ const page = () => {
         <div className="w-full md:mx-12  rounded-md h-[80vh] flex justify-center items-start">
           <div className="flex flex-col md:gap-6 gap-4 items-center py-8 md:py-16">
             {/* Plans and pricing */}
-            <p className="text-3xl md:text-4xl font-bold">Plans and Pricing</p>
-            <div className="flex justify-center md:text-base text-sm flex-col items-center">
+            <motion.p
+            initial={{
+              y : -50,
+              opacity : 0,
+            }}
+            animate={{
+              y : 0,
+              opacity : 1
+            }}
+            transition={{
+              duration : 0.5
+            }}
+            className="text-3xl md:text-4xl font-bold">Plans and Pricing</motion.p>
+            <motion.div
+            initial={{
+              y : -30,
+              opacity : 0,
+            }}
+            animate={{
+              y : 0,
+              opacity : 1
+            }}
+            transition={{
+              duration : 0.5,
+              delay : 0.5
+            }}
+            className="flex justify-center md:text-base text-sm flex-col items-center">
               <p>Resolve unlimited credits when you pay yearly, and </p>
               <p>save on your plan</p>
-            </div>
+            </motion.div>
 
             {/* Monthly and Anually Switch */}
 
-            <div className="flex justify-center items-center bg-gray-700/20 rounded-2xl cursor-pointer">
+            <motion.div
+            animate={{
+              opacity : 1,
+              y : 0
+            }}
+            initial={{
+              y : -10,
+              opacity : 0
+            }}
+            transition={{
+              duration : 0.8,
+              delay : 1
+            }}
+            className="flex justify-center items-center bg-gray-700/20 rounded-2xl cursor-pointer">
               <div
                 onClick={() => setisMonthlySubscription(true)}
                 className={`md:px-6 px-4 text-sm md:text-base  py-1.5 rounded-2xl ${isMonthlySubscription ? "bg-black" : ""}`}
@@ -109,10 +148,19 @@ const page = () => {
               >
                 Annual
               </div>
-            </div>
+            </motion.div>
 
             {/* Price Cards */}
-            <div className="flex md:flex-row flex-col-reverse justify-center gap-6 py-6">
+            <motion.div
+            initial={{
+              opacity : 0,
+              scale : 0.95
+            }}
+            animate= {{ opacity : 1, scale : 1}}
+            transition={{
+              duration : 2, delay : 1.8
+            }}
+            className="flex md:flex-row flex-col-reverse justify-center gap-6 py-6">
               {/* Free plan */}
 
               <CardSpotlight className="md:h-100 md:w-96 mx-4 md:mx-0 text-wrap">
@@ -170,7 +218,7 @@ const page = () => {
                   Get started with Premium
                 </Button>
               </CardSpotlight>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import {inngest} from '@/inngest/client'
 import { registrationEmail } from "@/inngest/functions/registrationEmail";
 import { verificationEmail } from "@/inngest/functions/verificationEmail";
 import { subscribersNotification } from "@/inngest/functions/subscribersNotification";
+import { subscriptionCron } from "@/inngest/functions/subscriptionCron";
 
 // Create an API that serves zero functions
 export const { GET, POST, PUT } = serve({
@@ -10,6 +11,7 @@ export const { GET, POST, PUT } = serve({
   functions: [
    registrationEmail,
    verificationEmail,
-   subscribersNotification
+   subscribersNotification,
+   subscriptionCron
   ],
 });
