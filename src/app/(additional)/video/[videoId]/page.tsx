@@ -30,7 +30,7 @@ import { RootState } from "@/store/store";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
-import { ThumbsDown, ThumbsUp, VideoOffIcon } from "lucide-react";
+import { Plus, ThumbsDown, ThumbsUp, VideoOffIcon } from "lucide-react";
 import VideoSkel from "../../../../../components/skeletons/VideoSkel";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
@@ -72,9 +72,8 @@ const page = () => {
   const [disLikesCount, setdisLikesCount] = useState(0)
   const [isLiked, setisLiked] = useState(false);
   const [isDisLiked, setisDisLiked] = useState(false)
-  const [commentsCount, setcommentsCount] = useState(0);
   const [openDescription, setopenDescription] = useState(false);
-  const [isPostingComment, setisPostingComment] = useState(false);
+  const [isCommentOpen, setisCommentOpen] = useState(false)
   const user = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
@@ -231,22 +230,22 @@ const page = () => {
         <VideoSkel />
       ) : (
         video && (
-          <div className="grid grid-cols-5 w-full  mx-2 md:mx-12">
-            <div className="col-span-3 space-y-5">
+          <div className="md:grid md:grid-cols-5 w-full  mx-2 md:mx-12">
+            <div className="md:col-span-3 space-y-5">
               {/* Video */}
-              <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-3 md:gap-5">
                 <video
-                  className="h-[70vh] w-full rounded-2xl"
+                  className="md:h-[70vh] w-full md:rounded-xl"
                   controls
                   src={video?.videoFile}
                 ></video>
                 <div className="space-y-2 md:space-y-4 px-2">
                   {/* Title of the video */}
-                  <p className="text-xl md:text-2xl font-semibold ">
+                  <p className="text-lg md:text-2xl font-semibold ">
                     {video?.title}
                   </p>
                   {/* Channel of the Video */}
-                  <div className="flex justify-between items-center">
+                  <div className="flex w-full md:flex-row flex-col justify-between items-center">
                     {/* Avatar of the Channel */}
                     <div
                       onClick={() => {
@@ -256,15 +255,16 @@ const page = () => {
                         }
                         // Push User's to the Channel Profile
                       }}
-                      className="flex items-center gap-6  cursor-pointer rounded-full transition-all duration-300 dark:hover:bg-black/50"
+                      className="flex items-center  justify-between md:w-fit w-full gap-3 md:gap-6  cursor-pointer rounded-full transition-all duration-300 dark:hover:bg-black/50"
                     >
-                      <div
+                      <div className="flex md:gap-6 items-center gap-3">
+                        <div
                         onClick={() => {
                           if (user._id !== video.owner._id) {
                             router.push(`/c/${video.owner.username}`);
                           }
                         }}
-                        className="relative w-[50px] h-[50px]"
+                        className="relative h-[35px] w-[35px] md:w-[50px] md:h-[50px]"
                       >
                         <Image
                           className="object-cover rounded-full"
@@ -280,19 +280,20 @@ const page = () => {
                             router.push(`/c/${video.owner.username}`);
                           }
                         }}
-                        className="flex flex-col "
+                        className="flex md:flex-col md:text-base text-sm"
                       >
                         <p>{video?.owner.fullName}</p>
-                        <p>{subscribersCount} Subscribers</p>
+                        <p className="text-gray-400 flex md:pl-0 pl-1.5">{subscribersCount}<span className="hidden md:block pl-1.5">Subscribers</span></p>
+                      </div>
                       </div>
                       {/* Subscribe button */}
-                      <div className={`mx-5 font-bold`}>
+                      <div className={`md:mx-5 font-bold`}>
                         {user && user._id ? (
                           user._id === video.owner._id ? (
                             // Button if it's user's own channel
                             <Button
                               className={`
-                    rounded-3xl font-semibold text-md
+                    rounded-3xl font-semibold text-sm md:text-md 
                     `}
                             >
                               Your Channel
@@ -302,7 +303,7 @@ const page = () => {
                               <AlertDialogTrigger asChild>
                                 <Button
                                   className={`
-                    rounded-3xl font-semibold hover:bg-gray-300 text-md text-black bg-gray-200 transition-all duration-300 dark:bg-black dark:text-white dark:hover:bg-gray-800
+                    rounded-3xl font-semibold hover:bg-gray-300 text-sm md:text-md text-black bg-gray-200 transition-all duration-300 dark:bg-black dark:text-white dark:hover:bg-gray-800
                     `}
                                 >
                                   Subscribed
@@ -337,7 +338,7 @@ const page = () => {
                                 handleToggleSubscribe(video.owner._id)
                               }
                               className={`
-                    rounded-3xl font-semibold text-md
+                    rounded-3xl font-semibold text-sm md:text-md
                     `}
                             >
                               Subscribe
@@ -348,7 +349,7 @@ const page = () => {
                           <Button
                             onClick={() => router.push("/sign-in")}
                             className={`
-                    rounded-3xl font-semibold text-md
+                    rounded-3xl font-semibold text-sm md:text-md
                     `}
                           >
                             Sign in
@@ -358,7 +359,7 @@ const page = () => {
                     </div>
                     {/* Like and Dislike button */}
 
-                    <div className="flex gap-5 justify-center items-center">
+                    <div className="flex gap-3 w-full md:w-fit md:gap-5 md:justify-center items-center">
                       <button
                         className={`w-15 h-15 rounded-full  transition-all duration-300 flex items-center justify-center `}
                       >
@@ -452,12 +453,28 @@ const page = () => {
                   </div>
                   
                   {/* Video Comments POST and GET */}
-                <AllComments videoId={video._id as string} />
+                <div className="md:block hidden">
+                    <AllComments videoId={video._id as string} />
+                </div>
+                <div className="md:hidden block">
+                    {
+                      isCommentOpen ? (
+                        <div className="relative mt-8">
+                          <Plus onClick={() => setisCommentOpen(false)} className="absolute -top-2 right-0 rotate-45" />
+                          <AllComments videoId={video._id as string} />
+                        </div>
+                      ) : (
+                        <div onClick={() => setisCommentOpen(true)} className="w-full text-sm text-gray-300 rounded-xl bg-gray-700 px-8 py-2 my-2">
+                          See all comments...
+                        </div>
+                      )
+                    }
+                </div>
                 </div>
               </div>
             </div>
             {/* Suggesting Videos */} 
-            <div className="col-span-2 w-full">
+            <div className="md:col-span-2 w-full">
               <SuggestVideos videoId={video._id as string} />
             </div>
           </div>

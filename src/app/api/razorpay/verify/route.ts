@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
             // Updating the payment status in DB
             const updatedPayment = await Payment.findOneAndUpdate({order_id : body.razorpay_order_id}, { done  : true }, {new : true})
             // Update the user subscription status
-            console.log(updatedPayment)
+
             const endDate = new Date(Date.now() + (updatedPayment.plan === "monthly" ? 
                 30*24*60*60*1000
                 : 365*24*60*60*1000

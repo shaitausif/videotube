@@ -223,18 +223,18 @@ const AllComments = ({ videoId }: { videoId: string }) => {
           </Button>
         </div>
       )}
-      <div className="w-full m-5 py-3 md:py-6">
+      <div className="w-full md:m-5 my-2 py-3 md:py-6">
         {loadingComments ? (
           <Loader />
         ) : commentsCount > 0 && videoComments.length ? (
           <div className="flex flex-col gap-4 md:gap-6 ">
             {videoComments.map((comment) => (
-              <div key={comment?._id as string} className="flex gap-5 relative">
+              <div key={comment?._id as string} className="flex items-start gap-3 md:gap-5 relative">
                 {/* Avatar Icon */}
                 <div
                   // @ts-ignore
                   onClick={() => router.push(`/c/${comment.owner.username}`)}
-                  className="relative w-10 h-10"
+                  className="relative w-7 h-7 md:w-10 md:h-10 shrink-0"
                 >
                   <Image
                     className="object-cover rounded-full"
@@ -267,7 +267,7 @@ const AllComments = ({ videoId }: { videoId: string }) => {
                     </span>
                   </span>
                   {/* Comment by the User */}
-                  <span>{comment.content}</span>
+                  <span className="w-fit text-sm">{comment.content}</span>
                   {/* Like and Dislike the Comment */}
                   {user._id ? (
                     <span className="flex items-center gap-5 mt-3">

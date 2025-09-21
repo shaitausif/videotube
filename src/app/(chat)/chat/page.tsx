@@ -8,6 +8,7 @@ import {
   getChatObjectMetaData,
   LocalStorage,
   requestHandler,
+  streamRequestHandler,
 } from "@/utils";
 import {
   Tooltip,
@@ -72,7 +73,7 @@ const page = () => {
   const [loadingMessages, setLoadingMessages] = useState(false); // To indicate loading of messages
 
   const [chats, setChats] = useState<ChatListItemInterface[]>([]); // To store user's chats
-  const [messages, setMessages] = useState<ChatMessageInterface[]>([]); // To store chat messages
+  const [messages, setMessages] = useState<ChatMessageInterface[] | any[]>([]); // To store chat messages
   const [unreadMessages, setUnreadMessages] = useState<ChatMessageInterface[]>(
     []
   ); // To track unread messages
@@ -88,6 +89,8 @@ const page = () => {
   const [isInChat, setisInChat] = useState(false);
   const [isLoadingMessage, setisLoadingMessage] = useState(false);
   const router = useRouter();
+
+
 
   /**
    *  A  function to update the last message of a specified chat to update the chat list
@@ -193,6 +196,7 @@ const page = () => {
       (res) => {
         const { data } = res;
         setMessages(data || []);
+        console.log(data)
       },
       // Display any error toasts if they occur during the fetch
       // @ts-ignore
@@ -217,28 +221,89 @@ const page = () => {
   };
 
   // Function to send Message to the AI and then get the response on that message
-  const sendAIChatMessage = async () => {
-    // If no current chat ID exists or there's no socket connection, exit the function
-    if (!currentChat.current?._id || !socket)
-      return toast.warning("No chat is selected");
-    // Emit a STOP_TYPING_EVENT to inform other users/participants that typing has stopped
-    socket.emit(STOP_TYPING_EVENT, currentChat.current?._id);
+  // const sendAIChatMessage = async () => {
+  //   // If no current chat ID exists or there's no socket connection, exit the function
+  //   if (!currentChat.current?._id || !socket)
+  //     return toast.warning("No chat is selected");
+  //   // Emit a STOP_TYPING_EVENT to inform other users/participants that typing has stopped
+  //   socket.emit(STOP_TYPING_EVENT, currentChat.current?._id);
 
-    if (!message) return toast.warning("Enter the message first");
+  //   if (!message) return toast.warning("Enter the message first");
 
-    await requestHandler(
-      async () => await sendAIMessage(currentChat.current?._id || "", message),
+  //   await requestHandler(
+  //     async () => await sendAIMessage(currentChat.current?._id || "", message),
+  //     setisSendingMessageToAI,
+  //     (res) => {
+  //       // setMessages((prev) => [...res.data, ...prev]); // Updating message in the UI
+  //       // updateChatLastMessage(currentChat.current?._id || "", res.data[0]);
+
+        
+  //       setMessages((prev) => [res.data, ...prev]); // Updating message in the UI
+  //       updateChatLastMessage(currentChat.current?._id || "", res.data);
+  //     },
+  //     // @ts-ignore
+  //     (error) => toast.error(error.message)
+  //   );
+  // };
+
+  const sendAIChatMessage = async() => {  
+    if(!currentChat.current?._id || !socket){
+      return toast.warning("No chat is selected")
+    }
+
+    socket.emit(STOP_TYPING_EVENT, currentChat.current._id)
+
+    if(!message) return toast.warning("Enter the message first")
+      
+     let isFirstChunk = true; // <-- local flag for this request only
+
+    await streamRequestHandler(
+      () => fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/chat-app/messages/ai/${currentChat.current?._id}`,{
+        method : "POST",
+        headers : {
+          "Content-Type" : "application/json"
+        },
+        credentials : "include",
+        body : JSON.stringify({content: message})
+      }),
       setisSendingMessageToAI,
-      (res) => {
-        // setMessages((prev) => [...res.data, ...prev]); // Updating message in the UI
-        // updateChatLastMessage(currentChat.current?._id || "", res.data[0]);
-        setMessages((prev) => [res.data, ...prev]); // Updating message in the UI
-        updateChatLastMessage(currentChat.current?._id || "", res.data);
+      (chunk) => {
+      
+        if(isFirstChunk){
+          isFirstChunk = false
+          console.log("New AI message")
+          setMessages((prev) => [
+            {_id : Date.now(), chat : currentChat.current?._id , content : chunk, sender : { _id : process.env.NEXT_PUBLIC_AI_BOT_ID, email : "ai@gmail.com", username : "AI Chatbot", avatar : 'https://res.cloudinary.com/dhrkajjwf/image/upload/v1754904646/u1e2b0j7sucyxczibwe9.jpg'}},
+          ...prev
+          ])
+          
+          return;
+        }else {
+          console.log("Old chunks")
+          setMessages((prev) => [
+          { ...prev[0] , content: (prev[0].content || "") + chunk},
+          ...prev.slice(1)
+        ]); // Updating message in the UI
+        }
+
+        
       },
-      // @ts-ignore
-      (error) => toast.error(error.message)
-    );
-  };
+      (finalText, id) => {
+        console.log("Final text arrived")
+         setMessages((prev) => [
+        {   ...prev[0], content: finalText, _id : id},
+        ...prev.slice(1),
+      ]);
+      
+      },
+      (error) => {
+        toast.error(error)
+        console.log(error)
+      }
+    )
+
+  }
+
 
   // Function to send a chat message
   const sendChatMessage = async () => {
@@ -729,6 +794,7 @@ const page = () => {
                           key={msg._id}
                           isOwnMessage={msg.sender?._id === user?._id}
                           isAIMessage={
+                            
                             msg.sender._id === process.env.NEXT_PUBLIC_AI_BOT_ID
                           }
                           isGroupChatMessage={currentChat.current?.isGroupChat}
@@ -800,11 +866,18 @@ const page = () => {
                           handleEnhanceMessage(message);
                         }
                       }}
-                      className="absolute right-3 top-3"
+                      className="absolute right-2 top-1.5"
                     >
                        <Tooltip>
                         <TooltipTrigger asChild>
-                         <Star/>
+                          <Image 
+                      
+                          src={'/AI.png'}
+                          width={35}
+                          height={35}
+                          alt="AI Icon"
+                          className="invert-100"
+                         />
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>AI Message Enhancer</p>
@@ -812,10 +885,17 @@ const page = () => {
                       </Tooltip>
                     </span>
                   ) : (
-                    <span className="absolute right-3 top-3">
+                    <span className="absolute right-2 top-1.5">
                       <Tooltip>
                         <TooltipTrigger asChild>
-                         <Star onClick={() => router.push('/upgrade')} className="opacity-50"/>
+                         <Image 
+                         onClick={() => router.push('/upgrade')}
+                          src={'/AI.png'}
+                          width={35}
+                          height={35}
+                          alt="AI Icon"
+                          className="opacity-50 invert-100"
+                         />
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>Upgrade your plan</p>

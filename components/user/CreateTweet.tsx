@@ -20,9 +20,13 @@ import { TweetSchema } from "@/schemas/TweetSchema";
 import { createTweet } from "@/lib/apiClient";
 import { toast } from "sonner";
 import TweetMentioned from "./TweetMentioned";
+import { useSelector } from "react-redux";
+import { RootState } from "@react-three/fiber";
 
 const CreateTweet = ({onClose} : { onClose: () => void}) => {
   const [isPosting, setisPosting] = useState(false);
+  // @ts-ignore
+  const user = useSelector((state: RootState) => state.user)
 
   const form = useForm({
     resolver: zodResolver(TweetSchema),
@@ -102,8 +106,10 @@ const CreateTweet = ({onClose} : { onClose: () => void}) => {
                         <div className="relative w-full h-full">
                           <div className="absolute top-0 left-0  w-full h-full py-3 px-3  whitespace-pre-wrap break-words rounded-lg text-sm text-gray-200">
                             {highlightMentions(field.value)}
+                            <div className="absolute bottom-3 right-3 text-sm text-end text-gray-500">{field.value.length}/{user.subscription?.active ? 1000 : 200}</div>
                           </div>
                           <textarea
+                          maxLength={user.subscription?.active ? 1000 : 200}
                             className="px-3 w-full bg-transparent text-transparent caret-white relative py-2 min-h-46 rounded-lg outline outline-gray-700 border-2 border-gray-800 focus:border-2 focus:border-gray-600 text-sm transition-discrete duration-300 focus:outline-gray-500"
                             placeholder="Enter Tweet"
                             {...field}

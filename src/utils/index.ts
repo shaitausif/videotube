@@ -41,6 +41,63 @@ export const requestHandler = async(
 }
 
 
+
+export const streamRequestHandler = async (
+  api: () => Promise<Response>, // using fetch, not axios
+  setLoading: ((loading: boolean) => void) | null,
+  onChunk: (chunk: string) => void, // called for each streamed chunk
+  onComplete: (finalText: string, id?: string) => void,
+  onError: (error: string) => void
+) => {
+  setLoading && setLoading(true);
+  let accumulatedResponse = "";
+  let id = ''
+
+  try {
+    const res = await api();
+    if (!res.body) throw new Error("No response body");
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+
+let buffer = "";
+
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) {
+    onComplete(accumulatedResponse, id);
+    break;
+  }
+
+  buffer += decoder.decode(value, { stream: true });
+
+  let boundary;
+  while ((boundary = buffer.indexOf("\n\n")) !== -1) {
+    const line = buffer.slice(0, boundary).trim();
+    buffer = buffer.slice(boundary + 2);
+
+    if (line.startsWith("data: ")) {
+      const data = JSON.parse(line.substring(6));
+      accumulatedResponse += data.text;
+      onChunk(data.text);
+    } else if (line.startsWith("end: ")) {
+      const data = JSON.parse(line.substring(5));
+      id = data._id;
+      console.log("Got final id:", id);
+    }
+  }
+}
+  } catch (error: any) {
+    onError(error?.message || "Something went wrong");
+  } finally {
+    setLoading && setLoading(false);
+  }
+};
+
+
+
+
+
 export const isBrowser = typeof window !== 'undefined'
 
 // A utility function to concatenate CSS class names with proper spacing
