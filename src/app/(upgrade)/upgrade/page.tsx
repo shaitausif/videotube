@@ -82,7 +82,7 @@ const page = () => {
   return (
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js"></Script>
-      <div className="w-[98.5vw] h-full flex justify-center items-center dark:text-white pointer-events-auto">
+      <div className="w-[99vw] h-full flex justify-center items-center dark:text-white pointer-events-auto">
         <div className="w-full md:mx-12  rounded-md h-[80vh] flex justify-center items-start">
           <div className="flex flex-col md:gap-6 gap-4 items-center py-8 md:py-16">
             {/* Plans and pricing */}
