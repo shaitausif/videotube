@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   EllipsisVertical,
@@ -33,18 +33,50 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import dynamic from "next/dynamic";
 import { AnimatePresence } from "motion/react";
 import { motion } from "motion/react";
-import { LocalStorage } from "@/utils";
+import { LocalStorage, requestHandler } from "@/utils";
 
 const DynamicModal = dynamic(() => import("./user/UploadContentModal"), {
   ssr: false,
 });
 
+import {
+  getVideosByQuery,
+  updateSearch,
+  userSearchHistory,
+} from "@/lib/apiClient";
+
 const Navbar = () => {
   const user = useSelector((state: RootState) => state.user);
   const { data: session } = useSession();
   const [isModalOpen, setisModalOpen] = useState(false);
-  const dispatch = useDispatch();
+  const [isSearchModalOpen, setisSearchModalOpen] = useState(false);
+  const [searchQuery, setsearchQuery] = useState("");
+  const [query, setquery] = useState([])
+  const [videos, setvideos] = useState([]);
+  const [searchHistory, setsearchHistory] = useState<any[]>([]);
   const router = useRouter();
+
+  // ✅ Fetch search history only on first mount
+  useEffect(() => {
+    const getUserSearhHistory = async () => {
+      console.log("Hey")
+      requestHandler(
+        async () => await userSearchHistory(),
+        null,
+        (res) => {
+          console.log(res)
+          if (res.success) {
+            setsearchHistory(res.data.searches);
+          }
+        },
+        (err) => {
+          // @ts-ignore
+          toast.error(err.message);
+        }
+      );
+    };
+    getUserSearhHistory();
+  }, []);
 
   const Logout = async () => {
     try {
@@ -70,6 +102,64 @@ const Navbar = () => {
     }
   };
 
+  // Using debouncing to search for the queries
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const handleUpdateSearch = async () => {
+    if(searchQuery.length < 3){
+      setquery([])
+      console.log(searchHistory)
+      return;
+    }
+    // Cancel previous timer
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+    debounceTimer.current = setTimeout(() => {
+      requestHandler(
+        // @ts-ignore
+        async () => await updateSearch(searchQuery),
+        null,
+        (res) => {
+          console.log(res);
+          if (!res.data) {
+            toast.info("No search results found!");
+            setquery([])
+            return;
+          }
+
+          setquery(res.data);
+        },
+        (err) => {
+          // @ts-ignore
+          toast.error(err.message);
+        }
+      );
+    }, 800);
+  };
+
+  const handleGetSearchedVideos = () => {
+    if (searchQuery.trim() == "") {
+      return toast.info("Please enter search query");
+    }
+
+    requestHandler(
+      // @ts-ignore
+      async () => await getVideosByQuery(searchQuery),
+      null,
+      (res) => {
+        if (!res.success) {
+          toast.info(res.message);
+        }
+        setvideos(res.data);
+      },
+      (err) => {
+        // @ts-ignore
+        // toast.error(err.message)
+        console.log(err);
+      }
+    );
+  };
+
   return (
     <>
       <AnimatePresence>
@@ -79,34 +169,139 @@ const Navbar = () => {
         {/* Logo */}
 
         <motion.div
-        animate={{
-          x : 0
-        }}
-        initial={{
-          x : -100
-        }}
-        className="flex justify-center items-center gap-6">
+          animate={{
+            x: 0,
+          }}
+          initial={{
+            x: -100,
+          }}
+          className="flex justify-center items-center gap-6"
+        >
           <SidebarTrigger />
           <Image src={"/Logo.png"} alt="Logo" width={40} priority height={40} />
         </motion.div>
 
         {/* Search Bar */}
-        <div className="ml-8 md:block hidden w-100 relative">
-          <Input name="search" className="rounded-2xl" />
-          <Search className="absolute top-1.5 right-2.5 w-4 dark:bg-[#161616]/50 cursor-pointer" />
+        <div className="ml-8 md:block hidden w-110 relative">
+          <AnimatePresence>
+            {isSearchModalOpen && (
+              <div className="absolute  w-full bg-main rounded-md top-9 py-2">
+                { 
+                      query.length === 0 ?(
+                        searchHistory.length > 0 ? (
+                        
+                  searchHistory.map((search, i) => (
+                    <motion.div
+                      key={i}
+                      animate={{
+                        height: 'auto',
+                        opacity: 1,
+                      }}
+                      initial={{
+                        height: 0,
+                        opacity: 0,
+                      }}
+                      exit={{
+                        height: 0,
+                        opacity: 0,
+                      }}
+                      onClick={() => setsearchQuery(search)}
+                      className=" px-4   rounded-sm  hover:bg-gray-800 h-10"
+                    >
+                      {search}
+                    </motion.div>
+                  ))
+                ) : (
+                  <motion.div
+                    animate={{
+                      height: 'auto',
+                      opacity: 1,
+                    }}
+                    initial={{
+                      height: 0,
+                      opacity: 0,
+                    }}
+                    exit={{
+                      height: 0,
+                      opacity: 0,
+                    }}
+                    className=" flex justify-center w-full h-[10vh] items-center"
+                  >
+                    No searches found
+                  </motion.div>
+                )
+                      ) : (
+                      
+                  query.map((search, i) => (
+                    <motion.div
+                      key={i}
+                      animate={{
+                        height: 'auto',
+                        opacity: 1,
+                      }}
+                      initial={{
+                        height: 0,
+                        opacity: 0,
+                      }}
+                      exit={{
+                        height: 0,
+                        opacity: 0,
+                      }}
+                      onClick={() => setsearchQuery(search)}
+                      className=" px-4   rounded-sm  hover:bg-gray-800 h-10"
+                    >
+                      {search}
+                    </motion.div>
+                  ))
+               
+                      )
+
+                }
+              </div>
+            )}
+          </AnimatePresence>
+
+          <Input
+            onFocus={() => setisSearchModalOpen(true)}
+            onBlur={(e) => {
+              // Small delay so blur doesn’t instantly close if SearchModal needs a click
+              setTimeout(() => {
+                setisSearchModalOpen(false);
+              }, 100);
+            }}
+            autoComplete="off"
+            value={searchQuery}
+            onKeyDown={(e) => {
+              if (e.key == "Enter") {
+                handleGetSearchedVideos();
+              }
+            }}
+            onChange={(e) => {
+              setsearchQuery(e.target.value);
+              handleUpdateSearch();
+            }}
+            placeholder="Search"
+            name="search"
+            className="rounded-2xl overflow-hidden"
+          />
+          <Search
+            onClick={() => handleGetSearchedVideos()}
+            className="absolute top-[1.4px] bg-gray-700 h-[90%] px-2 rounded-r-2xl right-0 w-8 cursor-pointer"
+          />
         </div>
 
         {/* Profile Icon and create button */}
         <motion.div
-        animate={{
-          x : 0,
-          opacity : 1
-        }}
-        initial={{
-          x : 100,
-          opacity : 0
-        }}
-        className="flex gap-4 md:gap-9 justify-center items-center">
+          animate={{
+            x: 0,
+            opacity: 1,
+          }}
+          initial={{
+            x: 100,
+            opacity: 0,
+          }}
+          className="flex gap-4 md:gap-9 justify-center items-center"
+        >
           {user && user._id ? (
             <Button
               onClick={() => setisModalOpen(true)}
@@ -176,13 +371,13 @@ const Navbar = () => {
                   >
                     Messages
                   </DropdownMenuItem>
-                  {
-                    user?.subscription?.active ? (
-                      <DropdownMenuItem>Billing</DropdownMenuItem>
-                    ) : (
-                      <DropdownMenuItem onClick={() => router.push("/upgrade")}>Upgrade</DropdownMenuItem>
-                    )
-                  }
+                  {user?.subscription?.active ? (
+                    <DropdownMenuItem>Billing</DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem onClick={() => router.push("/upgrade")}>
+                      Upgrade
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem>Settings</DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <div>

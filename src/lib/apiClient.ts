@@ -82,7 +82,7 @@ const sendMessage = (chatId: string, content: string, attachments: File[]) => {
 
 
 
-const enhanceMessages = async(content : string) => {
+const enhanceMessages = (content : string) => {
  
   return apiClient.patch(`/chat-app/messages/enhance`,{content: content})
 }
@@ -290,8 +290,29 @@ const toggleAcceptMessages = () => {
 }
 
 
+const userSearchHistory = () => {
+  return nativeApiClient.get(`/api/user/user-search`)
+}
+
+
+const getVideosByQuery = (query: string) => {
+  if(query.trim()){
+    return nativeApiClient.get(`/api/video/get-videos?query=${query.trim()}`)
+  }
+}
+
+const updateSearch = (query: string) => {
+  if(query.trim()){
+    return nativeApiClient.get(`/api/user/update-user-search?query=${query.trim()}`)
+  }
+}
+
+
 // Export all the API functions
 export {
+  updateSearch,
+  getVideosByQuery,
+  userSearchHistory,
   addParticipantToGroup,
   createGroupChat,
   createUserChat,

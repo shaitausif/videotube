@@ -205,7 +205,8 @@ const page = () => {
   };
 
   const handleEnhanceMessage = async (content: string) => {
-    if (!content) return toast.warning("Content is required!");
+    if (!content || content.length < 4) return toast.warning("Content length is too short!");
+    setMessage("")
     requestHandler(
       async () => await enhanceMessages(content),
       setisLoadingMessage,
@@ -862,7 +863,7 @@ const page = () => {
                     <span
                       onClick={() => {
                         if (!isLoadingMessage) {
-                          setMessage("")
+                          
                           handleEnhanceMessage(message);
                         }
                       }}

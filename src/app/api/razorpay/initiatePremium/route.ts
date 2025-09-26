@@ -48,7 +48,6 @@ export async function POST(req: NextRequest) {
       to_user: "VideoTube",
       plan,
     });
-    console.log(payment);
 
     if (!payment)
       return NextResponse.json(

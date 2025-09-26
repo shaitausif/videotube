@@ -20,7 +20,7 @@ export default function MainLayout({
           <Navbar />
         </nav>
       </header>
-      <AuroraBackground className="overflow-x-hidden">
+      <AuroraBackground className="overflow-hidden">
       <main className="flex pt-12 w-full">
         
         {children}

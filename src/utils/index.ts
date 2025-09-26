@@ -206,3 +206,11 @@ export const formatVideoDuration = (durationInSeconds: number): string => {
 };
 
 
+
+
+export function normalizeQuery(query: string): string {
+  return query
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s]/gi, ""); // remove punctuation
+}

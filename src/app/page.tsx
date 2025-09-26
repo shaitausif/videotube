@@ -63,7 +63,7 @@ export default function Home() {
         if(response.ok){
           LocalStorage.set("FcmToken",token)
           const result = await response.json()
-          console.log(result)
+       
         }
       }
       setFCMTokens()
@@ -104,14 +104,15 @@ export default function Home() {
 
     
     const fetchUserData = async () => {
-      
+
       requestHandler(
         async () => await getUserInfo(),
         null,
         (res) => {
           dispatch(setUser(res.data))
-          console.log(res)
-          if(res.isPlanExpired && res.isPlanExpired !== undefined || null){
+
+          if(res.isPlanExpired){
+            
             setTimeout(() => {
               setisExpireModalOpen(true)
             }, 3000);
