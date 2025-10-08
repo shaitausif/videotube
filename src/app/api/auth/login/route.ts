@@ -41,7 +41,8 @@ export async function POST(req: NextRequest){
 
     const options = {
         httpOnly : true,
-        secure : false
+        secure : false,
+        maxAge : 7 * 24 * 60 * 60 // For example, 7 days
     }
 
 

@@ -308,8 +308,13 @@ const updateSearch = (query: string) => {
 }
 
 
+const verifyUser = () => {
+  return nativeApiClient.get(`/api/user/verify`)  
+}
+
 // Export all the API functions
 export {
+  verifyUser,
   updateSearch,
   getVideosByQuery,
   userSearchHistory,

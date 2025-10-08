@@ -59,7 +59,7 @@ const Navbar = () => {
   // ✅ Fetch search history only on first mount
   useEffect(() => {
     const getUserSearhHistory = async () => {
-      console.log("Hey")
+      if(!user._id) return;
       requestHandler(
         async () => await userSearchHistory(),
         null,
@@ -105,9 +105,9 @@ const Navbar = () => {
   // Using debouncing to search for the queries
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
   const handleUpdateSearch = async () => {
-    if(searchQuery.length < 3){
+  
+    if(searchQuery.length < 2){
       setquery([])
-      console.log(searchHistory)
       return;
     }
     // Cancel previous timer
@@ -123,6 +123,7 @@ const Navbar = () => {
           console.log(res);
           if (!res.data) {
             toast.info("No search results found!");
+          
             setquery([])
             return;
           }
@@ -149,6 +150,7 @@ const Navbar = () => {
       (res) => {
         if (!res.success) {
           toast.info(res.message);
+          setquery([])
         }
         setvideos(res.data);
       },

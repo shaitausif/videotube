@@ -11,6 +11,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const options = {
       httpOnly: true,
       secure: false,
+      maxAge : 7 * 24 * 60 * 60 // For example, 7 days
     };
     if (!token || !token.accessToken) {
       // cookieStore.set("accessToken", token?.accessToken as string, options);

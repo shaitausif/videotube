@@ -40,6 +40,36 @@ export default function Home() {
       }, 3000); 
     }
   }, []);
+
+  
+
+  // This hook is specifically responsible for managing the user's Authentication by verifying the user token after an spefic interval, Like if the tokens have been expired then it will automatically delete the users data from their LocalStorage and redux store
+  useEffect(() => {
+    if(user && user._id){
+        const verifyAuth = async () => {
+    try {
+      const res = await fetch("/api/user/verify", { credentials: "include" });
+      const data = await res.json();
+      if (!res.ok || !data.valid) {
+        // If token expired or invalid
+        dispatch(setUser(null));
+        LocalStorage.remove("isLoggedIn");
+        LocalStorage.remove("isCookieSet");
+        toast.error("Session expired, please log in again.");
+      }
+    } catch (err) {
+      console.error("Error verifying token:", err);
+    }
+  };
+    verifyAuth();
+  const interval = setInterval(verifyAuth, 5 * 60 * 1000); // every 5 minutes
+  return () => clearInterval(interval);
+    }
+
+
+}, []);
+
+
   
   // This useEffect is responsible for setting up the user FCM registration token in the user's database
 

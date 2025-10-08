@@ -5,7 +5,7 @@ import { normalizeQuery } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 
-
+// This controller is responsible for sending the searched videos to the client along with adding the queries in client history and updating the trending searches using Inngest in the background
 export async function GET(req: NextRequest){
     try {
         const payload = await getCurrentUser(req)
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest){
         if(!query || query == ""){
             return NextResponse.json({success : false, message : "Please provide an appropriate query"}, {status : 400})
         }
-  
+     
 
         if(payload?._id){
    

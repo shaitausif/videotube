@@ -87,12 +87,12 @@ const AllVideos = () => {
           videos.map((video) => (
             <div
               key={video._id as string}
-              className="col-span-1 rounded-lg h-[50vh] group hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-900 transition-all duration-300 group"
+              className="col-span-1 rounded-lg h-[35vh] md:h-[45vh] group hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-900 transition-all duration-300 group"
               onClick={() => {
                 router.push(`/video/${video._id}`);
               }}
             >
-              <div className="w-full object-cover relative h-[68%] ">
+              <div className="w-full object-cover relative h-[70%] ">
                 
                 <div className="absolute z-10 text-white bg-black/90 p-1 rounded-md bottom-2 right-5">
                   {formatVideoDuration(video.duration)}
@@ -108,7 +108,7 @@ const AllVideos = () => {
                   priority
                 />
               </div>
-              <div className="flex  py-4 px-2 gap-3">
+              <div className="flex py-1 md:py-2 px-2 gap-3">
                 {/* Video Owner avatar */}
                 <div className="relative w-[32px] h-[32px]">
                   <Image
@@ -122,8 +122,8 @@ const AllVideos = () => {
                     priority
                   />
                 </div>
-                <div className="flex flex-col w-full">
-                  <span className="text-lg">{video.title!}</span>
+                <div className="flex flex-col w-full truncate">
+                  <span className="md:text-md">{video.title}</span>
                   <span className="text-sm text-gray-600 font-semibold dark:text-gray-400">
                     {video.owner.fullName!}
                   </span>
@@ -217,3 +217,4 @@ const AllVideos = () => {
 };
 
 export default AllVideos;
+    
