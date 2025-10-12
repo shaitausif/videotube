@@ -47,8 +47,10 @@ export const authOptions: NextAuthOptions = {
         //  Generate YOUR CUSTOM JWTs (accessToken, refreshToken)
         // Use your Mongoose user schema methods.
         const customAccessToken = await user.generateAccessToken();
+        const customRefreshToken = await user.generateRefreshToken();
         // const customRefreshToken = await user.generateRefreshToken();
         token.accessToken = customAccessToken;
+        token.refreshToken = customRefreshToken;
         // token.refreshToken = customRefreshToken;
         token._id = user._id.toString();
       }
@@ -60,6 +62,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token._id as string;
       }
       session.accessToken = token.accessToken;
+      session.refreshToken = token.refreshToken;
       // session.refreshToken = token.refreshToken;
       return session;
     },
@@ -72,7 +75,7 @@ export const authOptions: NextAuthOptions = {
 
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 10 * 24 * 60 * 60 // 10 days
   },
 
   secret: process.env.NEXTAUTH_SECRET,

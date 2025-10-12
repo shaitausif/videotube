@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 // This controller is responsible for getting the likedVideos of currently loggedInUser
 export async function GET(req: NextRequest) {
   try {
-    const payload = await getCurrentUser(req);
+    const {payload, cookies} = await getCurrentUser(req);
     if (!payload)
       return NextResponse.json(
         { success: false, messasge: "Unauthorized" },

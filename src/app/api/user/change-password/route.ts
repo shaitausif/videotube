@@ -11,7 +11,7 @@ export async function PUT(req: NextRequest){
         return NextResponse.json({success : false, message: "Passwords are required"})
     }
 
-    const payload = await getCurrentUser(req)
+    const {payload, cookies} = await getCurrentUser(req)
     if(!payload || !payload._id)return NextResponse.json({success : false, message: "Unauthorized"},{status : 401})
 
     

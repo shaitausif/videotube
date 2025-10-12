@@ -214,3 +214,16 @@ export function normalizeQuery(query: string): string {
     .trim()
     .replace(/[^\w\s]/gi, ""); // remove punctuation
 }
+
+
+export const accessTokenOptions = {
+    httpOnly : true, 
+    secure : process.env.NODE_ENV === 'production' ? true : false,
+    maxAge : 24 * 60 * 60  // 1 day
+}
+
+export const refreshTokenOptions = {
+    httpOnly : true,
+    secure : process.env.NODE_ENV === 'production' ? true : false,
+    maxAge : 10 * 24 * 60 * 60 // 10 days
+}

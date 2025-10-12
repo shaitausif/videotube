@@ -8,7 +8,7 @@ import { after, NextRequest, NextResponse } from "next/server";
 // Controller for posting tweets
 export async function POST(req: NextRequest) {
   try {
-    const payload = await getCurrentUser(req);
+    const {payload, cookies} = await getCurrentUser(req);
     if (!payload)
       return NextResponse.json(
         { success: false, message: "Unauthorized" },

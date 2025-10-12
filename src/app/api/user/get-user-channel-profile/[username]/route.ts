@@ -10,7 +10,7 @@ export async function GET(
 ) {
   
     try {
-        const payload = await getCurrentUser(req);
+        const {payload, cookies} = await getCurrentUser(req);
   if (!payload || !payload._id) {
     return NextResponse.json(
       { success: false, message: "Unauthorized" },

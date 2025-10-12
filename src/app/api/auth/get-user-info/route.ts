@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   try {
     // Getting these informations from user's token doesn't matter whethere if it is from oauth or credentials
-    const payload = await getCurrentUser(req);
+    const {payload, cookies} = await getCurrentUser(req);
 
     if (!payload)
       return NextResponse.json(
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
 
     await ConnectDB();
     const user = await User.findOne({ _id: payload._id }).select(
-      "-password -verifyCode -isVerified -watchHistory -fcmTokens -VerifyCodeExpiry"
+      "avatar coverImage fullName email username subscription fcmTokens isAcceptingMessages"
     );
     if (!user) {
       return NextResponse.json(

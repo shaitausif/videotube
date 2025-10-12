@@ -17,7 +17,7 @@ export async function GET(
   { params }: { params: { videoId: string } }
 ) {
   try {
-    const payload = await getCurrentUser(req);
+    const {payload, cookies} = await getCurrentUser(req);
     // if(!payload) return NextResponse.json({success : false, message : "Unauthorized"},{status : 401})
     const { videoId } = params;
 

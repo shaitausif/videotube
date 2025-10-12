@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { getToken } from "next-auth/jwt";
+import { accessTokenOptions, refreshTokenOptions } from "@/utils";
 
 // This endpoints main motive is to set the accessToken and refreshToken in user cookies when the user logs in using oauth providers because many of my express middlewares are looking for those cookies and I can't change them right now so I chose this alternate option
 export async function POST(req: NextRequest, res: NextResponse) {
@@ -8,11 +9,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     
     const cookieStore = await cookies();
-    const options = {
-      httpOnly: true,
-      secure: false,
-      maxAge : 7 * 24 * 60 * 60 // For example, 7 days
-    };
+    
     if (!token || !token.accessToken) {
       // cookieStore.set("accessToken", token?.accessToken as string, options);
       // cookieStore.set("refreshToken", token?.refreshToken as string, options);
@@ -23,7 +20,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
     }
 
     //   Now, setting my custom cookies in the user browser
-    cookieStore.set("accessToken", token.accessToken as string, options);
+    cookieStore.set("accessToken", token.accessToken as string, accessTokenOptions);
+    cookieStore.set("refreshToken",token.refreshToken as string, refreshTokenOptions)
     // cookieStore.set("refreshToken", token.refreshToken as string, options);
 
     return NextResponse.json(

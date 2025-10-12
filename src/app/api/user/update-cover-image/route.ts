@@ -8,7 +8,7 @@ import { User } from "@/models/user.model";
 
 export async function PUT(req: NextRequest) {
   try {
-    const payload = await getCurrentUser(req);
+    const {payload, cookies} = await getCurrentUser(req);
     if (!payload)
       return NextResponse.json(
         { success: false, message: "Unauthorized" },

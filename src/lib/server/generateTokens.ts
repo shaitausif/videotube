@@ -1,3 +1,4 @@
+import { UserInterface } from "@/interfaces/user";
 import { User } from "@/models/user.model";
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
@@ -5,10 +6,10 @@ import { NextResponse } from "next/server";
 
 
 
-export const generateAccessAndRefreshTokens = async(userId: mongoose.Types.ObjectId) => {
+export const generateAccessAndRefreshTokens = async(user: any) => {
     try {
 
-        const user = await User.findById(userId)
+        
         const accessToken = user.generateAccessToken()
         const refreshToken =  user.generateRefreshToken()
 

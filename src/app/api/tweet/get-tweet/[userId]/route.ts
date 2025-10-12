@@ -13,7 +13,7 @@ export async function GET(
 ) {
   try {
     const { userId } = params;
-    const payload = await getCurrentUser(req)
+    const {payload, cookies} = await getCurrentUser(req)
     await ConnectDB();
     // const isTweetExist = await Tweet.find({
     //     owner : userId

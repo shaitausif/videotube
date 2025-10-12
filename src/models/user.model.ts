@@ -18,6 +18,7 @@ export default interface User {
   VerifyCodeExpiry?: Date;
   isVerified?: boolean;
   isAI? : boolean;
+  refreshToken? : string
   isAcceptingMessages? : boolean;
   subscription? : {
     plan : String;
@@ -89,6 +90,9 @@ const userSchema = new Schema(
     isAcceptingMessages : {
       type : Boolean,
       default : true
+    },
+    refreshToken : {
+      type : String
     },
     subscription : {
       plan : { type : String, enum : ["free","monthly","annual"], default : "free"},

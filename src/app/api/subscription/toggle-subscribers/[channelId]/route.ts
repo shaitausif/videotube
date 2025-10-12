@@ -11,7 +11,7 @@ export async function POST(
 ) {
   try {
     const { channelId } = params;
-    const payload = await getCurrentUser(req);
+    const {payload, cookies} = await getCurrentUser(req);
     if (!payload)
       return NextResponse.json(
         { success: false, message: "Unauthorized" },

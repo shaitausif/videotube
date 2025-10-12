@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 // This controller is responsible for sending the searched videos to the client along with adding the queries in client history and updating the trending searches using Inngest in the background
 export async function GET(req: NextRequest){
     try {
-        const payload = await getCurrentUser(req)
+        const {payload, cookies} = await getCurrentUser(req)
         const { searchParams } = new URL(req.url)
         const query = searchParams.get("query")?.trim()
         

@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 // To get the user's search history
 export async function GET(req: NextRequest) {   
     try {
-        const payload = await getCurrentUser(req)
+        const {payload, cookies} = await getCurrentUser(req)
         if(!payload) return NextResponse.json({success : false, message : "user is not logged in"},{status : 200})
 
         // Get all the searched queries by this user

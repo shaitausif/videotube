@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req : NextRequest){
     try {
         const  { token } = await req.json()
-        const payload = await getCurrentUser(req)
+        const {payload, cookies} = await getCurrentUser(req)
        
         if(!payload) return NextResponse.json({success : false , message : "Unauthorized"}, {status : 401})
         
