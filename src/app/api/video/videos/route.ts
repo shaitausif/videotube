@@ -81,7 +81,7 @@ export async function GET(req: NextRequest){
 }
 
 
-
+// Controller responsible for posting the videos
 export async function POST(req: NextRequest){
     try { 
 

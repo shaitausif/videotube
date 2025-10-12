@@ -2,6 +2,7 @@ import { User } from "@/models/user.model";
 import ConnectDB from "@/lib/dbConnect";
 import { generateAccessAndRefreshTokens } from "@/lib/server/generateTokens";
 import { NextRequest, NextResponse } from "next/server";
+import { SigninSchema } from "@/schemas/SigninSchema";
 
 
 

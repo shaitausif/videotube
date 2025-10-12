@@ -19,7 +19,6 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({success : true, message : "No user searches found"},{status : 200})
         }
 
-        console.log(userSearches)
         return NextResponse.json({success : true , message : "user searches fetched successfully.", data : userSearches}, {status : 200})
 
 

@@ -41,7 +41,7 @@ const videoSchema = new Schema<VideoInterface>(
         duration : {
             type : Number,
             required : true
-        },
+        },  
         views : {
             type : Number,
             default : 0,

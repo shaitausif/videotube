@@ -312,8 +312,16 @@ const verifyUser = () => {
   return nativeApiClient.get(`/api/user/verify`)  
 }
 
+
+const getLikedVideos = () => {
+  return nativeApiClient.get(`/api/user/get-user-liked-videos`)
+}
+
+
+
 // Export all the API functions
 export {
+  getLikedVideos,
   verifyUser,
   updateSearch,
   getVideosByQuery,

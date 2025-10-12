@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "@/features/userSlice/UserSlice";
+import { clearUser, setUser } from "@/features/userSlice/UserSlice";
 import { RootState } from "@/store/store";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "../../components/App-Sidebar";
@@ -52,7 +52,8 @@ export default function Home() {
       const data = await res.json();
       if (!res.ok || !data.valid) {
         // If token expired or invalid
-        dispatch(setUser(null));
+        dispatch(clearUser());
+      
         LocalStorage.remove("isLoggedIn");
         LocalStorage.remove("isCookieSet");
         toast.error("Session expired, please log in again.");
