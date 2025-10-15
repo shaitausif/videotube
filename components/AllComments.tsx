@@ -63,9 +63,10 @@ const AllComments = ({ videoId }: { videoId: string }) => {
         (res) => {
           setcommentsCount(res.data.total);
           setvideoComments(res.data.comments);
+          console.log(res.data.comments)
         },
         (err) => toast.error(err)
-      );
+      );  
     };
     getvideoComments();
   }, []);

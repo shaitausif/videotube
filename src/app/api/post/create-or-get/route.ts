@@ -11,7 +11,7 @@ import mongoose from "mongoose";
 export async function POST(req: NextRequest) {
     try {
 
-        const payload = await getCurrentUser(req)
+        const {payload} = await getCurrentUser(req)
         if(!payload) return NextResponse.json({success : false, message : "Unauthorized"},{status : 401})
 
 

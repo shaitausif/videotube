@@ -12,7 +12,7 @@ export async function POST(req: NextRequest){
         const { name , description } = await req.json();
         if(!name || !description) return NextResponse.json({success : false, message : "Title and Description are required"},{status : 400})
 
-        const payload = await getCurrentUser(req)
+        const {payload} = await getCurrentUser(req)
 
         await ConnectDB()
         const playlist = await Playlist.create({

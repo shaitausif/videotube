@@ -39,7 +39,6 @@ import {
 import Image from "next/image";
 import { Icon, Star, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { BackgroundBeams } from "@/components/ui/background-beams";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -963,7 +962,6 @@ const page = () => {
           )}
         </div>
       </div>
-      <BackgroundBeams />
     </>
   );
 };

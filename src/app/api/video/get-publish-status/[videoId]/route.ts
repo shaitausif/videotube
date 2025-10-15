@@ -9,7 +9,7 @@ export async function GET(req : NextRequest,
     { params } : { params : { videoId : string } }
 ){
     try {
-        const payload = await getCurrentUser(req)
+        const {payload} = await getCurrentUser(req)
         if(!payload)return NextResponse.json({success : false, message : "Unaothorized"},{status : 401})
     
         const {videoId} = params

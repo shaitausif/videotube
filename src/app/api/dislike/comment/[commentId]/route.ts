@@ -14,7 +14,7 @@ export async function POST(req: NextRequest,
 ){
     try {
         const { commentId } = params
-        const payload = await getCurrentUser(req)
+        const {payload} = await getCurrentUser(req)
 
         await ConnectDB()
         const isDislikedComment = await Dislike.findOne({

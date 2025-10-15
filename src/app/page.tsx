@@ -12,7 +12,6 @@ import AllVideos from "../../components/AllVideos";
 import { LocalStorage, requestHandler } from "@/utils";
 import { getUserInfo, setOauthCustomToken } from "@/lib/apiClient";
 import useFcmToken from "./hooks/useFcmToken";
-import { BackgroundBeams } from "@/components/ui/background-beams";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
@@ -187,7 +186,7 @@ export default function Home() {
         <main className="pt-20 md:px-8 px-4 w-full">
           <AllVideos /> 
         </main>
-        <BackgroundBeams />
+       
       </SidebarProvider>
     </>
   );

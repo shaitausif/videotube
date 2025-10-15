@@ -11,7 +11,7 @@ export async function POST(req : NextRequest,
     { params }: { params: { videoId: string } }
 ){
     try {
-        const payload = await getCurrentUser(req)
+        const {payload} = await getCurrentUser(req)
         if(!payload) return NextResponse.json({success : false, message : "Unauthorized"},{status : 401})
         const { videoId } = params
         const { content } = await req.json()
@@ -86,7 +86,8 @@ export  async function GET(req : NextRequest,
      const page = searchParams.get("page") || 1
      const limit: any = searchParams.get("limit") || 10
      const skip = (Number(page) -1) * Number(limit)
-     const payload = await getCurrentUser(req)
+     const {payload} = await getCurrentUser(req)
+
  
     //  const filter: any = {}
     //  if(videoId){
@@ -147,14 +148,14 @@ const result = await Comment.aggregate([
     $addFields : {
       isLiked : {
         $cond : {
-          if: { $in: [new mongoose.Types.ObjectId(payload?._id as string), "$likesCount.likedBy"] },
+          if: { $in: [new mongoose.Types.ObjectId(payload?._id), "$likesCount.likedBy"] },
                       then: true,
                       else: false,
         }
       },
       isDisLiked : {
         $cond : {
-          if : { $in : [ new mongoose.Types.ObjectId(payload?._id as string), "$disLikesCount.disLikedBy"]},
+          if : { $in : [ new mongoose.Types.ObjectId(payload?._id), "$disLikesCount.disLikedBy"]},
           then : true,
           else : false
         }

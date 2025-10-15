@@ -182,7 +182,7 @@ export async function PUT(
   { params }: { params: { videoId: string } }
 ) {
   try {
-    const payload = await getCurrentUser(req);
+    const {payload} = await getCurrentUser(req);
     if (!payload)
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
@@ -269,7 +269,7 @@ export async function DELETE(
   { params }: { params: { videoId: string } }
 ) {
   try {
-    const payload = await getCurrentUser(req);
+    const {payload} = await getCurrentUser(req);
     if (!payload)
       return NextResponse.json(
         { success: false, message: "Unaothorized" },
@@ -335,7 +335,7 @@ export async function PATCH(
   { params }: { params: { videoId: string } }
 ) {
   try {
-    const payload = await getCurrentUser(req);
+    const {payload} = await getCurrentUser(req);
     if (!payload)
       return NextResponse.json(
         { success: false, message: "Unaothorized" },
