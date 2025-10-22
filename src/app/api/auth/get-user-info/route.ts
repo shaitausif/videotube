@@ -33,14 +33,14 @@ export async function GET(req: NextRequest) {
     const end = new Date(user.subscription.endDate);
     end.setHours(0, 0, 0, 0);
 
-    console.log(end <= today);
-    console.log(user.subscription)
-    console.log(user.subscription.active && end <= today)
+
+ 
+  
     if (user.subscription.active && end <= today) {
       user.subscription.active = false;
       user.subscription.plan = "free";
       await user.save({ validateBeforeSave: false });
-      console.log(user.subscription);
+  
       return NextResponse.json(
         {
           success: false,

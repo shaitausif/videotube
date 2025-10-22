@@ -318,9 +318,14 @@ const getLikedVideos = () => {
 }
 
 
+const updateVideoComments = (commentId : string, content : string) => {
+  return nativeApiClient.patch(`/api/comment/update-or-delete/${commentId}`,{content})
+}
+
 
 // Export all the API functions
 export {
+  updateVideoComments,
   getLikedVideos,
   verifyUser,
   updateSearch,

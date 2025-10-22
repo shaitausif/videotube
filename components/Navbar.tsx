@@ -187,7 +187,7 @@ const Navbar = () => {
         <div className="ml-8 md:block hidden w-110 relative">
           <AnimatePresence>
             {isSearchModalOpen && (
-              <div className="absolute  w-full bg-main rounded-md top-9 py-2">
+              <div className="absolute  w-full bg-white dark:bg-main rounded-md top-9 py-2">
                 { 
                       query.length === 0 ?(
                         searchHistory.length > 0 ? (
@@ -208,7 +208,7 @@ const Navbar = () => {
                         opacity: 0,
                       }}
                       onClick={() => setsearchQuery(search)}
-                      className=" px-4   rounded-sm  hover:bg-gray-800 h-10"
+                      className=" px-4   rounded-sm hover:bg-gray-200 dark:hover:bg-gray-800 h-10"
                     >
                       {search}
                     </motion.div>
@@ -250,7 +250,7 @@ const Navbar = () => {
                         opacity: 0,
                       }}
                       onClick={() => setsearchQuery(search)}
-                      className=" px-4   rounded-sm  hover:bg-gray-800 h-10"
+                      className=" px-4   rounded-sm hover:bg-gray-200 cursor-default dark:hover:bg-gray-800 h-10"
                     >
                       {search}
                     </motion.div>
@@ -288,7 +288,7 @@ const Navbar = () => {
           />
           <Search
             onClick={() => handleGetSearchedVideos()}
-            className="absolute top-[1.4px] bg-gray-700 h-[90%] px-2 rounded-r-2xl right-0 w-8 cursor-pointer"
+            className="absolute top-[1.4px] bg-gray-200 dark:bg-gray-700 h-[90%] px-2 rounded-r-2xl right-0 w-8 cursor-pointer"
           />
         </div>
 

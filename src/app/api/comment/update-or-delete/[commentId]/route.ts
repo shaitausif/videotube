@@ -3,7 +3,7 @@ import { Comment } from "@/models/comment.model";
 import { NextRequest, NextResponse } from "next/server";
 
 
-
+// This controller is responsible for updating comments of videos
 export async function PATCH(req: NextRequest,
     { params } : { params : { commentId : string } }
 ){
@@ -16,12 +16,13 @@ export async function PATCH(req: NextRequest,
         const isCommentExist = await Comment.findByIdAndUpdate(
             commentId,
             {
-                content
+                content,
+                isEdited : true
             },
             { new : true }
         )
         if(!isCommentExist) return NextResponse.json({success : false, message : "Comment not found"},{status : 404})
-        
+        console.log(isCommentExist)
         return NextResponse.json({success : true, data : isCommentExist, message : "Comment updated successfully"},{status : 200})
     } catch (error) {
         return NextResponse.json({success : false, message : error},{status : 500})
@@ -39,7 +40,7 @@ export async function DELETE(req: NextRequest,
     
         await ConnectDB()
         const isCommentExist = await Comment.findByIdAndDelete(commentId)
-        console.log(isCommentExist)
+        
         if(!isCommentExist) return NextResponse.json({success : false, message : "Comment not found"},{status : 404})
     
         return NextResponse.json({success : true, message : "Comment deleted successfully."},{status : 200})

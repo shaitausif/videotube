@@ -37,6 +37,7 @@ import Select from "./Select";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const GroupChatDetailsModal: React.FC<{
   open: boolean;
@@ -61,6 +62,8 @@ const GroupChatDetailsModal: React.FC<{
 
   // State to manage a list of users, initially set as an empty array
   const [users, setUsers] = useState<UserInterface[]>([]);
+
+  const router = useRouter();
 
   // Function to handle the update of the group name.
   const handleGroupNameUpdate = async () => {
@@ -325,7 +328,10 @@ const GroupChatDetailsModal: React.FC<{
                               return (
                                 <React.Fragment key={part._id}>
                                   <div className="flex justify-between items-center w-full py-4">
-                                    <div className="flex justify-start items-start gap-3 w-full">
+                                    <div onClick={() => {
+                                      if(part._id == user._id) return;
+                                      router.push(`/c/${part.username}`)
+                                    }} className="flex justify-start items-start gap-3 w-full">
                                       <img
                                         className="h-12 w-12 object-cover rounded-full"
                                         src={part.avatar}

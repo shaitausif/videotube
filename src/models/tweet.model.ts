@@ -3,7 +3,8 @@ import mongoose, { Schema , Document} from "mongoose";
 export interface TweetInterface extends Document{
     owner: mongoose.Types.ObjectId,
     content : string,
-        createdAt? : Date,
+    isEdited : boolean,
+    createdAt? : Date,
     updatedAt? : Date,
 }
 
@@ -16,6 +17,10 @@ const tweetSchema = new Schema<TweetInterface>(
         content : {
             type : String,
             required : true 
+        },
+        isEdited : {
+            type : Boolean,
+            default : false
         }
     },
     {timestamps : true}

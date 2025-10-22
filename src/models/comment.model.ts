@@ -1,11 +1,13 @@
 import mongoose,{Document, Schema} from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
+import { boolean } from "zod";
 
 
 export interface Comments extends Document{
     content : string,
     video : mongoose.Types.ObjectId,
     owner : mongoose.Types.ObjectId,
+    isEdited : Boolean,
     createdAt? : Date,
     updatedAt? : Date,
 }
@@ -26,6 +28,10 @@ const commentSchema = new Schema(
         owner : {
             type : Schema.Types.ObjectId,
             ref : "User"
+        },
+        isEdited : {
+            type : Boolean,
+            default : false
         }
     }   
     ,{timestamps : true}

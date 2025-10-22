@@ -36,6 +36,7 @@ import {
   postComment,
   toggleCommentDisLike,
   toggleCommentLike,
+  updateVideoComments,
 } from "@/lib/apiClient";
 import { requestHandler } from "@/utils";
 import { toast } from "sonner";
@@ -51,6 +52,8 @@ const AllComments = ({ videoId }: { videoId: string }) => {
   const [videoComments, setvideoComments] = useState<any[]>([]);
   const [loadingComments, setloadingComments] = useState({});
   const [commentsCount, setcommentsCount] = useState(0);
+  const [editingComment, seteditingComment] = useState<string | null>(null)
+  const [isEdited, setisEdited] = useState(false)
   const [isPostingComment, setisPostingComment] = useState(false);
   const user = useSelector((state: RootState) => state.user);
   const router = useRouter();
@@ -162,14 +165,6 @@ const AllComments = ({ videoId }: { videoId: string }) => {
   }
 
 
-
-  const form = useForm<z.infer<typeof PostCommentSchema>>({
-    resolver: zodResolver(PostCommentSchema),
-    defaultValues: {
-      comment: "",
-    },
-  });
-
   // Function for handling comments Post
   const handleCommentPost = async (data: z.infer<typeof PostCommentSchema>) => {
     requestHandler(
@@ -184,6 +179,36 @@ const AllComments = ({ videoId }: { videoId: string }) => {
       (err) => toast.error(err)
     );
   };
+
+
+
+  const handleEditComment = async(commentId: string, content : string) => {
+    
+    requestHandler(
+      async() => await updateVideoComments(commentId, content),
+      null,
+      (res) => {
+        setvideoComments((prev) => prev.map((c) => (
+          c._id == commentId ? {...c, isEdited : true} : c
+        )))
+        toast.success(res.message)
+        setisEdited(false)
+      },
+      (err) => {
+        // @ts-ignore
+        toast.error(err.message)
+      }
+    )
+  }
+
+  
+
+  const form = useForm<z.infer<typeof PostCommentSchema>>({
+    resolver: zodResolver(PostCommentSchema),
+    defaultValues: {
+      comment: "",
+    },
+  });
 
   return (
     <>
@@ -259,16 +284,52 @@ const AllComments = ({ videoId }: { videoId: string }) => {
                       {
                         // @ts-ignore
                         comment.owner.username
-                      }
+                      }{" "}
+                      { comment.isEdited ? <span className="text-gray-300 "> • Edited</span> : ""}
                     </span>{" "}
                     <span className="dark:text-gray-300 dark:hover:text-gray-400 transition-all duration-300 text-[14px]">
-                      {formatDistanceToNow(new Date(comment.createdAt!), {
+                      {formatDistanceToNow(new Date(comment.isEdited ? comment.updatedAt : comment.createdAt), {
                         addSuffix: true,
                       })}
                     </span>
                   </span>
                   {/* Comment by the User */}
-                  <span className="w-fit text-sm">{comment.content}</span>
+                  {
+                    editingComment == comment._id ? (
+                      <>
+                        <form onSubmit={(e) => {
+                            // if(comment.content.trim() == "") return toast.info("Please enter content")
+                            e.preventDefault()
+                            if(!isEdited) return toast.info("Edit the comment first"); 
+                              seteditingComment(null)
+    
+                            handleEditComment(comment._id, comment.content)
+                        }} className="flex flex-col gap-2 justify-center">
+                          <textarea
+                          
+                          className="h-fit w-[95%] field-sizing-content px-3   py-2  rounded-lg outline outline-gray-700 border-2 border-gray-800 focus:border-2 focus:border-gray-600 text-sm e duration-100 focus:outline-gray-500" value={comment.content} 
+                          onChange={(e) => {
+                            isEdited ? '' : setisEdited(true)
+                            setvideoComments((prev) => 
+                          prev.map((c) => (
+                            c._id === comment._id ? {...c, content : e.target.value} : c
+                          ))
+                        )
+                          } }
+                           />
+                        <div className="flex gap-2">
+                          <Button type="submit" className="bg-button hover:bg-button/90">Edit</Button>
+                        <Button className="" onClick={() => {
+                          setisEdited(false)
+                          seteditingComment(null)
+                        }}>Cancel</Button>
+                        </div>
+                        </form>
+                      </>
+                    ) : (
+                      <span className="w-[95%] text-sm ">{comment.content}</span>
+                    )
+                  }
                   {/* Like and Dislike the Comment */}
                   {user._id ? (
                     <span className="flex items-center gap-5 mt-3">
@@ -331,12 +392,12 @@ const AllComments = ({ videoId }: { videoId: string }) => {
                   )}
                 </div>
                 <span className="absolute right-5 top-0">
-                  <DropdownMenu modal={false}>
+                  <DropdownMenu  modal={false}>
                     <DropdownMenuTrigger asChild>
                       <EllipsisVertical className="w-6 h-6 p-1 rounded-full dark:hover:bg-gray-600 transition-all duration-300 " />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      className="w-25 dark:bg-[#161616]/50"
+                    </DropdownMenuTrigger >
+                    <DropdownMenuContent 
+                      className="w-25 dark:bg-[#161616]/50 flex flex-col-reverse"
                       align="center"
                     >
                       {
@@ -352,13 +413,14 @@ const AllComments = ({ videoId }: { videoId: string }) => {
                             Channel
                           </DropdownMenuItem>
                         ) : (
-                          <DropdownMenuItem
+                          <>
+                            <DropdownMenuItem
                             asChild
                             className="transition-all duration-300"
                           >
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
-                                <Button className="w-full transition-all duration-300">
+                                <Button className="w-full bg-red-500 hover:bg-red-600 text-white transition-all duration-300">
                                   Delete
                                 </Button>
                               </AlertDialogTrigger>
@@ -385,6 +447,17 @@ const AllComments = ({ videoId }: { videoId: string }) => {
                               </AlertDialogContent>
                             </AlertDialog>
                           </DropdownMenuItem>
+                                    <DropdownMenuItem
+                            className="transition-all px-0 py-1  duration-300"
+                            onClick={() => {
+                              seteditingComment(comment._id)
+                            }
+                              
+                            }
+                          >
+                            <Button className="w-full transition-all duration-300">Edit</Button>
+                          </DropdownMenuItem>
+                          </>
                         )
                       }
                     </DropdownMenuContent>

@@ -15,6 +15,11 @@ import { onMessage, Unsubscribe } from "firebase/messaging";
 import { fetchToken, messaging } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
+import { RootState } from "@react-three/fiber";
+
+
+
 
 async function getNotificationPermissionAndToken() {
   // Step 1: Check if Notifications are supported in the browser.
@@ -48,7 +53,9 @@ const useFcmToken = () => {
   const [token, setToken] = useState<string | null>(null); // State to store the FCM token.
   const retryLoadToken = useRef(0); // Ref to keep track of retry attempts.
   const isLoading = useRef(false); // Ref to keep track if a token fetch is currently in progress.
-
+  // @ts-ignore
+  const user = useSelector((state: RootState) => state.user)
+  
   const loadToken = async () => {
     // Step 4: Prevent multiple fetches if already fetched or in progress.
     if (isLoading.current) return;
@@ -95,7 +102,7 @@ const useFcmToken = () => {
 
   useEffect(() => {
     // Step 8: Initialize token loading when the component mounts.
-    if ("Notification" in window) {
+    if ("Notification" in window && user._id) {
       loadToken();
     }
   }, []);
