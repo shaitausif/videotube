@@ -4,7 +4,7 @@ import path from "path";
 import { User } from "@/models/user.model";
 import { uploadOnCloudinary } from "@/lib/cloudinary";
 import ConnectDB from "@/lib/dbConnect";
-import { sendVerificationEmail } from "../../../../../helpers/SendVerificationEmail";
+import { SignupSchema } from "@/schemas/SignupSchema";
 import { inngest } from "@/inngest/client";
 
 export async function POST(req: NextRequest) {
@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
 
     // Check for the existing User
     await ConnectDB();
@@ -80,6 +81,8 @@ export async function POST(req: NextRequest) {
         message: "Failed to upload avatar on cloudinary",
       });
 
+    const result = SignupSchema.safeParse({fullName, username, email, password, avatar, coverImage})
+    if(!result.success) return NextResponse.json({success : false, message : 'Invalid inputs'}, {status : 400})
 
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString()
     

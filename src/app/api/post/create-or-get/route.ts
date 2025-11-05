@@ -24,6 +24,7 @@ export async function POST(req: NextRequest) {
             message : "Both the fields are required.."
         },{status : 400})
 
+        
 
         const postImgArrayBuffer = await postImgFile.arrayBuffer();
         const postImgBuffer = Buffer.from(postImgArrayBuffer)

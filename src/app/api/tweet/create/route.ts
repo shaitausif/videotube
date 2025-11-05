@@ -4,6 +4,7 @@ import { SendNotification } from "@/lib/SendNotification";
 import { Tweet } from "@/models/tweet.model";
 import { User } from "@/models/user.model";
 import { after, NextRequest, NextResponse } from "next/server";
+import { TweetSchema } from "@/schemas/TweetSchema";
 
 // Controller for posting tweets
 export async function POST(req: NextRequest) {
@@ -21,6 +22,8 @@ export async function POST(req: NextRequest) {
         { success: false, message: "Content is required" },
         { status: 400 }
       );
+      const result = TweetSchema.safeParse({tweet: content})
+      if(!result.success) return NextResponse.json({success : false, message : "Invalid inputs"}, {status : 400});
 
     await ConnectDB();
     const tweet = await Tweet.create({

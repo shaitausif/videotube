@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import ConnectDB from "@/lib/dbConnect";
 import { Tweet } from "@/models/tweet.model";
 import { NextRequest, NextResponse } from "next/server";
+import { TweetSchema } from "@/schemas/TweetSchema";
 
 
 
@@ -20,6 +21,8 @@ export async function PATCH(
         { success: false, message: "Content is required" },
         { status: 400 }
       );
+      const result = TweetSchema.safeParse({tweet : content})
+      if(!result.success) return NextResponse.json({success : false, message : "Invalid inputs"}, {status : 400})
     await ConnectDB();
     const isTweetExist = await Tweet.findByIdAndUpdate(
       tweetId,

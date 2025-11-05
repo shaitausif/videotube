@@ -55,6 +55,8 @@ export default function Home() {
       
         LocalStorage.remove("isLoggedIn");
         LocalStorage.remove("isCookieSet");
+        LocalStorage.remove("FcmToken")
+        
         toast.error("Session expired, please log in again.");
       }
     } catch (err) {

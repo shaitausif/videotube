@@ -14,7 +14,9 @@ export async function POST(req: NextRequest){
     if(!identifier || !password){
         return NextResponse.json({success : false, message : "All fields are required"},{status : 400})
     }
-
+    
+    const result = SigninSchema.safeParse({identifier, password})
+    if(!result.success) return NextResponse.json({success : false, message : "Invalid Inputs"}, {status : 400})
     await ConnectDB();
     const user = await User.findOne({
         $or : [

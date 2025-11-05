@@ -1,7 +1,7 @@
 import ConnectDB from "@/lib/dbConnect";
 import { Comment } from "@/models/comment.model";
 import { NextRequest, NextResponse } from "next/server";
-
+import { PostCommentSchema } from "@/schemas/PostCommentSchema";
 
 // This controller is responsible for updating comments of videos
 export async function PATCH(req: NextRequest,
@@ -11,6 +11,8 @@ export async function PATCH(req: NextRequest,
         const { commentId } = params
         const { content } = await req.json()
         if(!content) return NextResponse.json({success : false, message : "Content is required"},{status : 400})
+        const result = PostCommentSchema.safeParse({comment: content})
+        if(!result.success) return NextResponse.json({success : false, message : "Invalid inputs"}, {status : 400})
     
         await ConnectDB();
         const isCommentExist = await Comment.findByIdAndUpdate(

@@ -4,6 +4,7 @@ import { Comment } from "@/models/comment.model";
 import { Video } from "@/models/video.model";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
+import { PostCommentSchema } from "@/schemas/PostCommentSchema";
 
 
 // This controller is for posting comments on videos
@@ -16,6 +17,8 @@ export async function POST(req : NextRequest,
         const { videoId } = params
         const { content } = await req.json()
         if(!content) return NextResponse.json({success : false, message : "Content is required"},{ status : 400 })
+        const result = PostCommentSchema.safeParse({comment: content})
+        if(!result.success) return NextResponse.json({success : false, message : "Invalid inputs"}, {status : 400})
         
         await ConnectDB();
         const isVideoExist = await Video.findById(videoId)
