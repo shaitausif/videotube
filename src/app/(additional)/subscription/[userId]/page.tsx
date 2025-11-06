@@ -55,7 +55,7 @@ const page = () => {
                   router.push(`/c/${subscription.channel.username}`)
                 }
                 key={subscription._id}
-                className="flex relative items-center gap-5 cursor-pointer hover:bg-gray-900 transition-all duration-300 w-full px-4 py-2  rounded-lg"
+                className="flex relative items-center gap-5 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-900 transition-all duration-300 w-full px-4 py-2  rounded-lg"
               >
                 <div className="w-[100px] h-[100px] relative">
                   {/* User Avatar Image */}
@@ -72,14 +72,14 @@ const page = () => {
                   <span className="md:text-xl font-semibold">
                     {subscription.channel.fullName}
                   </span>
-                  <span className="text-gray-400 text-sm hover:text-gray-500 transition-all duration-300">
+                  <span className="text-gray-700 dark:text-gray-400 text-sm hover:text-gray-500 transition-all duration-300">
                     @{subscription.channel.username}
                   </span>
-                  <span className="text-[12px] text-gray-400">
+                  <span className="text-[12px] text-gray-700 dark:text-gray-400">
                     {subscription.channel.subscribersCount} Subscribers
                   </span>
                 </div>
-                <span className="text-sm text-gray-300 absolute top-4 right-4">
+                <span className="text-sm text-gray-700 dark:text-gray-300 absolute top-4 right-4">
                   {formatDistanceToNow(subscription.channel.createdAt)}
                 </span>
               </div>

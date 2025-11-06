@@ -512,7 +512,7 @@ const page = () => {
   useEffect(() => {
     // Fetch the chat list from the server.
     const starterFunction = async () => {
-      createAIChat();
+      createAIChat(); 
 
       await getChats();
       const _currentChat = LocalStorage.get("currentChat");

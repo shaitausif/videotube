@@ -138,7 +138,7 @@ const AddChatModal: React.FC<{
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/50 bg-opacity-75 transition-opacity" />
+          <div className="fixed inset-0 bg-black/70 pointer-events-none bg-opacity-75 transition-opacity" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 overflow-y-visible">
@@ -153,7 +153,7 @@ const AddChatModal: React.FC<{
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel
-                className="relative transform overflow-x-hidden rounded-lg bg-dark px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl sm:p-6"
+                className="relative transform overflow-x-hidden rounded-lg bg-secondary px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl sm:p-6"
                 style={{
                   overflow: "inherit",
                 }}
@@ -201,7 +201,7 @@ const AddChatModal: React.FC<{
                       <span
                         className={classNames(
                           "font-medium   dark:text-white",
-                          isGroupChat ? "" : "opacity-40"
+                          isGroupChat ? "" : "opacity-80"
                         )}
                       >
                         Is it a group chat?
@@ -230,7 +230,10 @@ const AddChatModal: React.FC<{
                       options={users.map((user) => {
                         return {
                           label: user.username,
+                          avatar : user.avatar,
+                          fullName : user.fullName,
                           value: user._id,
+                          
                         };
                       })}
                       onChange={({ value }) => {

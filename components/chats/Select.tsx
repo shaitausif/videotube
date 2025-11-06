@@ -2,11 +2,14 @@ import { Combobox } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import React, { useEffect, useState } from "react";
 import { classNames } from "@/utils";
+import Image from "next/image";
 
 const Select: React.FC<{
   options: {
     value: string;
     label: string;
+    avatar? : string;
+    fullName? : string;
   }[];
   value: string;
   onChange: (value: { value: string; label: string }) => void;
@@ -54,7 +57,7 @@ const Select: React.FC<{
                 className={({ active }) =>
                   classNames(
                     "cursor-pointer relative rounded-2xl select-none py-4 pl-3 pr-9",
-                    active ? "bg-dark dark:text-white" : "dark:text-white"
+                    active ? "bg-black/20 dark:text-white" : "dark:text-white"
                   )
                 }
               >
@@ -66,7 +69,21 @@ const Select: React.FC<{
                         selected ? "font-semibold" : ""
                       )}
                     >
-                      {option.label}
+                      <div className="flex items-center gap-4">
+                        <div className="relative w-10 h-10">
+                        <Image
+                        alt="Avatar Image"
+                        className="absolute rounded-full object-cover"
+                        fill
+                        src={option.avatar!}
+                        />
+                      </div>
+                      
+                      <div>
+                        {option.label}
+                        {option.fullName}
+                      </div>
+                      </div>
                     </span>
 
                     {selected && (

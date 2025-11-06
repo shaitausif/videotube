@@ -127,8 +127,8 @@ const CreatePost = ({onClose}: {onClose: () => void}) => {
                             </>
                           ) : (
                             <>
-                              <Upload className="group-hover:text-purple-200 transition-all duration-300" />
-                              <span className="group-hover:text-purple-200 transition-all duration-300">
+                              <Upload className="group-hover:text-purple-400 dark:group-hover:text-purple-200 transition-all duration-300" />
+                              <span className="group-hover:text-purple-400 dark:group-hover:text-purple-200 transition-all duration-300">
                                 Upload Image
                               </span>
                             </>
