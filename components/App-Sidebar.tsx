@@ -1,5 +1,5 @@
 "use client"
-import { History, Home, Inbox, Search, Settings, ThumbsUp } from "lucide-react"
+import { History, Home, Inbox, ListVideo, Search, Settings, ThumbsUp } from "lucide-react"
 
 
 import {
@@ -33,13 +33,18 @@ const items = [
   },
   {
     title: "Subscriptions",
-    url: `/subscription/${user._id}`,
+    url: `/subscription/${user._id}`, 
     icon: Inbox,
   },
   {
     title: "History",
     url: "/watch-history",
     icon: History,
+  },
+  {
+    title: "Plylists",
+    url: "/playlists",
+    icon: ListVideo,
   },
   {
     title: "Liked Videos",

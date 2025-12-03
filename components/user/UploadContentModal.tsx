@@ -52,7 +52,7 @@ const UploadContentModal: React.FC<UploadContentModalProps> = ({ onClose }) => {
 
 
       onClick={(e) => e.stopPropagation()}
-      className="md:w-[40vw] w-full mx-4 h-fit bg-gray-700/30 rounded-lg relative backdrop-blur-lg">
+      className="md:w-[40vw] w-full mx-4 h-fit bg-white dark:bg-gray-700/30 rounded-lg relative backdrop-blur-lg">
           <Plus onClick={() => onClose()} className="absolute top-3 right-3 rotate-45 hover:text-red-400 transition-all duration-300"  />
             {
               active && (

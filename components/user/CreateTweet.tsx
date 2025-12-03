@@ -96,7 +96,7 @@ const CreateTweet = ({onClose} : { onClose: () => void}) => {
                 className="flex flex-col gap-5 w-full h-full"
                 onSubmit={form.handleSubmit(onSubmit)}
               >
-                <h3 className="text-center text-lg text-gray-200 font-semibold">Create Tweet</h3>
+                <h3 className="text-center text-lg text-gray-800 dark:text-gray-200 font-semibold">Create Tweet</h3>
                 <FormField
                   control={form.control}
                   name="tweet"
@@ -104,9 +104,9 @@ const CreateTweet = ({onClose} : { onClose: () => void}) => {
                     <FormItem>
                       <FormControl>
                         <div className="relative w-full h-full">
-                          <div className="absolute top-0 left-0  w-full h-full py-3 px-3  whitespace-pre-wrap break-words rounded-lg text-sm text-gray-200">
+                          <div className="absolute top-0 left-0  w-full h-full py-3 px-3  whitespace-pre-wrap break-words rounded-lg text-sm text-gray-700 dark:text-gray-200">
                             {highlightMentions(field.value)}
-                            <div className="absolute bottom-3 right-3 text-sm text-end text-gray-500">{field.value.length}/{user.subscription?.active ? 1000 : 200}</div>
+                            <div className="absolute bottom-3 right-3 text-sm text-end text-gray-700 dark:text-gray-500">{field.value.length}/{user.subscription?.active ? 1000 : 200}</div>
                           </div>
                           <textarea
                           maxLength={user.subscription?.active ? 1000 : 200}

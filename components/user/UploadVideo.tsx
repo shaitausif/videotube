@@ -169,13 +169,13 @@ const UploadVideo = ({onClose}: {onClose: () => void}) => {
                       {
                         isVideoSelected ? (
                           <>
-                          <Check className="group-hover:text-purple-200 transition-all duration-300" />
-                      <span className="group-hover:text-purple-200 transition-all duration-300">Video is ready to upload</span>
+                          <Check className="group-hover:text-purple-400 dark:group-hover:text-purple-200 transition-all duration-300" />
+                      <span className="group-hover:text-purple-400 dark:group-hover:text-purple-200 transition-all duration-300">Video is ready to upload</span>
                           </>
                         ) : (
                           <>
-                          <Upload className="group-hover:text-purple-200 transition-all duration-300" />
-                      <span className="group-hover:text-purple-200 transition-all duration-300">Upload Video</span>
+                          <Upload className="group-hover:text-purple-400 dark:group-hover:text-purple-200 transition-all duration-300" />
+                      <span className="group-hover:text-purple-400 dark:group-hover:text-purple-200 transition-all duration-300">Upload Video</span>
                           </>
                         )
                       }

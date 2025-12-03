@@ -364,7 +364,7 @@ const GroupChatDetailsModal: React.FC<{
                                                 </AlertDialogTitle>
                                                 <AlertDialogDescription>
                                                   Are you sure you want to
-                                                  remove ${part.username} this
+                                                  remove {part.username} from this
                                                   chat?
                                                 </AlertDialogDescription>
                                               </AlertDialogHeader>
