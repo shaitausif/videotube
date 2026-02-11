@@ -42,7 +42,7 @@ const items = [
     icon: History,
   },
   {
-    title: "Plylists",
+    title: "Playlists",
     url: "/playlists",
     icon: ListVideo,
   },

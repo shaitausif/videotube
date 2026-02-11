@@ -611,7 +611,7 @@ const page = () => {
         }}
       />
 
-      <div className="w-full justify-between items-stretch h-screen flex flex-shrink-0">
+      <div className="w-full justify-between overflow-hidden items-stretch h-screen flex flex-shrink-0">
         <div
           className={`${isInChat ? "hidden" : "block"} md:block w-full md:w-1/3 relative dark:ring-white overflow-y-auto px-4`}
         >

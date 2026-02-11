@@ -6,6 +6,8 @@ import {
   PaperClipIcon,
   TrashIcon,
   XMarkIcon,
+  ClipboardDocumentIcon,
+  CheckIcon,
 } from "@heroicons/react/20/solid";
 import {
   AlertDialog,
@@ -19,10 +21,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import moment from "moment";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { ChatMessageInterface } from "@/interfaces/chat";
 import { classNames } from "@/utils";
 import Image from "next/image";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 const MessageItem: React.FC<{
   isAIMessage?: boolean;
   isOwnMessage?: boolean;
@@ -38,7 +44,13 @@ const MessageItem: React.FC<{
 }) => {
   const [resizedImage, setResizedImage] = useState<string | null>(null);
   const [openOptions, setopenOptions] = useState<boolean>(false); //To open delete menu option on hover
-  
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
+  const handleCopyCode = useCallback((code: string) => {
+    navigator.clipboard.writeText(code);
+    setCopiedCode(code);
+    setTimeout(() => setCopiedCode(null), 2000);
+  }, []);
 
   return (
     <>
@@ -254,11 +266,67 @@ const MessageItem: React.FC<{
                 </button>
               ) : null}
 
-              <p className="text-sm">{isAIMessage ? message.content.split("**").map((string ,i) => (
-                <span key={i}>
-                  {string.replace("*","")}<br/>
-                </span>
-              )) : message.content}</p>
+              {isAIMessage ? (
+                <div className="text-sm prose prose-sm dark:prose-invert max-w-none
+                  prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5
+                  prose-pre:my-2 prose-pre:p-0 prose-pre:bg-transparent
+                  prose-code:before:content-none prose-code:after:content-none
+                  prose-code:bg-zinc-700/30 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs
+                  prose-a:text-blue-400 prose-a:underline
+                  prose-strong:text-inherit prose-em:text-inherit
+                  prose-table:text-xs prose-th:p-2 prose-td:p-2 prose-th:border prose-td:border
+                  prose-th:border-zinc-600 prose-td:border-zinc-600">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      code({ node, className, children, ...props }) {
+                        const match = /language-(\w+)/.exec(className || "");
+                        const codeString = String(children).replace(/\n$/, "");
+                        if (match) {
+                          return (
+                            <div className="relative group/code my-2 rounded-lg overflow-hidden">
+                              <div className="flex items-center justify-between bg-zinc-800 px-4 py-1.5 text-xs text-zinc-400">
+                                <span>{match[1]}</span>
+                                <button
+                                  onClick={() => handleCopyCode(codeString)}
+                                  className="flex items-center gap-1 hover:text-white transition-colors"
+                                >
+                                  {copiedCode === codeString ? (
+                                    <><CheckIcon className="h-3.5 w-3.5" /> Copied!</>
+                                  ) : (
+                                    <><ClipboardDocumentIcon className="h-3.5 w-3.5" /> Copy</>
+                                  )}
+                                </button>
+                              </div>
+                              <SyntaxHighlighter
+                                style={oneDark}
+                                language={match[1]}
+                                PreTag="div"
+                                customStyle={{
+                                  margin: 0,
+                                  borderRadius: 0,
+                                  fontSize: "0.8rem",
+                                }}
+                              >
+                                {codeString}
+                              </SyntaxHighlighter>
+                            </div>
+                          );
+                        }
+                        return (
+                          <code className={className} {...props}>
+                            {children}
+                          </code>
+                        );
+                      },
+                    }}
+                  >
+                    {message.content}
+                  </ReactMarkdown>
+                </div>
+              ) : (
+                <p className="text-sm">{message.content}</p>
+              )}
             </div>
           ) : null}
           <p

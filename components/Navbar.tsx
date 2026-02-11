@@ -56,15 +56,15 @@ const Navbar = () => {
   const [searchHistory, setsearchHistory] = useState<any[]>([]);
   const router = useRouter();
 
-  // ✅ Fetch search history only on first mount
+  // Fetch search history only on first mount
   useEffect(() => {
-    const getUserSearhHistory = async () => {
+    const getUserSearchHistory = async () => {
       if(!user._id) return;
       requestHandler(
         async () => await userSearchHistory(),
         null,
         (res) => {
-          console.log(res)
+          
           if (res.success) {
             setsearchHistory(res.data.searches);
           }
@@ -75,7 +75,7 @@ const Navbar = () => {
         }
       );
     };
-    getUserSearhHistory();
+    getUserSearchHistory();
   }, []);
 
   const Logout = async () => {
@@ -120,7 +120,7 @@ const Navbar = () => {
         async () => await updateSearch(searchQuery),
         null,
         (res) => {
-          console.log(res);
+          // console.log(res);
           if (!res.data) {
             toast.info("No search results found!");
           
@@ -180,7 +180,8 @@ const Navbar = () => {
           className="flex justify-center items-center gap-6"
         >
           <SidebarTrigger />
-          <Image src={"/Logo.png"} alt="Logo" width={40} priority height={40} />
+          <Image src={"/Logo_2.png"} className="dark:hidden" alt="Logo" width={120} priority height={40} />
+          <Image src={"/Logo_dark.png"} className="hidden dark:block" alt="Logo" width={120} priority height={40} />
         </motion.div>
 
         {/* Search Bar */}
@@ -207,10 +208,14 @@ const Navbar = () => {
                         height: 0,
                         opacity: 0,
                       }}
-                      onClick={() => setsearchQuery(search)}
-                      className=" px-4   rounded-sm hover:bg-gray-200 dark:hover:bg-gray-800 h-10"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setsearchQuery(search);
+                        setisSearchModalOpen(false);
+                      }}
+                      className=" px-4  pointer-events-auto rounded-sm hover:bg-gray-200 dark:hover:bg-gray-800 h-10 cursor-pointer"
                     >
-                      {search}
+                      <p><span>{search}</span></p>
                     </motion.div>
                   ))
                 ) : (
@@ -249,8 +254,12 @@ const Navbar = () => {
                         height: 0,
                         opacity: 0,
                       }}
-                      onClick={() => setsearchQuery(search)}
-                      className=" px-4   rounded-sm hover:bg-gray-200 cursor-default dark:hover:bg-gray-800 h-10"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setsearchQuery(search);
+                        setisSearchModalOpen(false);
+                      }}
+                      className=" px-4   rounded-sm hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-800 h-10"
                     >
                       {search}
                     </motion.div>
