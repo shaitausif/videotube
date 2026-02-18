@@ -9,23 +9,39 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest){
     try {
         
-        const { name , description } = await req.json();
+        const { name , description, videos } = await req.json();
         if(!name || !description) return NextResponse.json({success : false, message : "Title and Description are required"},{status : 400})
 
         const {payload} = await getCurrentUser(req)
+        if(!payload) return NextResponse.json({success : false, message : "Unauthorized"},{status : 401})
 
         await ConnectDB()
         const playlist = await Playlist.create({
             name,
             description,
-            owner : payload?._id
+            owner : payload._id,
+            videos : Array.isArray(videos) ? videos : []
         })
         if(!playlist) return NextResponse.json({success : false, message : "Unable to create playlist"})
 
-        return NextResponse.json({success : true, data : playlist, message : "Playlist created successfully."})
+        // Populate the created playlist to return full data
+        const populatedPlaylist = await Playlist.findById(playlist._id)
+            .populate({
+                path : "videos",
+                populate : {
+                    path : "owner",
+                    select : "username avatar fullName"
+                }
+            })
+            .populate({
+                path : "owner",
+                select : "username avatar fullName"
+            })
+
+        return NextResponse.json({success : true, data : populatedPlaylist, message : "Playlist created successfully."})
         
 
-    } catch (error) {
-        return NextResponse.json({success : false, message : error},{status : 500})
+    } catch (error : any) {
+        return NextResponse.json({success : false, message : error?.message || "Internal server error"},{status : 500})
     }
 }

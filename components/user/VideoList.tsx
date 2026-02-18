@@ -60,7 +60,7 @@ const VideoList: React.FC<VideoListProps> = ({
           <div
             key={video._id as string}
             onClick={() => router.push(`/video/${video._id}`)}
-            className="flex gap-3 group hover:bg-gray-100 dark:hover:bg-gray-900 rounded-2xl w-full md:w-[70vw] p-2 transition-all duration-300 cursor-pointer"
+            className="flex gap-3 group hover:bg-purple-50/50 dark:hover:bg-purple-500/5 rounded-2xl w-full md:w-[70vw] p-2 transition-all duration-300 cursor-pointer border border-transparent hover:border-purple-500/10"
           >
             {/* Thumbnail */}
             <div className="relative flex-shrink-0 w-[40vw] sm:w-[30vw] md:w-[15vw] h-[25vw] sm:h-[20vw] md:h-[10vw]">

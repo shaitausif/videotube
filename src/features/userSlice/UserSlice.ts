@@ -15,6 +15,15 @@ export interface UserState {
       VerifyCode?: string;
       VerifyCodeExpiry?: Date;
       isVerified?: boolean;
+    bookmarkedPlaylists?: string[];
+    bio?: string;
+    socialLinks?: {
+      website?: string;
+      twitter?: string;
+      instagram?: string;
+      github?: string;
+      linkedin?: string;
+    };
     subscription? : {
     plan : String;
     startDate : Date;

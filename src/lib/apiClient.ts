@@ -307,6 +307,25 @@ const updateSearch = (query: string) => {
   }
 }
 
+interface SearchFilters {
+  query: string
+  sortBy?: 'relevance' | 'date' | 'views'
+  uploadDate?: '' | 'hour' | 'today' | 'week' | 'month' | 'year'
+  duration?: '' | 'short' | 'medium' | 'long'
+  page?: number
+  limit?: number
+}
+
+const searchVideos = ({ query, sortBy = 'relevance', uploadDate = '', duration = '', page = 1, limit = 20 }: SearchFilters) => {
+  const params = new URLSearchParams({ query: query.trim() })
+  if (sortBy) params.set('sortBy', sortBy)
+  if (uploadDate) params.set('uploadDate', uploadDate)
+  if (duration) params.set('duration', duration)
+  params.set('page', page.toString())
+  params.set('limit', limit.toString())
+  return nativeApiClient.get(`/api/video/get-videos?${params.toString()}`)
+}
+
 
 const verifyUser = () => {
   return nativeApiClient.get(`/api/user/verify`)  
@@ -320,6 +339,60 @@ const getLikedVideos = () => {
 
 const updateVideoComments = (commentId : string, content : string) => {
   return nativeApiClient.patch(`/api/comment/update-or-delete/${commentId}`,{content})
+}
+
+
+// ==================== User Profile API Functions ====================
+
+const updateProfile = (data: { fullName?: string; username?: string; bio?: string; socialLinks?: Record<string, string> }) => {
+  return nativeApiClient.patch(`/api/user/update-profile`, data)
+}
+
+const changePassword = (oldPassword: string, newPassword: string) => {
+  return nativeApiClient.put(`/api/user/change-password`, { oldPassword, newPassword })
+}
+
+const checkUsername = (username: string) => {
+  return nativeApiClient.get(`/api/user/check-username?username=${encodeURIComponent(username)}`)
+}
+
+
+// ==================== Playlist API Functions ====================
+
+const getUserPlaylists = (userId: string) => {
+  return nativeApiClient.get(`/api/playlist/get-user-playlist/${userId}`)
+}
+
+const getPlaylistById = (playlistId: string) => {
+  return nativeApiClient.get(`/api/playlist/get-set-remove-playlist/${playlistId}`)
+}
+
+const createPlaylist = (name: string, description: string, videoIds?: string[]) => {
+  return nativeApiClient.post(`/api/playlist/create-playlist`, { name, description, videos: videoIds || [] })
+}
+
+const updatePlaylist = (playlistId: string, name: string, description: string) => {
+  return nativeApiClient.patch(`/api/playlist/get-set-remove-playlist/${playlistId}`, { name, description })
+}
+
+const deletePlaylist = (playlistId: string) => {
+  return nativeApiClient.delete(`/api/playlist/get-set-remove-playlist/${playlistId}`)
+}
+
+const addVideoToPlaylist = (playlistId: string, videoId: string) => {
+  return nativeApiClient.post(`/api/playlist/add-remove/${playlistId}/${videoId}`)
+}
+
+const removeVideoFromPlaylist = (playlistId: string, videoId: string) => {
+  return nativeApiClient.patch(`/api/playlist/add-remove/${playlistId}/${videoId}`)
+}
+
+const toggleBookmarkPlaylist = (playlistId: string) => {
+  return nativeApiClient.post(`/api/playlist/toggle-bookmark/${playlistId}`)
+}
+
+const getBookmarkedPlaylists = () => {
+  return nativeApiClient.get(`/api/playlist/get-bookmarked`)
 }
 
 
@@ -379,5 +452,18 @@ export {
   togglePostDisLike,
   toggleTweetDisLike,
   toggleAcceptMessages,
-  enhanceMessages
+  enhanceMessages,
+  getUserPlaylists,
+  getPlaylistById,
+  createPlaylist,
+  updatePlaylist,
+  deletePlaylist,
+  addVideoToPlaylist,
+  removeVideoFromPlaylist,
+  toggleBookmarkPlaylist,
+  getBookmarkedPlaylists,
+  updateProfile,
+  changePassword,
+  checkUsername,
+  searchVideos
 };

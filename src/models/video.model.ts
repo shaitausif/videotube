@@ -59,6 +59,9 @@ const videoSchema = new Schema<VideoInterface>(
     ,{timestamps : true}
 )
 
+// Text index for semantic search — weights title higher than description
+videoSchema.index({ title : "text", description : "text" }, { weights : { title : 10, description : 3 } })
+
 // Here, we're adding plugins and this feature is provided by the mongoose
 videoSchema.plugin(mongooseAggregatePaginate)   
 // And now here we can write aggregation pipeline queries of mongodb easily

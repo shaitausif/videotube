@@ -61,7 +61,7 @@ const ChangePassword = ({email}: {email: string}) => {
 
 
   return (
-    <div className="flex flex-col z-10 m-0.5 rounded-md  justify-between items-center p-6 dark:text-white dark:bg-main bg-white gap-4">
+    <div className="flex flex-col z-10 m-0.5 rounded-xl justify-between items-center p-6 dark:text-white dark:bg-gray-900 bg-white gap-4">
         <h1 className='md:text-xl text-lg'>Create New Password</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onsubmit)} className='w-full flex flex-col items-center gap-3 text-center'>
@@ -110,7 +110,7 @@ const ChangePassword = ({email}: {email: string}) => {
                       )}
                     />
           
-          <Button type='submit' disabled={isSubmitting} className='mt-1'>
+          <Button type='submit' disabled={isSubmitting} className='mt-1 gradient-btn rounded-lg'>
             {isSubmitting ? (
               <Loader2 className='animate-spin' />
             ): "Submit"}

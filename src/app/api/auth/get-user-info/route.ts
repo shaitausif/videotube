@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
 
     await ConnectDB();
     const user = await User.findOne({ _id: payload._id }).select(
-      "avatar coverImage fullName email username subscription fcmTokens isAcceptingMessages"
+      "avatar coverImage fullName email username subscription fcmTokens isAcceptingMessages bio socialLinks"
     );
     if (!user) {
       return NextResponse.json(

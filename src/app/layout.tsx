@@ -32,7 +32,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       {/* So whenever we use server rendering, normally there is a warning when server and the client render different content well that's what we're going to get with next themes */}
       <body suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} antialiased transition-all duration-500 dark:bg-[#0A0A0A] light:bg-[#FFFFFF] light:text-[#000]`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased transition-colors duration-300`}
       >
         <ReduxProvider>
         <Providers>

@@ -27,6 +27,9 @@ import {
 import UserVideos from "./user/UserVideos";
 import UserPosts from "./user/UserPosts";
 import UserTweets from "./user/UserTweets";
+import UserPlaylists from "./user/UserPlaylists";
+import ProfileInfoModal from "./ProfileInfoModal";
+import { MoreHorizontal } from "lucide-react";
 
 interface Channel {
   _id?: string;
@@ -39,6 +42,15 @@ interface Channel {
   subscribedToCount?: number;
   isSubscribed?: boolean;
   isAcceptingMessages?: boolean;
+  bio?: string;
+  socialLinks?: {
+    website?: string;
+    twitter?: string;
+    instagram?: string;
+    github?: string;
+    linkedin?: string;
+  };
+  createdAt?: string;
 }
 
 const UserProfile = ({ username }: { username: any }) => {
@@ -49,7 +61,7 @@ const UserProfile = ({ username }: { username: any }) => {
 
   const [subscribersCount, setsubscribersCount] = useState(0);
   const [channelInfo, setchannelInfo] = useState<Channel>({});
-  const [activeTab, setactiveTab] = useState<"Home" | "Videos" | "Posts" | "Tweets">('Home')
+  const [activeTab, setactiveTab] = useState<"Home" | "Videos" | "Playlists" | "Posts" | "Tweets">('Home')
   
 
 
@@ -182,7 +194,7 @@ const UserProfile = ({ username }: { username: any }) => {
                 <AlertDialogTrigger asChild>
                   <Button
                     className={`
-                    rounded-3xl font-semibold hover:bg-gray-300 text-md text-black bg-gray-200 transition-all duration-300 dark:bg-black dark:text-white dark:hover:bg-gray-800
+                    rounded-3xl font-semibold hover:bg-gray-200 text-sm text-gray-700 bg-gray-100 transition-all duration-300 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700
                     `}
                   >
                     Subscribed
@@ -214,7 +226,7 @@ const UserProfile = ({ username }: { username: any }) => {
               <Button
                 onClick={() => handleToggleSubscribe(channelInfo._id!)}
                 className={`
-                              rounded-3xl font-semibold text-md
+                              rounded-3xl font-semibold text-sm gradient-btn
                               `}
               >
                 Subscribe
@@ -223,13 +235,31 @@ const UserProfile = ({ username }: { username: any }) => {
             { channelInfo.isAcceptingMessages && (
               <Button
                 onClick={() => handleMessageUser()}
-                className="rounded-3xl font-semibold text-md"
+                className="rounded-3xl font-semibold text-sm gradient-btn"
               >
                 Message
               </Button>
             )}
+
+            {/* More Info (ellipsis) */}
+            <ProfileInfoModal
+              fullName={channelInfo.fullName}
+              username={channelInfo.username}
+              bio={channelInfo.bio}
+              socialLinks={channelInfo.socialLinks}
+              subscribersCount={subscribersCount}
+              createdAt={channelInfo.createdAt}
+            >
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full hover:bg-purple-50 dark:hover:bg-purple-500/10 transition-all"
+              >
+                <MoreHorizontal className="w-5 h-5" />
+              </Button>
+            </ProfileInfoModal>
           </div>
-          <div  className="px-2 dark:hover:text-gray-400 cursor-pointer transition-all duration-300 dark:text-gray-300">
+          <div  className="px-2 hover:text-purple-500 dark:hover:text-purple-400 cursor-pointer transition-all duration-300 text-gray-600 dark:text-gray-300">
             <p
             onClick={() => router.push(`/subscription/${channelInfo._id}`)}
             >
@@ -243,15 +273,15 @@ const UserProfile = ({ username }: { username: any }) => {
       </div>
       {/* Section Bar to show home, videos, posts and tweets of the User */}
       <div className="px-4 rounded-lg md:px-12 flex items-center gap-12 md:text-lg">
-        {["Home", "Videos", "Posts", "Tweets"].map((item) => (
+        {["Home", "Videos", "Playlists", "Posts", "Tweets"].map((item) => (
           <span
           onClick={() => {
             //@ts-ignore
             setactiveTab(item)
           }}
           key={item} className="cursor-pointer relative pb-2 group">
-            <span className={` ${activeTab === item ? 'text-gray-200' : "text-gray-400"}`}>{item}</span>
-            <span className={`absolute left-0 bottom-0 w-0 h-[3px] bg-red-500 rounded-full transition-all duration-500 ease-out group-hover:w-full group-hover:shadow-[0_0_8px_2px_rgba(239,68,68,0.7)] ${activeTab === item ? 'shadow-[0_0_8px_2px_rgba(239,68,68,0.7)] w-full' : ''}`}></span>
+            <span className={` ${activeTab === item ? 'text-foreground font-medium' : "text-gray-500 dark:text-gray-400"}`}>{item}</span>
+            <span className={`absolute left-0 bottom-0 w-0 h-[3px] bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500 ease-out group-hover:w-full group-hover:shadow-[0_0_8px_2px_rgba(168,85,247,0.4)] ${activeTab === item ? 'shadow-[0_0_8px_2px_rgba(168,85,247,0.4)] w-full' : ''}`}></span>
           </span>
         ))}
       </div>
@@ -263,6 +293,9 @@ const UserProfile = ({ username }: { username: any }) => {
 
         { activeTab === 'Videos' && (
           <UserVideos userId={channelInfo._id?.toString()!} /> 
+        )}
+        { activeTab === 'Playlists' && (
+          <UserPlaylists userId={channelInfo._id?.toString()!} />
         )}
         { activeTab === 'Posts' && (
           <UserPosts userId={channelInfo._id?.toString()!} />

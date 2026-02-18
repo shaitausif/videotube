@@ -15,6 +15,7 @@ import {
 import Link from "next/link"
 import { useSelector } from "react-redux"
 import { RootState } from "@/store/store"
+import { usePathname } from "next/navigation"
 
 
 
@@ -22,6 +23,7 @@ import { RootState } from "@/store/store"
 
 export function AppSidebar() {
   const user = useSelector((state: RootState) => state.user)
+  const pathname = usePathname()
 
 
   // Menu items.
@@ -53,32 +55,35 @@ const items = [
   },
   {
     title: "Search",
-    url: "#",
+    url: "/search",
     icon: Search,
   },
   {
     title: "Settings",
-    url: "#",
+    url: "/settings",
     icon: Settings,
   },
 ]
   return (
-    <Sidebar >
-      <SidebarContent className="dark:bg-[#161616]">
+    <Sidebar>
+      <SidebarContent className="bg-white dark:bg-gray-950 border-r border-gray-200/50 dark:border-gray-800/50">
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {items.map((item) => {
+                const isActive = pathname === item.url
+                return (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild className={`transition-all duration-200 rounded-lg ${isActive ? 'bg-gradient-to-r from-purple-500/10 to-pink-500/10 text-purple-600 dark:text-purple-400 font-medium' : 'hover:bg-purple-50 dark:hover:bg-purple-500/10 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400'}`}>
                     <Link href={item.url}>
-                      <item.icon />
-                      <span >{item.title}</span>
+                      <item.icon className={`w-4 h-4 ${isActive ? 'text-purple-500' : ''}`} />
+                      <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-              ))}
+                )
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

@@ -142,24 +142,9 @@ const Navbar = () => {
     if (searchQuery.trim() == "") {
       return toast.info("Please enter search query");
     }
-
-    requestHandler(
-      // @ts-ignore
-      async () => await getVideosByQuery(searchQuery),
-      null,
-      (res) => {
-        if (!res.success) {
-          toast.info(res.message);
-          setquery([])
-        }
-        setvideos(res.data);
-      },
-      (err) => {
-        // @ts-ignore
-        // toast.error(err.message)
-        console.log(err);
-      }
-    );
+    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    setisSearchModalOpen(false);
+    setquery([]);
   };
 
   return (
@@ -167,7 +152,7 @@ const Navbar = () => {
       <AnimatePresence>
         {isModalOpen && <DynamicModal onClose={() => setisModalOpen(false)} />}
       </AnimatePresence>
-      <div className="w-full px-4 mx-auto py-4 fixed dark:bg-[#161616]/50 flex md:pr-12 md:pl-6 justify-between items-center backdrop-blur-3xl z-20">
+      <div className="w-full px-4 mx-auto py-4 fixed bg-white/80 dark:bg-gray-950/80 flex md:pr-12 md:pl-6 justify-between items-center backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50 z-20">
         {/* Logo */}
 
         <motion.div
@@ -188,7 +173,7 @@ const Navbar = () => {
         <div className="ml-8 md:block hidden w-110 relative">
           <AnimatePresence>
             {isSearchModalOpen && (
-              <div className="absolute  w-full bg-white dark:bg-main rounded-md top-9 py-2">
+              <div className="absolute w-full bg-white dark:bg-gray-900 rounded-xl top-9 py-2 border border-gray-200 dark:border-gray-700/50 shadow-xl dark:shadow-purple-500/5">
                 { 
                       query.length === 0 ?(
                         searchHistory.length > 0 ? (
@@ -213,7 +198,7 @@ const Navbar = () => {
                         setsearchQuery(search);
                         setisSearchModalOpen(false);
                       }}
-                      className=" px-4  pointer-events-auto rounded-sm hover:bg-gray-200 dark:hover:bg-gray-800 h-10 cursor-pointer"
+                      className="px-4 pointer-events-auto rounded-lg hover:bg-purple-50 dark:hover:bg-purple-500/10 h-10 cursor-pointer transition-colors duration-200"
                     >
                       <p><span>{search}</span></p>
                     </motion.div>
@@ -259,7 +244,7 @@ const Navbar = () => {
                         setsearchQuery(search);
                         setisSearchModalOpen(false);
                       }}
-                      className=" px-4   rounded-sm hover:bg-gray-200 cursor-pointer dark:hover:bg-gray-800 h-10"
+                      className="px-4 rounded-lg hover:bg-purple-50 cursor-pointer dark:hover:bg-purple-500/10 h-10 transition-colors duration-200"
                     >
                       {search}
                     </motion.div>
@@ -293,11 +278,11 @@ const Navbar = () => {
             }}
             placeholder="Search"
             name="search"
-            className="rounded-2xl overflow-hidden"
+            className="rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700/50 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all duration-200"
           />
           <Search
             onClick={() => handleGetSearchedVideos()}
-            className="absolute top-[1.4px] bg-gray-200 dark:bg-gray-700 h-[90%] px-2 rounded-r-2xl right-0 w-8 cursor-pointer"
+            className="absolute top-[1.4px] bg-gradient-to-r from-purple-500 to-pink-500 text-white h-[90%] px-2 rounded-r-2xl right-0 w-8 cursor-pointer hover:from-purple-600 hover:to-pink-600 transition-all duration-200"
           />
         </div>
 
@@ -316,7 +301,7 @@ const Navbar = () => {
           {user && user._id ? (
             <Button
               onClick={() => setisModalOpen(true)}
-              className="rounded-full md:rounded-2xl"
+              className="rounded-full md:rounded-2xl gradient-btn"
             >
               <Plus />
               <span className="md:block hidden">Create</span>
@@ -324,15 +309,15 @@ const Navbar = () => {
           ) : (
             <Button
               onClick={() => router.push("/sign-in")}
-              className="md:rounded-2xl rounded-full"
+              className="md:rounded-2xl rounded-full gradient-btn"
             >
               <Plus />
               <span className="md:block hidden">Sign in</span>
             </Button>
           )}
-          <Search className="md:hidden block dark:bg-[#161616]/50 cursor-pointer" />
+          <Search className="md:hidden block text-gray-600 dark:text-gray-400 hover:text-purple-500 dark:hover:text-purple-400 cursor-pointer transition-colors duration-200" />
           {user && user._id && (
-            <div className="p-2 md:block hidden rounded-full hover:dark:bg-gray-700 hover:shadow-2xl duration-300">
+            <div className="p-2 md:block hidden rounded-full hover:bg-purple-50 hover:dark:bg-purple-500/10 hover:shadow-lg duration-300 transition-all">
               <MessageSquareMore onClick={() => router.push("/chat")} />
             </div>
           )}
@@ -355,7 +340,7 @@ const Navbar = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="w-56 dark:bg-[#161616]/70"
+              className="w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700/50 shadow-xl dark:shadow-purple-500/5"
               align="start"
             >
               {user && user._id && (
@@ -389,7 +374,7 @@ const Navbar = () => {
                       Upgrade
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push('/settings')}>Settings</DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <div>
                       <ThemeSwitcher />
@@ -398,7 +383,7 @@ const Navbar = () => {
                 </DropdownMenuGroup>
               ) : (
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push('/settings')}>Settings</DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <div>
                       <ThemeSwitcher />
@@ -412,7 +397,7 @@ const Navbar = () => {
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>Invite users</DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
-                    <DropdownMenuSubContent className="dark:bg-[#161616]/50">
+                    <DropdownMenuSubContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700/50 shadow-xl">
                       <DropdownMenuItem>Email</DropdownMenuItem>
                       <DropdownMenuItem>Message</DropdownMenuItem>
                       <DropdownMenuSeparator />

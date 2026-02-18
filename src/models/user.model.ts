@@ -1,7 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 import jwt, { Secret } from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { boolean } from "zod";
 
 
 export default interface User {
@@ -20,6 +19,15 @@ export default interface User {
   isAI? : boolean;
   refreshToken? : string
   isAcceptingMessages? : boolean;
+  bookmarkedPlaylists? : Array<mongoose.Types.ObjectId>;
+  bio? : string;
+  socialLinks? : {
+    website? : string;
+    twitter? : string;
+    instagram? : string;
+    github? : string;
+    linkedin? : string;
+  };
   subscription? : {
     plan : String;
     startDate : Date;
@@ -93,6 +101,24 @@ const userSchema = new Schema(
     },
     refreshToken : {
       type : String
+    },
+    bookmarkedPlaylists : [
+      {
+        type : Schema.Types.ObjectId,
+        ref : "Playlist"
+      }
+    ],
+    bio : {
+      type : String,
+      default : "",
+      maxlength : 500
+    },
+    socialLinks : {
+      website : { type : String, default : "" },
+      twitter : { type : String, default : "" },
+      instagram : { type : String, default : "" },
+      github : { type : String, default : "" },
+      linkedin : { type : String, default : "" }
     },
     subscription : {
       plan : { type : String, enum : ["free","monthly","annual"], default : "free"},

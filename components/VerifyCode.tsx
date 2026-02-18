@@ -76,7 +76,7 @@ const VerifyCode = ({email, redirect, setverify, verify}: {email: string, redire
     
     
     
-    className="flex flex-col z-10 justify-between items-center p-6 m-0.5 dark:text-white dark:bg-main bg-white gap-4">
+    className="flex flex-col z-10 justify-between items-center p-6 m-0.5 dark:text-white dark:bg-gray-900 bg-white gap-4 rounded-xl">
         <h1 className='md:text-xl text-lg'>Verification Code has been sent to {email}</h1>
         <form 
         className="flex flex-col gap-4"

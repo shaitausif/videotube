@@ -30,11 +30,9 @@ export async function GET(req : NextRequest,
             select : "username avatar fullName"
         })
 
-        if(!playlists) return NextResponse.json({success : false, message : "Playlist doesn't exist"},{status : 404})
-
         return NextResponse.json({success : true, data : playlists, message : "Playlists fetched successfully."},{status : 200})
 
-    } catch (error) {
-        return NextResponse.json({success : false, message : error},{status : 500})
+    } catch (error : any) {
+        return NextResponse.json({success : false, message : error?.message || "Internal server error"},{status : 500})
     }
 }

@@ -78,23 +78,23 @@ const AllVideos = () => {
           ))
         : videos.length === 0 ? (
           <div className="col-span-3 gap-2 w-full flex justify-center items-center h-[80vh] flex-col">
-            <div className="text-2xl">No Videos yet.</div>
+            <div className="text-2xl font-semibold gradient-text">No Videos yet.</div>
             <div
             onClick={() => setisModalOpen(true)}
-            className="text-lg cursor-pointer text-gray-400 hover:text-gray-500 transition-all duration-300">Start by yourself then!</div>
+            className="text-lg cursor-pointer text-gray-400 hover:text-purple-500 transition-all duration-300">Start by yourself then!</div>
           </div>
         ) : (
           videos.map((video) => (
             <div
               key={video._id as string}
-              className="col-span-1 rounded-lg h-[35vh] md:h-[45vh] group hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-900 transition-all duration-300 group"
+              className="col-span-1 rounded-xl overflow-hidden group hover:bg-gray-50 dark:hover:bg-gray-800/50 border border-transparent hover:border-purple-500/20 dark:hover:border-purple-500/20 transition-all duration-300 cursor-pointer hover:shadow-lg hover:shadow-purple-500/5"
               onClick={() => {
                 router.push(`/video/${video._id}`);
               }}
             >
-              <div className="w-full object-cover relative h-[70%] ">
+              <div className="w-full object-cover relative aspect-video">
                 
-                <div className="absolute z-10 text-white bg-black/90 p-1 rounded-md bottom-2 right-5">
+                <div className="absolute z-10 text-white bg-black/80 backdrop-blur-sm px-1.5 py-0.5 text-xs rounded-md bottom-2 right-3 font-medium">
                   {formatVideoDuration(video.duration)}
                 </div>
                 <Image
@@ -103,7 +103,7 @@ const AllVideos = () => {
                     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfj3Bm37Nn_rBQHkIzxnpmGMv3AnLWNYvA1_GwXzebfQ7rxLHl0fRsKo6mIi1SmoOiCL4&usqp=CAU"
                   }
                   alt="Video Thumbnail"
-                  className="object-cover rounded-lg dark:rounded-t-lg group-hover:opacity-90 transition-all duration-300"
+                  className="object-cover rounded-t-xl group-hover:scale-[1.02] transition-all duration-500"
                   fill
                   priority
                 />
@@ -123,7 +123,7 @@ const AllVideos = () => {
                   />
                 </div>
                 <div className="flex flex-col w-full truncate">
-                  <span className="md:text-md">{video.title}</span>
+                  <span className="text-sm">{video.title}</span>
                   <span className="text-sm text-gray-600 font-semibold dark:text-gray-400">
                     {video.owner.fullName!}
                   </span>
@@ -133,13 +133,13 @@ const AllVideos = () => {
                     {formatDistanceToNow(new Date(video.createdAt!), {
                       addSuffix: true,
                     })}</span>
-                    <span className="md:hidden absolute bottom-0 right-0 group-hover:block transition-all duration-300 hover:bg-gray-700 p-1 rounded-full">
+                    <span className="md:hidden absolute bottom-0 right-0 group-hover:block transition-all duration-300 hover:bg-purple-50 dark:hover:bg-purple-500/10 p-1 rounded-full">
                         <DropdownMenu modal={false}>
                   <DropdownMenuTrigger onClick={(e) => e.stopPropagation() } asChild>
                     <EllipsisVertical className="w-6 h-6 p-1 rounded-full  transition-all duration-300 " />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
-                    className="w-25 dark:bg-[#161616]/50"
+                    className="w-25 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700/50 shadow-xl"
                     align="center"
                   >
                     {

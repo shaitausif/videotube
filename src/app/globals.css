@@ -155,12 +155,13 @@
 } */
 
 
-/* It's for extending the pallet */
+/* Extended palette – gradient accent tokens */
 @theme {
-  --color-twitter-blue: #000;
-  --color-main : #161616;
-  --color-button : rgba(252, 132, 184, 0.937);
-  
+  --color-main: #0F0F11;
+  --color-surface: #18181B;
+  --color-surface-hover: #1F1F23;
+  --color-accent-purple: #A855F7;
+  --color-accent-pink: #EC4899;
 
   @keyframes border-spin {
     100% {
@@ -171,43 +172,44 @@
   --animate-border-spin: border-spin 5s linear infinite;
 }
 
+/* Gradient utility classes */
+@layer utilities {
+  .gradient-text {
+    @apply bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent;
+  }
+  .gradient-btn {
+    @apply bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg shadow-purple-500/25 transition-all duration-300;
+  }
+  .gradient-btn-outline {
+    @apply border border-purple-500/40 hover:border-purple-500 bg-transparent hover:bg-purple-500/10 text-purple-400 transition-all duration-300;
+  }
+  .gradient-border {
+    @apply border border-gray-200 dark:border-gray-700/50;
+  }
+  .gradient-ring {
+    @apply focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500;
+  }
+  .gradient-glow {
+    @apply shadow-[0_0_15px_rgba(168,85,247,0.15)] dark:shadow-[0_0_15px_rgba(168,85,247,0.1)];
+  }
 
+  /* Card wrapper – animated gradient border */
+  .card-wrapper {
+    @apply relative bg-gradient-to-b from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-xl overflow-hidden md:h-[100%] w-[calc(fit+2px)];
+  }
 
-@layer utilities{
-  /* Act as a border */
-.card-wrapper{
-  @apply relative bg-gradient-to-b bg-gray-100 dark:from-slate-700 dark:to-slate-800 rounded-md overflow-hidden md:h-[100%] w-[calc(fit+2px)]
-}
+  .card-wrapper::before {
+    background: conic-gradient(
+      rgba(168, 85, 247, 0.5) 0deg,
+      rgba(236, 72, 153, 0.5) 120deg,
+      transparent 240deg
+    );
+    @apply h-[200%] w-[150%] left-[-25%] top-[-50%] content-[''] absolute animate-border-spin;
+  }
 
-
-/* Act as a gradient */
-.card-wrapper::before{
-  background : conic-gradient(
-    rgba(244, 144, 182, 0.4) 0deg,
-    rgba(192, 132, 252, 0.4) 0deg,
-    transparent 80deg
-  );
-  @apply h-[200%]  w-[150%] left-[-25%] top-[-50%] content-[''] absolute animate-border-spin
-}
-
-
-/* Body */
-.card-content{
-  @apply  bg-gradient-to-b  rounded-2xl absolute w-[calc(100%-2px)] h-[calc(100%-2px)]
-}
-}
-
-
-
-
-
-
-.darkText{
-  @apply text-[#A1A1A1]
-}
-
-.lightText{
-  @apply text-[#000]
+  .card-content {
+    @apply bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950 rounded-xl absolute w-[calc(100%-2px)] h-[calc(100%-2px)];
+  }
 }
 
 @keyframes bounce {

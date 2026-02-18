@@ -103,15 +103,15 @@ const page = () => {
           className="card-wrapper flex justify-center items-center">
              <div
           
-          className="md:w-[50vw] z-10 m-0.5 h-fit flex flex-col gap-6 dark:text-white dark:bg-[#161616] bg-white rounded-md px-6 justify-center py-6"
+          className="md:w-[50vw] z-10 m-0.5 h-fit flex flex-col gap-6 dark:text-white dark:bg-gray-900 bg-white rounded-xl px-6 justify-center py-6">
         >
           <div className="flex flex-col justify-center space-y-0.5 items-center">
-            <h2 className="text-2xl">Create an Account</h2>
+            <h2 className="text-2xl font-bold gradient-text">Create an Account</h2>
             <p className="text-sm">
               Already have an account?{" "}
               <span
                 onClick={() => router.push("/sign-in")}
-                className="duration-200 cursor-pointer hover:text-blue-500"
+                className="duration-200 cursor-pointer text-purple-500 hover:text-purple-400"
               >
                 Login
               </span>
@@ -258,7 +258,7 @@ const page = () => {
                     <Button
                       disabled={isSubmitting}
                       type="submit"
-                      className="md:mt-4 w-full"
+                      className="md:mt-4 w-full gradient-btn rounded-lg"
                     >
                       {isSubmitting ? (
                         <Loader2 className="animate-spin" />
@@ -273,9 +273,9 @@ const page = () => {
           </div>
           {/* OAuth Options */}
           <div className="flex items-center gap-2 md:gap-3">
-            <span className="h-px flex-1 bg-gray-300"></span>
-            <span className="text-sm text-gray-500">OR</span>
-            <span className="h-px flex-1 bg-gray-300"></span>
+            <span className="h-px flex-1 bg-gray-200 dark:bg-gray-700"></span>
+            <span className="text-sm text-gray-400">OR</span>
+            <span className="h-px flex-1 bg-gray-200 dark:bg-gray-700"></span>
           </div>
           <div className="flex flex-col gap-3  justify-center items-center">
            <OAuthProviders />

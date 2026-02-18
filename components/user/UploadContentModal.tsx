@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "motion/react";
 import UploadVideo from "./UploadVideo";
 import CreatePost from "./CreatePost";
 import CreateTweet from "./CreateTweet";
+import CreatePlaylist from "./CreatePlaylist";
 
 interface UploadContentModalProps {
   onClose: () => void;
@@ -14,7 +15,7 @@ interface UploadContentModalProps {
 
 const UploadContentModal: React.FC<UploadContentModalProps> = ({ onClose }) => {
 
-  const [active, setactive] = useState<"Video" | "Post" | "Tweet" | null>(null)
+  const [active, setactive] = useState<"Video" | "Post" | "Tweet" | "Playlist" | null>(null)
   
 
   
@@ -76,6 +77,7 @@ const UploadContentModal: React.FC<UploadContentModalProps> = ({ onClose }) => {
                 <Button onClick={() => setactive("Video")} className="opacity-100 hover:bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 border-purple-300 hover:font-semibold cursor-pointer w-[200px] hover:border-purple-500 transition-all duration-300 border rounded-full px-12 py-2">Upload Video</Button>
                 <Button onClick={() => setactive("Post")} className="opacity-100 hover:bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 border-purple-300 hover:font-semibold cursor-pointer w-[200px] hover:border-purple-500 transition-all duration-300 border rounded-full px-12 py-2">Create Post</Button>
                 <Button onClick={() => setactive("Tweet")} className="opacity-100 hover:bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 border-purple-300 hover:font-semibold cursor-pointer w-[200px] hover:border-purple-500 transition-all duration-300 border rounded-full px-12 py-2">Create Tweet</Button>
+                <Button onClick={() => setactive("Playlist")} className="opacity-100 hover:bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 border-purple-300 hover:font-semibold cursor-pointer w-[200px] hover:border-purple-500 transition-all duration-300 border rounded-full px-12 py-2">Create Playlist</Button>
                 
             </motion.div>
               )
@@ -94,6 +96,11 @@ const UploadContentModal: React.FC<UploadContentModalProps> = ({ onClose }) => {
               {
                 active === 'Tweet' && (
                   <CreateTweet onClose={onClose} />
+                )
+              }
+              {
+                active === 'Playlist' && (
+                  <CreatePlaylist onClose={onClose} />
                 )
               }
             

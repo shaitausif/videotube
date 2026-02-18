@@ -91,7 +91,10 @@ export async function GET(
         isSubscribed: 1,
         avatar: 1,
         coverImage: 1,
-        isAcceptingMessages : 1
+        isAcceptingMessages : 1,
+        bio : 1,
+        socialLinks : 1,
+        createdAt : 1
       },
     },
   ]);
